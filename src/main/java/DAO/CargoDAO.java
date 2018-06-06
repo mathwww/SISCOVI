@@ -67,4 +67,28 @@ public class CargoDAO {
         }
         return null;
     }
+    public boolean cadastroCargos(ArrayList<CargoModel> cargos, String currentUser) {
+        PreparedStatement preparedStatement = null;
+        int a = 1;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement("INSERT INTO TB_CARGO (NOME, DESCRICAO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
+            for (CargoModel cargo : cargos) {
+                if ((a % 4) == 0) {
+                    a = 1;
+                }
+                preparedStatement.setString(a++, cargo.getNome());
+                preparedStatement.setString(a++, cargo.getDescricao());
+                preparedStatement.setString(a++, currentUser);
+                preparedStatement.addBatch();
+            }
+            int [] updateCounts = preparedStatement.executeBatch();
+            connection.commit();
+            connection.setAutoCommit(true);
+            return true;
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return false;
+    }
 }

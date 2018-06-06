@@ -3,6 +3,7 @@ package Controllers;
 import DAO.CargoDAO;
 import DAO.ConnectSQLServer;
 import DAO.UsuarioDAO;
+import Model.CadastroCargoModel;
 import Model.CargoModel;
 import Model.CargoResponseModel;
 import Model.ContratoModel;
@@ -55,6 +56,28 @@ public class CargoController {
         }
         connectSQLServer.dbConnect().close();
         String json = gson.toJson(cargos);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+    @POST
+    @Path("/cadastrarCargos")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cadastrarCargos(String object) throws SQLException {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        Gson gson = new Gson();
+        CadastroCargoModel ccm = gson.fromJson(object, CadastroCargoModel.class);
+        CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
+        String json;
+        if(cargoDAO.cadastroCargos(ccm.getCargos(), ccm.getCurrentUser())){
+            json = gson.toJson("Cadastro realizado com sucesso !");
+        }else {
+            json = gson.toJson("Ocorreu Algum erro");
+        }
+        try {
+            connectSQLServer.dbConnect().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }
