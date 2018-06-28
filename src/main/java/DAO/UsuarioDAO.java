@@ -17,8 +17,8 @@ public class UsuarioDAO {
         ResultSet resultSet = null;
         ArrayList<UsuarioModel> usuarios = new ArrayList<UsuarioModel>();
         try {
-            preparedStatement = connection.prepareStatement("SELECT U.cod,NOME, LOGIN, SIGLA, U.LOGIN_ATUALIZACAO, U.DATA_ATUALIZACAO FROM tb_usuario U" +
-                    " JOIN TB_PERFIL P ON P.cod=u.COD_PERFIL");
+            preparedStatement = connection.prepareStatement("SELECT U.cod, U.NOME, LOGIN, SIGLA, U.LOGIN_ATUALIZACAO, U.DATA_ATUALIZACAO FROM tb_usuario U" +
+                    " JOIN TB_PERFIL_USUARIO P ON P.cod=u.COD_PERFIL");
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 UsuarioModel usuarioModel = new UsuarioModel(resultSet.getInt("COD"),
@@ -42,7 +42,8 @@ public class UsuarioDAO {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try{
-            preparedStatement = connection.prepareStatement("SELECT NOME FROM TB_USUARIO JOIN TB_CONTRATO CONTRATO ON TB_USUARIO.COD = CONTRATO.COD_GESTOR WHERE CONTRATO.COD=?");
+            preparedStatement = connection.prepareStatement("SELECT U.NOME FROM TB_USUARIO U JOIN TB_HISTORICO_GESTAO_CONTRATO HGC ON HGC.COD_USUARIO=U.COD JOIN TB_PERFIL_GESTAO PG ON PG.COD=HGC.COD_PERFIL_GESTAO" +
+                    " WHERE HGC.COD_CONTRATO=?");
             preparedStatement.setInt(1, codigoContrato);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
@@ -103,5 +104,27 @@ public class UsuarioDAO {
             sqle.printStackTrace();
         }
         return false;
+    }
+    public ArrayList<UsuarioModel> getGestores(){
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<UsuarioModel> usuarios = new ArrayList<>();
+        try {
+            preparedStatement = connection.prepareStatement("SELECT U.cod, U.NOME, LOGIN, SIGLA, U.LOGIN_ATUALIZACAO, U.DATA_ATUALIZACAO FROM tb_usuario U JOIN TB_PERFIL_USUARIO P ON P.cod=u.COD_PERFIL WHERE P.COD=4");
+            resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                UsuarioModel usuarioModel = new UsuarioModel(resultSet.getInt("COD"),
+                        resultSet.getString("NOME"),
+                        resultSet.getString("LOGIN"),
+                        resultSet.getString("LOGIN_ATUALIZACAO"),
+                        resultSet.getDate("DATA_ATUALIZACAO"));
+                usuarioModel.setPerfil(resultSet.getString("SIGLA"));
+                usuarios.add(usuarioModel);
+            }
+            return usuarios;
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return null;
     }
 }

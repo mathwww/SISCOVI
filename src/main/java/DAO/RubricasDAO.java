@@ -23,7 +23,7 @@ public class RubricasDAO {
         PreparedStatement preparedStatement = null;
         ArrayList<RubricaModel> rubricas = new ArrayList<RubricaModel>();
         try{
-            preparedStatement = connection.prepareStatement("SELECT * FROM TB_RUBRICAS");
+            preparedStatement = connection.prepareStatement("SELECT * FROM TB_RUBRICA");
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
                 RubricaModel rubrica = new RubricaModel(resultSet.getString("NOME"), resultSet.getString("SIGLA"), resultSet.getInt("COD"));
@@ -52,7 +52,7 @@ public class RubricasDAO {
         ArrayList<PercentuaisEstaticosModel> listaDePercentuais = new ArrayList<PercentuaisEstaticosModel>();
         PercentuaisEstaticosModel meuPercentual;
         try{
-            preparedStatement = connection.prepareStatement("SELECT NOME,PERCENTUAL, DATA_INICIO, DATA_FIM, DATA_ADITAMENTO FROM tb_percentual_estatico JOIN tb_rubricas R ON " +
+            preparedStatement = connection.prepareStatement("SELECT NOME,PERCENTUAL, DATA_INICIO, DATA_FIM, DATA_ADITAMENTO FROM tb_percentual_estatico JOIN tb_rubrica R ON " +
                     " COD_RUBRICA=R.cod");
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
@@ -73,7 +73,7 @@ public class RubricasDAO {
     public boolean InsertRubrica(RubricaModel rubricaModel, String currentUser) {
         PreparedStatement preparedStatement;
         try {
-            preparedStatement = connection.prepareStatement("INSERT INTO TB_RUBRICAS (NOME, SIGLA, DESCRICAO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)");
+            preparedStatement = connection.prepareStatement("INSERT INTO TB_RUBRICA (NOME, SIGLA, DESCRICAO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)");
             preparedStatement.setString(1, rubricaModel.getNome());
             preparedStatement.setString(2, rubricaModel.getSigla());
             preparedStatement.setString(3, rubricaModel.getDescricao());
@@ -90,7 +90,7 @@ public class RubricasDAO {
         PreparedStatement preparedStatement;
         ResultSet resultSet;
         try {
-            preparedStatement = connection.prepareStatement("SELECT COD, NOME, SIGLA, DESCRICAO FROM TB_RUBRICAS WHERE COD=?");
+            preparedStatement = connection.prepareStatement("SELECT COD, NOME, SIGLA, DESCRICAO FROM TB_RUBRICA WHERE COD=?");
             preparedStatement.setInt(1, codigo);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
@@ -110,7 +110,7 @@ public class RubricasDAO {
     public boolean DeleteRubrica(int codigo) {
         PreparedStatement preparedStatement;
         try{
-            preparedStatement = connection.prepareStatement("DELETE FROM TB_RUBRICAS WHERE COD=?");
+            preparedStatement = connection.prepareStatement("DELETE FROM TB_RUBRICA WHERE COD=?");
             preparedStatement.setInt(1, codigo);
             preparedStatement.executeUpdate();
             return true;
@@ -122,7 +122,7 @@ public class RubricasDAO {
     public boolean AlteraRubrica(RubricaModel rubrica, String currentUser) {
         PreparedStatement preparedStatement;
         try {
-            preparedStatement = connection.prepareStatement("UPDATE TB_RUBRICAS SET NOME=?, SIGLA=?, DESCRICAO=?, LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=CURRENT_TIMESTAMP WHERE COD=?");
+            preparedStatement = connection.prepareStatement("UPDATE TB_RUBRICA SET NOME=?, SIGLA=?, DESCRICAO=?, LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=CURRENT_TIMESTAMP WHERE COD=?");
             preparedStatement.setString(1, rubrica.getNome());
             preparedStatement.setString(2, rubrica.getSigla());
             preparedStatement.setString(3, rubrica.getDescricao());

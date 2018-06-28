@@ -48,6 +48,9 @@ public class TestAuxiliateCalc {
             System.out.println("Último dia do mês da data1: "+date3.withDayOfMonth(date3.lengthOfMonth()));
             System.out.print("Convertendo :");
             System.out.println(" "+date3.withDayOfMonth(date3.lengthOfMonth()).format(DateTimeFormatter.ofPattern("cccc, dd 'de' MMMM 'de' uuuu")));
+            Date date = Date.valueOf("2013-02-01");
+            System.out.println(date);
+            System.out.println(date.toLocalDate().format(DateTimeFormatter.ofPattern("cccc, dd 'de' "+ "MMMM" +" 'de' uuuu")));
             connectSQLServer.dbConnect().close();
         } catch (SQLServerException sqlse) {
             sqlse.printStackTrace();

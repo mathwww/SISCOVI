@@ -88,4 +88,19 @@ public class UsuarioController {
         connectSQLServer.dbConnect().close();
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+    @GET
+    @Path("/getGestores")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getGestores() {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        Gson gson = new Gson();
+        UsuarioDAO usuarioDAO = new UsuarioDAO(connectSQLServer.dbConnect());
+        String json = gson.toJson(usuarioDAO.getGestores());
+        try {
+            connectSQLServer.dbConnect().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
 }

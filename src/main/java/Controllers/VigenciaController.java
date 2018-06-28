@@ -1,6 +1,7 @@
 package Controllers;
 
 import DAO.ConnectSQLServer;
+import DAO.ContratoDAO;
 import DAO.UsuarioDAO;
 import DAO.VigenciaDAO;
 import Model.ContratoModel;
@@ -27,13 +28,13 @@ public class VigenciaController {
         ContratoModel contratos[] = gson.fromJson(object, ContratoModel[].class);
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         VigenciaDAO vigenciaDAO = new VigenciaDAO(connectSQLServer.dbConnect());
-        UsuarioDAO usuarioDAO = new UsuarioDAO(connectSQLServer.dbConnect());
+        ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
         ArrayList<VigenciaResponseModel> listaVigencias = new ArrayList<>();
         for(int i = 0; i < contratos.length; i++) {
             VigenciaResponseModel vigenciaResponseModel = new VigenciaResponseModel();
             vigenciaResponseModel.setVigencias(vigenciaDAO.retornaVigenciasDeUmContrato(contratos[i].getCodigo()));
             vigenciaResponseModel.setContrato(contratos[i]);
-            vigenciaResponseModel.setGestor(usuarioDAO.retornaNomeDoGestorDoContrato(contratos[i].getCodigo()));
+            vigenciaResponseModel.setGestor(contratoDAO.retornaNomeDoGestorDoContrato(contratos[i].getCodigo()));
             listaVigencias.add(vigenciaResponseModel);
         }
         try {

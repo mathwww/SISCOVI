@@ -20,7 +20,7 @@ public class PerfilDAO {
         ResultSet resultSet = null;
         PerfilModel perfilUser = new PerfilModel();
         try{
-            preparedStatement = connection.prepareStatement("SELECT P.COD, SIGLA, DESCRICAO FROM TB_USUARIO U JOIN TB_PERFIL P ON P.COD=U.COD_PERFIL WHERE U.LOGIN=?");
+            preparedStatement = connection.prepareStatement("SELECT P.COD, SIGLA, DESCRICAO FROM TB_USUARIO U JOIN TB_PERFIL_USUARIO P ON P.COD=U.COD_PERFIL WHERE U.LOGIN=?");
             preparedStatement.setString(1,username);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()){
@@ -42,7 +42,7 @@ public class PerfilDAO {
         ResultSet resultSet = null;
         ArrayList<String> perfis = new ArrayList<>();
         try {
-            preparedStatement = connection.prepareStatement("SELECT SIGLA FROM TB_PERFIL");
+            preparedStatement = connection.prepareStatement("SELECT SIGLA FROM TB_PERFIL_USUARIO");
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 perfis.add(resultSet.getString("SIGLA"));
@@ -58,7 +58,7 @@ public class PerfilDAO {
 
     public int getPerfilCod(String sigla) {
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT COD FROM TB_PERFIL WHERE SIGLA=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT COD FROM TB_PERFIL_USUARIO WHERE SIGLA=?");
             preparedStatement.setString(1, sigla);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()){

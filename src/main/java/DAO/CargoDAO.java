@@ -20,7 +20,7 @@ public class CargoDAO {
         ResultSet resultSet = null;
         ArrayList<CargoModel> cargos = new ArrayList<>();
         try{
-            preparedStatement = connection.prepareStatement("SELECT * FROM TB_CARGO");
+            preparedStatement = connection.prepareStatement("SELECT * FROM TB_FUNCAO ORDER BY NOME");
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 CargoModel cargo = new CargoModel(resultSet.getInt("COD"),
@@ -46,7 +46,7 @@ public class CargoDAO {
         ArrayList<CargoModel> cargos = new ArrayList<>();
         try {
             preparedStatement = connection.prepareStatement("SELECT CC.COD_CARGO,CA.NOME,CA.DESCRICAO,CA.LOGIN_ATUALIZACAO,CA.DATA_ATUALIZACAO FROM tb_cargo_contrato " +
-                    "CC join tb_cargo CA on CA.cod=CC.COD_CARGO where CC.COD_CONTRATO=?");
+                    "CC join tb_FUNCAO CA on CA.cod=CC.COD_FUNCAO where CC.COD_CONTRATO=? ORDER BY CA.NOME");
             preparedStatement.setInt(1, codigo);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -72,7 +72,7 @@ public class CargoDAO {
         int a = 1;
         try {
             connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement("INSERT INTO TB_CARGO (NOME, DESCRICAO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
+            preparedStatement = connection.prepareStatement("INSERT INTO TB_FUNCAO (NOME, DESCRICAO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
             for (CargoModel cargo : cargos) {
                 if ((a % 4) == 0) {
                     a = 1;

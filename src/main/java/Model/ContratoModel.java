@@ -6,7 +6,7 @@ public class ContratoModel {
     private String nomeDaEmpresa;
     private String cnpj;
     private int codigo;
-    private int numeroDoContrato;
+    private String numeroDoContrato;
     private int anoDoContrato;
     private Date dataInicio;
     private Date dataFim;
@@ -27,7 +27,7 @@ public class ContratoModel {
     public int getCodigo() {
         return codigo;
     }
-    public int getNumeroDoContrato() {
+    public String getNumeroDoContrato() {
         return numeroDoContrato;
     }
     public int getAnoDoContrato() {
@@ -59,7 +59,7 @@ public class ContratoModel {
     public void setNomeDaEmpresa(String nomeDaEmpresa) {
         this.nomeDaEmpresa = nomeDaEmpresa;
     }
-    public void setNumeroDoContrato(int numeroDoContrato) {
+    public void setNumeroDoContrato(String numeroDoContrato) {
         this.numeroDoContrato = numeroDoContrato;
     }
     public void setObjeto (String objeto) {this.objeto = objeto;}

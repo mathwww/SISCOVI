@@ -2,6 +2,7 @@ package Controllers;
 
 import DAO.ConnectSQLServer;
 import DAO.ContratoDAO;
+import Helpers.ErrorMessage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -28,6 +29,23 @@ public class ContratoController {
             connectSQLServer.dbConnect().close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+    @GET
+    @Path("/getGestorContrato={codigo}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getGestorContrato(@PathParam("codigo") int codigo) {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        Gson gson = new Gson();
+        String json;
+        ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
+        String nomeGestor = contratoDAO.retornaNomeDoGestorDoContrato(codigo);
+        if (nomeGestor != null) {
+            json = gson.toJson(nomeGestor);
+        }else {
+            ErrorMessage errorMessage = new ErrorMessage();
+         json = gson.toJson(errorMessage.error = "Este contrato não existe !");
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }

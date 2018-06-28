@@ -1,6 +1,7 @@
 package Controllers;
 
 import DAO.ConnectSQLServer;
+import DAO.ContratoDAO;
 import DAO.PercentualDAO;
 import DAO.UsuarioDAO;
 import Model.ContratoModel;
@@ -36,12 +37,12 @@ public class PercentualController {
             contratoModels.add(gson.fromJson(temp, ContratoModel.class)); // realiza a conversão da classe de json para o objeto respectivo e o adiciona à lista
         }
         for(int i = 0; i < contratoModels.size(); i++){
-            UsuarioDAO usuarioDAO = new UsuarioDAO(connectSQLServer.dbConnect());
+            ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
             PercentualDAO percentualDAO = new PercentualDAO(connectSQLServer.dbConnect());
             pmr = new PercentualModelResponse();
             pmr.setPercentuais(percentualDAO.getPercentuaisDoContrato(contratoModels.get(i).getCodigo())); // insere no Modelo de Resposta de Percentual os percentuais de um contrato
             pmr.setContrato(contratoModels.get(i)); // Insere o contrato no Modelo de Respostas de Percentual
-            pmr.setGestor(usuarioDAO.retornaNomeDoGestorDoContrato(contratoModels.get(i).getCodigo())); // Adiciona o nome do gestor do contrato no Modelo de resposta de percentual
+            pmr.setGestor(contratoDAO.retornaNomeDoGestorDoContrato(contratoModels.get(i).getCodigo())); // Adiciona o nome do gestor do contrato no Modelo de resposta de percentual
             percentuais.add(pmr); // Adiciona o modelo de resposta de percentual na lista
         }
         String json = gson.toJson(percentuais);

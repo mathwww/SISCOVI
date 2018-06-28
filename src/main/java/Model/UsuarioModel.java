@@ -36,4 +36,7 @@ public class UsuarioModel {
     public void setPerfil(String perfil) {
         this.perfil = perfil;
     }
+    public int getCodigo() {
+        return codigo;
+    }
 }

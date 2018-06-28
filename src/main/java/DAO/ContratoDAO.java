@@ -20,17 +20,17 @@ public class ContratoDAO {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = connection.prepareStatement("SELECT SIGLA FROM TB_PERFIL P JOIN tb_usuario U ON U.COD_PERFIL=P.cod WHERE U.LOGIN=?");
+            preparedStatement = connection.prepareStatement("SELECT SIGLA FROM TB_PERFIL_USUARIO P JOIN tb_usuario U ON U.COD_PERFIL=P.cod WHERE U.LOGIN=?");
             preparedStatement.setString(1, username);
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
             if(resultSet.getString("SIGLA").equals("ADMINISTRADOR")) {
                 preparedStatement = connection.prepareStatement("SELECT DISTINCT C.COD, NOME_EMPRESA, CNPJ, NUMERO_CONTRATO, SE_ATIVO, DATA_INICIO, DATA_FIM, OBJETO " +
-                        "FROM TB_CONTRATO C JOIN tb_historico_gestor_contrato HGC ON HGC.COD_CONTRATO=C.COD");
+                        "FROM TB_CONTRATO C JOIN tb_historico_gestao_contrato HGC ON HGC.COD_CONTRATO=C.COD");
                 resultSet = preparedStatement.executeQuery();
                 while(resultSet.next()){
                     ContratoModel contrato = new ContratoModel(resultSet.getInt("COD"), resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
-                    contrato.setNumeroDoContrato(resultSet.getInt("NUMERO_CONTRATO"));
+                    contrato.setNumeroDoContrato(resultSet.getString("NUMERO_CONTRATO"));
                     contrato.setAnoDoContrato(resultSet.getDate("DATA_INICIO").toLocalDate().getYear()); // RECUPERA O ANO DA DATA INÍCIO DO CONTRATO
                     contrato.setDataInicio(resultSet.getDate("DATA_INICIO"));
                     contrato.setNomeDaEmpresa(contrato.getNomeDaEmpresa());
@@ -55,13 +55,13 @@ public class ContratoDAO {
                 preparedStatement = connection.prepareStatement("SELECT DISTINCT C.COD , NOME_EMPRESA,CNPJ, NUMERO_CONTRATO, SE_ATIVO, DATA_INICIO, DATA_FIM, OBJETO  FROM TB_CONTRATO C" +
                         " JOIN tb_historico_gestor_contrato hgc ON hgc.cod_contrato = c.cod" +
                         " JOIN tb_usuario u ON u.cod = hgc.cod_usuario" +
-                        " JOIN tb_perfil p ON p.cod = u.cod_perfil" +
+                        " JOIN tb_perfil_usuario p ON p.cod = u.cod_perfil" +
                         " WHERE u.login = ?");
                 preparedStatement.setString(1, username);
                 resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
                     ContratoModel contrato = new ContratoModel(resultSet.getInt("COD"), resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
-                    contrato.setNumeroDoContrato(resultSet.getInt("NUMERO_CONTRATO"));
+                    contrato.setNumeroDoContrato(resultSet.getString("NUMERO_CONTRATO"));
                     contrato.setAnoDoContrato(resultSet.getDate("DATA_INICIO").toLocalDate().getYear()); // RECUPERA O ANO DA DATA INÍCIO DO CONTRATO
                     contrato.setDataInicio(resultSet.getDate("DATA_INICIO"));
                     contrato.setSeAtivo(resultSet.getString("SE_ATIVO"));
@@ -83,6 +83,22 @@ public class ContratoDAO {
             npe.printStackTrace();
         }
         catch (SQLException sqle){
+            sqle.printStackTrace();
+        }
+        return null;
+    }
+    public String retornaNomeDoGestorDoContrato(int codigo) {
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT U.NOME FROM TB_USUARIO U JOIN tb_historico_gestao_contrato HGC ON HGC.COD_USUARIO=U.cod " +
+                    "JOIN TB_CONTRATO C ON  C.cod=HGC.COD_CONTRATO WHERE C.COD = ?");
+            preparedStatement.setInt(1, codigo);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                return resultSet.getString("NOME");
+            }
+        }catch(SQLException sqle) {
             sqle.printStackTrace();
         }
         return null;

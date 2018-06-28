@@ -16,4 +16,24 @@ public class PercentualModel {
         this.dataFim = dataFim;
         this.dataAditamento = dataAditamento;
     }
+    public String getNome() {
+        return nome;
+    }
+
+    public Date getDataAditamento() {
+        return dataAditamento;
+    }
+
+    public Date getDataFim() {
+        return dataFim;
+    }
+
+    public Date getDataInicio() {
+        return dataInicio;
+    }
+
+    public float getPercentual() {
+        return percentual;
+    }
+
 }

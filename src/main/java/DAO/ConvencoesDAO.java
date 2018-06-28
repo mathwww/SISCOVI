@@ -24,7 +24,7 @@ public class ConvencoesDAO {
         try {
             preparedStatement = connection.prepareStatement("SELECT DISTINCT CA.NOME, REMUNERACAO, DATA_INICIO_CONVENCAO, DATA_FIM_CONVENCAO, DATA_ADITAMENTO, CON.LOGIN_ATUALIZACAO," +
                     " CON.DATA_ATUALIZACAO, U.NOME FROM tb_convencao_coletiva CON JOIN tb_cargo_contrato CC ON cc.cod=CON.COD_CARGO_CONTRATO JOIN tb_contrato CO ON CO.cod=CC.COD_CONTRATO " +
-                    "JOIN tb_cargo CA ON CA.cod=cc.COD_CARGO JOIN tb_usuario U ON U.cod=COD_GESTOR WHERE CO.cod=?");
+                    "JOIN tb_funcao CA ON CA.cod=cc.COD_CARGO JOIN tb_usuario U ON U.cod=COD_GESTOR WHERE CO.cod=?");
             preparedStatement.setInt(1, codigoContrato);
             resultSet = preparedStatement.executeQuery();
             String tempCargo = null;

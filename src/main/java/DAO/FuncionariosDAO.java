@@ -22,8 +22,9 @@ public class FuncionariosDAO {
         ResultSet resultSet = null;
         ArrayList<FuncionarioModel> funcionarios = new ArrayList<>();
         try {
-            preparedStatement = connection.prepareStatement("SELECT F.cod, F.NOME, F.CPF ,F.ATIVO, F.LOGIN_ATUALIZACAO, F.DATA_ATUALIZACAO FROM tb_funcionario F JOIN tb_cargo_funcionario CF " +
-                    "ON CF.COD_FUNCIONARIO=F.cod JOIN tb_cargo_contrato CC ON CC.cod=CF.COD_CARGO_CONTRATO JOIN TB_CONTRATO CO ON CO.cod=CC.COD_CONTRATO WHERE CO.cod=?");
+            preparedStatement = connection.prepareStatement("SELECT F.cod, F.NOME, F.CPF ,F.ATIVO, F.LOGIN_ATUALIZACAO, F.DATA_ATUALIZACAO FROM tb_terceirizado F " +
+                    "JOIN TB_TERCEIRIZADO_CONTRATO CF ON CF.COD_TERCEIRIZADO=F.cod " +
+                    "JOIN tb_contrato CO ON CO.COD=CF.COD_CONTRATO WHERE CO.COD=? ORDER BY F.NOME");
             preparedStatement.setInt(1, codigoContrato);
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
@@ -46,9 +47,9 @@ public class FuncionariosDAO {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = connection.prepareStatement("SELECT F.cod, F.NOME, F.CPF ,F.ATIVO,CA.NOME AS CARGO,CF.DATA_DISPONIBILIZACAO,CF.DATA_DESLIGAMENTO, F.LOGIN_ATUALIZACAO, F.DATA_ATUALIZACAO" +
-                    " FROM tb_funcionario F JOIN tb_cargo_funcionario CF ON CF.COD_FUNCIONARIO=F.cod JOIN tb_cargo_contrato CC ON CC.cod=CF.COD_CARGO_CONTRATO JOIN TB_CONTRATO CO ON CO.cod=CC.COD_CONTRATO JOIN " +
-                    "tb_cargo CA ON CA.cod=CF.COD_CARGO_CONTRATO WHERE CO.cod=?");
+            preparedStatement = connection.prepareStatement("SELECT T.cod, T.NOME, T.CPF ,T.ATIVO, F.NOME AS CARGO, TC.DATA_DISPONIBILIZACAO, TC.DATA_DESLIGAMENTO, T.LOGIN_ATUALIZACAO, T.DATA_ATUALIZACAO " +
+                    " FROM TB_TERCEIRIZADO_CONTRATO TC JOIN TB_TERCEIRIZADO T ON T.COD=TC.COD_TERCEIRIZADO JOIN TB_FUNCAO_TERCEIRIZADO FT ON FT.COD_TERCEIRIZADO_CONTRATO=TC.COD " +
+                    "JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=?");
             preparedStatement.setInt(1, codigoContrato);
             resultSet = preparedStatement.executeQuery();
             String cargoTemp = null;

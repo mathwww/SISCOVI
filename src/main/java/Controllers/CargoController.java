@@ -2,6 +2,7 @@ package Controllers;
 
 import DAO.CargoDAO;
 import DAO.ConnectSQLServer;
+import DAO.ContratoDAO;
 import DAO.UsuarioDAO;
 import Model.CadastroCargoModel;
 import Model.CargoModel;
@@ -38,7 +39,7 @@ public class CargoController {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         Gson gson = new GsonBuilder().serializeNulls().setDateFormat("dd/MM/yyyy").create();
         CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
-        UsuarioDAO usuarioDAO = new UsuarioDAO(connectSQLServer.dbConnect());
+        ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
         ArrayList<ContratoModel> contratos;
         ArrayList<ContratoModel> contratoModels = new ArrayList<>();
         ArrayList<CargoResponseModel> cargos = new ArrayList<>();
@@ -51,7 +52,7 @@ public class CargoController {
             CargoResponseModel cargoResponse = new CargoResponseModel();
             cargoResponse.setCargos(cargoDAO.getCargosDeUmContrato(contratoModels.get(i).getCodigo()));
             cargoResponse.setContrato(contratoModels.get(i));
-            cargoResponse.setGestor(usuarioDAO.retornaNomeDoGestorDoContrato(contratoModels.get(i).getCodigo()));
+            cargoResponse.setGestor(contratoDAO.retornaNomeDoGestorDoContrato(contratoModels.get(i).getCodigo()));
             cargos.add(cargoResponse);
         }
         connectSQLServer.dbConnect().close();
