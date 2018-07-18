@@ -52,8 +52,8 @@ public class ContratoDAO {
                     contratos.add(contrato);
                 }
             }else{
-                preparedStatement = connection.prepareStatement("SELECT DISTINCT C.COD , NOME_EMPRESA,CNPJ, NUMERO_CONTRATO, SE_ATIVO, DATA_INICIO, DATA_FIM, OBJETO  FROM TB_CONTRATO C" +
-                        " JOIN tb_historico_gestor_contrato hgc ON hgc.cod_contrato = c.cod" +
+                preparedStatement = connection.prepareStatement("SELECT DISTINCT C.COD , NOME_EMPRESA,CNPJ, NUMERO_CONTRATO,hgc.data_inicio, hgc.data_fim, SE_ATIVO, OBJETO  FROM TB_CONTRATO C" +
+                        " JOIN tb_historico_gestao_contrato hgc ON hgc.cod_contrato = c.cod" +
                         " JOIN tb_usuario u ON u.cod = hgc.cod_usuario" +
                         " JOIN tb_perfil_usuario p ON p.cod = u.cod_perfil" +
                         " WHERE u.login = ?");
@@ -102,5 +102,31 @@ public class ContratoDAO {
             sqle.printStackTrace();
         }
         return null;
+    }
+    public int codigoGestorContrato(int codigoUsuario, int codigoContrato) {
+        int codigoGestor = 0;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT PU.SIGLA AS \"USUARIO\", COD_USUARIO FROM TB_USUARIO U" +
+                " JOIN TB_PERFIL_USUARIO PU ON PU.COD=U.COD_PERFIL" +
+                " JOIN tb_historico_gestao_contrato HGC ON HGC.COD_CONTRATO=?" +
+                " JOIN TB_PERFIL_GESTAO PG ON PG.COD=HGC.COD_PERFIL_GESTAO WHERE U.COD=?")){
+            preparedStatement.setInt(1, codigoContrato);
+            preparedStatement.setInt(2, codigoUsuario);
+            try (ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    if(resultSet.getInt("COD_USUARIO") == codigoUsuario) {
+                        codigoGestor = codigoUsuario;
+                    }else if(resultSet.getString("USUARIO").equals("USUÁRIO") || resultSet.getString(1).equals("GESTOR") || resultSet.getString(1).equals("1° SUBSTITUTO") ||
+                                resultSet.getString(1).equals("2° SUBSTITUTO")){
+                        codigoGestor = resultSet.getInt("COD_USUARIO");
+                    }
+                    if(resultSet.getString(1).equals("ADMINISTRADOR")){
+                        codigoGestor = resultSet.getInt("COD_USUARIO");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new NullPointerException("Erro ao tentar recuperar cálculos anteriores. Erro na função: 'codigoGestorContrato em ContratoDao.class'");
+        }
+        return codigoGestor;
     }
 }

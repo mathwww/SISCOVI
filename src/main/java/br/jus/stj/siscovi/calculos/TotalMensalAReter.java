@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class TotalMensalAReter {
     private Connection connection;
-    TotalMensalAReter(Connection connection) {
+    public TotalMensalAReter(Connection connection) {
         this.connection = connection;
     }
 
@@ -433,7 +433,7 @@ public class TotalMensalAReter {
                 */
         }
     }
-    public Date adaptaDataPara360(Date vDataFimMes) {
+    Date adaptaDataPara360(Date vDataFimMes) {
         if(vDataFimMes.toLocalDate().getDayOfMonth() == 31) {
             vDataFimMes = Date.valueOf(vDataFimMes.toLocalDate().minusDays(1));
         }
@@ -445,7 +445,7 @@ public class TotalMensalAReter {
         }
         return vDataFimMes;
     }
-    public ArrayList<CodTerceirizadoECodFuncaoTerceirizadoModel> selecionaTerceirizadosContratoFuncao(int pCodFuncaoContrato, Date pDataReferencia, int pMes, int pAno) {
+    ArrayList<CodTerceirizadoECodFuncaoTerceirizadoModel> selecionaTerceirizadosContratoFuncao(int pCodFuncaoContrato, Date pDataReferencia, int pMes, int pAno) {
         // Busca funcionários do contrato na respectiva função c1[i]
         ArrayList<CodTerceirizadoECodFuncaoTerceirizadoModel> tuplas = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ft.cod_terceirizado_contrato, ft.cod FROM tb_funcao_terceirizado ft WHERE ft.cod_funcao_contrato = ?" +
