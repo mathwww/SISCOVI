@@ -15,6 +15,13 @@ public class ContratoDAO {
         this.connection = connection;
     }
 
+    /**
+     *
+     * @param username
+     * @return
+     * @throws NullPointerException
+     * @throws SQLException
+     */
     public ArrayList<ContratoModel> retornaContratoDoUsuario(String username) throws NullPointerException,SQLException {
         ArrayList<ContratoModel> contratos = new ArrayList<ContratoModel>();
         PreparedStatement preparedStatement = null;
@@ -87,6 +94,12 @@ public class ContratoDAO {
         }
         return null;
     }
+
+    /**
+     *
+     * @param codigo
+     * @return
+     */
     public String retornaNomeDoGestorDoContrato(int codigo) {
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -103,6 +116,13 @@ public class ContratoDAO {
         }
         return null;
     }
+
+    /**
+     *
+     * @param codigoUsuario
+     * @param codigoContrato
+     * @return
+     */
     public int codigoGestorContrato(int codigoUsuario, int codigoContrato) {
         int codigoGestor = 0;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT PU.SIGLA AS \"USUARIO\", COD_USUARIO FROM TB_USUARIO U" +

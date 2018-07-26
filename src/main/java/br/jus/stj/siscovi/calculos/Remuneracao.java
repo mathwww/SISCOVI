@@ -1,6 +1,7 @@
 package br.jus.stj.siscovi.calculos;
 
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 
 public class Remuneracao {
     private Connection connection;
@@ -171,5 +172,56 @@ public class Remuneracao {
                     "'RetornaRemuneracaoPeriodo'");
         }
         return 0;
+    }
+
+    public float RetornaRemuneracaoPeriodo(int pCodFuncaoContrato, Date pDataInicio, Date pDataFim, int pRetroatividade) {
+
+        /* Operação 1: Remuneração do mês em que não há dupla vigência ou remuneração atual.
+           Operação 2: Remuneração encerrada do mês em que há dupla vigência.
+           pRetroatividade 1: Considera a retroatividade.
+           pRetroatividade 2: Desconsidera os períodos de retroatividade.
+        */
+
+        float vRemuneracao = 0;
+        Date vDataReferencia;
+        int vCodContrato = 0;
+        int vCodRemuneracaoFunCon = 0;
+        boolean vRetroatividade = false;
+        Date vDataAditamento;
+
+
+
+        /* Definição do cod_contrato.*/
+        String sql = "SELECT COD_CONTRATO FROM TB_FUNCAO_CONTRATO WHERE COD=?"; // Retorna apenas um valor ?
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, pCodFuncaoContrato);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    vCodContrato = resultSet.getInt("COD_CONTRATO");
+                }
+            }
+        }catch (SQLException e) {
+            throw new NullPointerException("");
+        }
+
+        /* Definição do percentual.*/
+        sql = "SELECT COD, REMUNERACAO FROM TB_REMUNERACAO_FUN_CON WHERE DATA_ADITAMENTO IS NOT NULL AND COD_FUNCAO_CONTRATO= ? AND DATA_INICIO <= ? AND (DATA_FIM >= ? or DATA_FIM IS NULL)";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, pCodFuncaoContrato);
+            preparedStatement.setDate(2, pDataInicio);
+            preparedStatement.setDate(3, pDataFim);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    vCodRemuneracaoFunCon = resultSet.getInt("COD");
+                    vRemuneracao = resultSet.getFloat("REMUNERACAO");
+
+                }
+            }
+
+        }catch (SQLException e){
+            throw new NullPointerException("Erro ao tentar carregar a remuneração e código. Função: " + pCodFuncaoContrato + ". No periodo entre : " +
+                    pDataInicio.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " e " + pDataFim.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyyy")));
+        }
+        return vRemuneracao;
     }
 }

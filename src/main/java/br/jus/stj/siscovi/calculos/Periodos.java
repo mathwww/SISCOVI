@@ -2,6 +2,7 @@ package br.jus.stj.siscovi.calculos;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Periodos {
@@ -218,7 +219,7 @@ public class Periodos {
                         && (vDataFimFuncao.after(vDataFim))){
                     LocalDate dataFim = vDataFim.toLocalDate();
                     LocalDate dataDisponibilizacao = vDataInicioFuncao.toLocalDate();
-                    long numeroDeDias = ChronoUnit.DAYS.between(dataDisponibilizacao,dataFim) + 1;
+                    long numeroDeDias = ChronoUnit.DAYS.between(dataDisponibilizacao, dataFim) + 1;
                     vRetorno = (int) numeroDeDias;
                 }
 
@@ -337,7 +338,7 @@ public class Periodos {
         /** --Se as datas estão no mesmo ano. */
 
         if(pDataFim.toLocalDate().getYear() == pDataInicio.toLocalDate().getYear()) {
-            vRetorno = ChronoUnit.MONTHS.between(pDataInicio.toLocalDate(), pDataFim.toLocalDate());
+            vRetorno = ChronoUnit.MONTHS.between(pDataInicio.toLocalDate(), pDataFim.toLocalDate()) + 1;
         }
 
         /** --Caso sejam anos diferentes. */
@@ -547,7 +548,7 @@ public class Periodos {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            vRetorno = (int)(ChronoUnit.DAYS.between(vDataReferencia.toLocalDate(), vDataFimPercentual.toLocalDate())) + 1;
+            vRetorno = (int)(ChronoUnit.DAYS.between(vDataReferencia.toLocalDate(), vDataFimPercentual.toLocalDate()));
         }
         if(pOperacao == 4) {
             try {
@@ -563,11 +564,83 @@ public class Periodos {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            vRetorno = (int) (ChronoUnit.DAYS.between(vDataInicioPercentual.toLocalDate(), vDataReferencia.toLocalDate().withDayOfMonth(vDataReferencia.toLocalDate().lengthOfMonth()))) + 1;
+            vRetorno = (int) (ChronoUnit.DAYS.between(vDataInicioPercentual.toLocalDate(), vDataReferencia.toLocalDate().withDayOfMonth(vDataReferencia.toLocalDate().lengthOfMonth())));
             if(vDataReferencia.toLocalDate().getDayOfMonth() == 31) {
                 vRetorno = vRetorno - 1;
             }
         }
         return vRetorno;
+    }
+
+    /**
+     * Função que retorna o número de dias que um terceirizado trabalhou em uma função em um determinado mês.
+     * @param pCodFuncaoTerceirizado
+     * @param pDataInicio
+     * @param pDataFim
+     * @return
+     */
+    public int DiasTrabalhadosPeriodo(int pCodFuncaoTerceirizado, Date pDataInicio, Date pDataFim) {
+
+        Date vDataInicio = null;
+        Date vDataFim = null;
+
+        /* Carregamento das datas de disponibilização e desligamento do terceirizado na função.*/
+
+        String sql = "SELECT DATA_INICIO, DATA_FIM FROM TB_FUNCAO_TERCEIRIZADO WHERE COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, pCodFuncaoTerceirizado);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    vDataInicio = resultSet.getDate("DATA_INICIO");
+                    vDataFim = resultSet.getDate("DATA_FIM");
+                }
+            }
+        } catch (SQLException e) {
+            throw new NullPointerException("Erro ao tentar carregar as datas de disponibilização e de desligamento do terceirizado na função: " + pCodFuncaoTerceirizado +
+                    ", no período especificado. Data Inicio: " + pDataInicio.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+                    ". Data Fim: " + pDataFim.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
+
+        /* Caso não possua data de desligamento. */
+
+        if(vDataFim == null) {
+
+            /* Se a data de disponibilização é inferior a data referência então o terceirizado trabalhou o período completo, a data
+               referência é sempre a data inicio argumento da função.
+            */
+
+            if(vDataInicio.before(pDataInicio)) {
+                return (int) ChronoUnit.DAYS.between(pDataInicio.toLocalDate(), pDataFim.toLocalDate()) + 1;
+            }
+
+            /* Se a data de disponibilização está no mês referência enão se verifica
+               a quantidade de dias trabalhados pelo terceirizado no período.
+            */
+            if((vDataInicio.after(pDataInicio) || vDataInicio.equals(pDataInicio)) && (vDataInicio.before(pDataFim) || vDataInicio.equals(pDataFim))) {
+                return (int) ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), pDataFim.toLocalDate()) + 1;
+            }
+        }
+
+        /* Caso possua data de desligamento. */
+
+        if(vDataFim != null) {
+
+            /* Se a data de disponibilização é inferior a data referência e a data de desligamento é superior ao último dia do mês referência então o
+               terceirizado trabalhou os 30 dias.
+            */
+
+            if(vDataInicio.before(pDataInicio) && vDataFim.after(pDataFim)) {
+                return (int) ChronoUnit.DAYS.between(pDataInicio.toLocalDate(), pDataFim.toLocalDate()) + 1;
+            }
+
+            /* Se a data de disponibilização está no mês referência e também a data de
+               desligamento, então contam-se os dias trabalhados pelo terceirizado.
+             */
+
+            if(vDataInicio.before(pDataInicio) && (vDataFim.after(pDataInicio) || vDataFim.equals(pDataInicio)) && (vDataFim.before(pDataFim) || vDataFim.equals(pDataFim))) {
+                return (int) ChronoUnit.DAYS.between(pDataInicio.toLocalDate(), vDataFim.toLocalDate()) + 1;
+            }
+        }
+        return 0;
     }
 }
