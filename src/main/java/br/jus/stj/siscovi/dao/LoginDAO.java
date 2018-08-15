@@ -22,7 +22,7 @@ public class LoginDAO{
         PreparedStatement prpstm= null;
 
         try {
-            prpstm = connection.prepareStatement("SELECT LOGIN FROM TB_USUARIO WHERE LOGIN=?");
+            prpstm = connection.prepareStatement("SELECT LOGIN FROM TB_USUARIO WHERE LOGIN = ?");
             prpstm.setString(1, username);
 
             rs = prpstm.executeQuery();
