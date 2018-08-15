@@ -1,6 +1,7 @@
 package br.jus.stj.siscovi.model;
 
 public class TotalMensal {
+
     private String funcao;
     private float ferias;
     private float tercoConstitucional;
@@ -9,7 +10,8 @@ public class TotalMensal {
     private float multaFGTS;
     private float total;
 
-    public TotalMensal(float ferias, float tercoConstitucional, float decimoTerceiro, float incidencia, float multaFGTS, float total, String funcao) {
+    public TotalMensal (float ferias, float tercoConstitucional, float decimoTerceiro, float incidencia, float multaFGTS, float total, String funcao) {
+
         this.ferias = ferias;
         this.tercoConstitucional = tercoConstitucional;
         this.decimoTerceiro = decimoTerceiro;
@@ -17,6 +19,7 @@ public class TotalMensal {
         this.multaFGTS = multaFGTS;
         this.total = total;
         this.funcao = funcao;
+
     }
 
     public String getFuncao() {
