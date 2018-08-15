@@ -11,6 +11,7 @@ import com.google.gson.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -66,5 +67,15 @@ public class FuncionariosController {
         String json = gson.toJson(funcionariosDAO.retornaCargosFuncionarios(codigoContrato));
         connectSQLServer.dbConnect().close();
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/getTerceirizadosFerias={codigoContrato}")
+    public Response getTerceirizadosParaFerias(@PathParam("codigoContrato") int codigoContrato) {
+        Gson gson = new Gson();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+
+        return Response.ok().build();
     }
  }
