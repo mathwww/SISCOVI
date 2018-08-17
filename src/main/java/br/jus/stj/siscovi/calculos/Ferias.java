@@ -171,4 +171,128 @@ public class Ferias {
 
     }
 
+    /**
+     * Função que retorna o início ou fim do período aquisitivo de férias.
+     * @param pCodTerceirizadoContrato
+     * @param pOperacao
+     * @return int
+     */
+
+    public Date DataPeriodoAquisitivo (int pCodTerceirizadoContrato, int pOperacao) {
+
+        /**pOperação:
+         1 - Início do período aquisitivo.
+         2 - Fim do período aquisitivo.*/
+
+        Date vDataDisponibilizacao = null;
+        Date vDataInicio = null;
+        Date vDataFim = null;
+        int vDiasUsufruidos = 0;
+        int vSaldoFerias = 0;
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        /**Recupera a data de disponibilização do terceirizado.*/
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT data_disponibilizacao" +
+                                                                 " FROM tb_terceirizado_contrato" +
+                                                                 " WHERE cod = ?;");
+
+            preparedStatement.setInt(1, pCodTerceirizadoContrato);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vDataDisponibilizacao = resultSet.getDate(1);
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar a data de disponibilização do terceirizado.");
+
+        }
+
+        /**Recupera a última data de período aquisitivo e os dias concedidos.*/
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT data_inicio_periodo_aquisitivo," +
+                                                                      " data_fim_periodo_aquisitivo," +
+                                                                      " SUM(data_fim_usufruto - data_inicio_usufruto + dias_vendidos + 1)" +
+                                                                 " FROM tb_restituicao_ferias" +
+                                                                 " WHERE cod_terceirizado_contrato = ?" +
+                                                                   " AND data_inicio_periodo_aquisitivo = (SELECT MAX(data_inicio_periodo_aquisitivo)" +
+                                                                                                           " FROM tb_restituicao_ferias" +
+                                                                                                           " WHERE cod_terceirizado_contrato = ?)" +
+                                                                " GROUP BY data_inicio_periodo_aquisitivo, data_fim_periodo_aquisitivo");
+
+            preparedStatement.setInt(1, pCodTerceirizadoContrato);
+            preparedStatement.setInt(2, pCodTerceirizadoContrato);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vDataInicio = resultSet.getDate(1);
+                vDataFim = resultSet.getDate(2);
+                vDiasUsufruidos = resultSet.getInt(3);
+
+            } else {
+
+                vDataInicio = null;
+                vDataFim = null;
+                vDiasUsufruidos = 0;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o último período de férias.");
+
+        }
+
+        if (vDataInicio != null) {
+
+            vSaldoFerias = 30 - vDiasUsufruidos;
+
+            if (vSaldoFerias <= 0) {
+
+                vDataInicio = vDataFim.toLocalDate().plusDays(1);
+                vDataFim = vDataInicio.toLocalDate().plusDays(364);
+
+            }
+
+        } else {
+
+            vDataInicio = vDataDisponibilizacao;
+            vDataFim = vDataInicio.toLocalDate().plusDays(364);
+
+        }
+
+        /**Retorna o início do período aquisitivo válido (corrente).*/
+
+        if (pOperacao == 1) {
+
+            return vDataInicio;
+
+        }
+
+        /**Retorna o fim do período aquisitivo válido (corrente).*/
+
+        if (pOperacao == 2) {
+
+            return vDataFim;
+
+        }
+
+        return null;
+
+    }
+
+
 }
