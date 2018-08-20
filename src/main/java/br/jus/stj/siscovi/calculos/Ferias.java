@@ -198,8 +198,8 @@ public class Ferias {
         try {
 
             preparedStatement = connection.prepareStatement("SELECT data_disponibilizacao" +
-                                                                 " FROM tb_terceirizado_contrato" +
-                                                                 " WHERE cod = ?;");
+                    " FROM tb_terceirizado_contrato" +
+                    " WHERE cod = ?;");
 
             preparedStatement.setInt(1, pCodTerceirizadoContrato);
 
@@ -222,14 +222,14 @@ public class Ferias {
         try {
 
             preparedStatement = connection.prepareStatement("SELECT data_inicio_periodo_aquisitivo," +
-                                                                      " data_fim_periodo_aquisitivo," +
-                                                                      " SUM(data_fim_usufruto - data_inicio_usufruto + dias_vendidos + 1)" +
-                                                                 " FROM tb_restituicao_ferias" +
-                                                                 " WHERE cod_terceirizado_contrato = ?" +
-                                                                   " AND data_inicio_periodo_aquisitivo = (SELECT MAX(data_inicio_periodo_aquisitivo)" +
-                                                                                                           " FROM tb_restituicao_ferias" +
-                                                                                                           " WHERE cod_terceirizado_contrato = ?)" +
-                                                                " GROUP BY data_inicio_periodo_aquisitivo, data_fim_periodo_aquisitivo");
+                    " data_fim_periodo_aquisitivo," +
+                    " SUM(DATEDIFF(day, data_inicio_usufruto, data_fim_usufruto) + dias_vendidos + 1)" +
+                    " FROM tb_restituicao_ferias" +
+                    " WHERE cod_terceirizado_contrato = ?" +
+                    " AND data_inicio_periodo_aquisitivo = (SELECT MAX(data_inicio_periodo_aquisitivo)" +
+                    " FROM tb_restituicao_ferias" +
+                    " WHERE cod_terceirizado_contrato = ?)" +
+                    " GROUP BY data_inicio_periodo_aquisitivo, data_fim_periodo_aquisitivo");
 
             preparedStatement.setInt(1, pCodTerceirizadoContrato);
             preparedStatement.setInt(2, pCodTerceirizadoContrato);
@@ -262,15 +262,15 @@ public class Ferias {
 
             if (vSaldoFerias <= 0) {
 
-                vDataInicio = vDataFim.toLocalDate().plusDays(1);
-                vDataFim = vDataInicio.toLocalDate().plusDays(364);
+                vDataInicio = Date.valueOf(vDataFim.toLocalDate().plusDays(1));
+                vDataFim = Date.valueOf(vDataInicio.toLocalDate().plusDays(364));
 
             }
 
         } else {
 
             vDataInicio = vDataDisponibilizacao;
-            vDataFim = vDataInicio.toLocalDate().plusDays(364);
+            vDataFim = Date.valueOf(vDataInicio.toLocalDate().plusDays(364));
 
         }
 
@@ -293,6 +293,5 @@ public class Ferias {
         return null;
 
     }
-
 
 }
