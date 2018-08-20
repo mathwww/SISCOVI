@@ -68,14 +68,4 @@ public class FuncionariosController {
         connectSQLServer.dbConnect().close();
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/getTerceirizadosFerias={codigoContrato}")
-    public Response getTerceirizadosParaFerias(@PathParam("codigoContrato") int codigoContrato) {
-        Gson gson = new Gson();
-        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
-
-        return Response.ok().build();
-    }
  }

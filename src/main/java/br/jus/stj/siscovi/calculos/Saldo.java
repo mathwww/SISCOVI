@@ -1,16 +1,12 @@
 package br.jus.stj.siscovi.calculos;
 
-import com.sun.scenario.effect.impl.prism.ps.PPSBlend_REDPeer;
-import javax.validation.constraints.Null;
 import java.sql.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 public class Saldo {
 
-    private Connection connection;
+    private final  Connection connection;
 
-    Saldo (Connection connection) {
+    public Saldo(Connection connection) {
 
         this.connection = connection;
 
@@ -30,7 +26,8 @@ public class Saldo {
 
         //Checked.
 
-        /**pOperacao = 1 - RETENÇÃO POR FUNCIONÁRIO
+        /*
+           pOperacao = 1 - RETENÇÃO POR FUNCIONÁRIO
            pOperacao = 2 - RESTITUIÇÃO FÉRIAS POR FUNCIONÁRIO
            pOperacao = 3 - RESTITUICAO 13º POR FUNCIONÁRIO
 
@@ -47,7 +44,8 @@ public class Saldo {
            100 - TOTAL
            101 - Incidência de férias
            102 - Incidência de terço de férias
-           103 - Incidência de décimo terceiro*/
+           103 - Incidência de décimo terceiro
+         */
 
         float vFeriasRetido = 0;
         float vTercoConstitucionalRetido = 0;
