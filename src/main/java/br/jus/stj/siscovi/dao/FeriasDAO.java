@@ -22,9 +22,7 @@ public class FeriasDAO {
     public ArrayList<TerceirizadoFerias> getListaTerceirizadoParaCalculoDeFerias(int codigoContrato) {
         ArrayList<TerceirizadoFerias> terceirizados = new ArrayList<>();
         String sql = "SELECT TC.COD, " +
-                " T.NOME, " +
-                " TC.DATA_DISPONIBILIZACAO, " +
-                " TC.DATA_DESLIGAMENTO" +
+                " T.NOME " +
                 " FROM tb_terceirizado_contrato TC " +
                 " JOIN " +
                 " tb_terceirizado T ON T.COD=TC.COD_TERCEIRIZADO " +
@@ -39,7 +37,6 @@ public class FeriasDAO {
 
                     Date inicioPeriodoAquisitivo = ferias.DataPeriodoAquisitivo(resultSet.getInt("COD"), 1);
                     Date fimPeriodoAquisitivo = ferias.DataPeriodoAquisitivo(resultSet.getInt("COD"), 2);
-
                     TerceirizadoFerias terceirizadoFerias = new TerceirizadoFerias(resultSet.getInt("COD"), resultSet.getString("NOME"), inicioPeriodoAquisitivo, fimPeriodoAquisitivo);
                     terceirizados.add(terceirizadoFerias);
                 }

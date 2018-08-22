@@ -3,6 +3,7 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.FeriasDAO;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,7 +19,7 @@ public class FeriasController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/getTerceirizadosFerias={codigoContrato}/{tipoRestituicao}")
     public Response getTerceirizadosParaFerias(@PathParam("codigoContrato") int codigoContrato, @PathParam("tipoRestituicao") String tipoRestituicao) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         FeriasDAO feriasDAO= new FeriasDAO(connectSQLServer.dbConnect());
         String json = "";

@@ -20,7 +20,6 @@ public class Ferias {
      * @param pDataFim
      * @return float
      */
-
     public float DiasPeriodoAquisitivo (Date pDataInicio, Date pDataFim) {
 
         //Checked.
@@ -108,7 +107,7 @@ public class Ferias {
 
         }
 
-        /**A cada 12 dias de trabalho o funcionário adquire 1 dias de férias,
+        /*A cada 12 dias de trabalho o funcionário adquire 1 dias de férias,
          considerando um período de 360 dias, óbviamente.*/
 
         vDiasAUsufruir = vContagemDeDias/12;
@@ -127,7 +126,6 @@ public class Ferias {
      * @param pDataFim
      * @return int
      */
-
     public int ParcelasConcedidas (int pCodTerceirizadoContrato, Date pDataInicio, Date pDataFim) {
 
         //Checked.
@@ -146,7 +144,7 @@ public class Ferias {
                                                                    " AND data_fim_periodo_aquisitivo = ?");
 
             preparedStatement.setInt(1, pCodTerceirizadoContrato);
-            preparedStatement.setDate(2, pDataFim);
+            preparedStatement.setDate(2, pDataInicio);
             preparedStatement.setDate(3, pDataFim);
 
             resultSet = preparedStatement.executeQuery();
@@ -167,13 +165,13 @@ public class Ferias {
         return vParcelasConcedidas;
 
     }
+
     /**
      * Função que retorna o início ou fim do período aquisitivo de férias.
      * @param pCodTerceirizadoContrato
      * @param pOperacao
      * @return int
      */
-
     public Date DataPeriodoAquisitivo (int pCodTerceirizadoContrato, int pOperacao) {
 
         /*

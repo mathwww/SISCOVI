@@ -35,7 +35,6 @@ public class RestituicaoFerias {
      * @param pValorMovimentado;
      * @param pProporcional;
      */
-
     public void CalculaRestituicaoFerias (int pCodTerceirizadoContrato,
                                           String pTipoRestituicao,
                                           int pDiasVendidos,
@@ -54,37 +53,37 @@ public class RestituicaoFerias {
         Remuneracao remuneracao = new Remuneracao(connection);
         Ferias ferias = new Ferias(connection);
 
-        /**Chaves primárias.*/
+        /* Chaves primárias.*/
 
         int vCodContrato = 0;
         int vCodTbRestituicaoFerias = 0;
         int vCodTipoRestituicao = 0;
 
-        /**Variáveis totalizadoras de valores.*/
+        /* Variáveis totalizadoras de valores.*/
 
         float vTotalFerias = 0;
         float vTotalTercoConstitucional = 0;
         float vTotalIncidenciaFerias = 0;
         float vTotalIncidenciaTerco = 0;
 
-        /**Variáveis de valores parciais.*/
+        /* Variáveis de valores parciais.*/
 
         float vValorFerias = 0;
         float vValorTercoConstitucional = 0;
         float vValorIncidenciaFerias = 0;
         float vValorIncidenciaTerco = 0;
 
-        /**Variáveis de percentuais.*/
+        /* Variáveis de percentuais.*/
 
         float vPercentualFerias = 0;
         float vPercentualTercoConstitucional = 0;
         float vPercentualIncidencia = 0;
 
-        /**Variável de remuneração da função.*/
+        /* Variável de remuneração da função.*/
 
         float vRemuneracao = 0;
 
-        /**Variáveis de data.*/
+        /* Variáveis de data.*/
 
         Date vDataReferencia = null;
         Date vDataInicio = null;
@@ -92,11 +91,11 @@ public class RestituicaoFerias {
         int vAno = 0;
         int vMes = 0;
 
-        /**Variável para a checagem de existência do terceirizado.*/
+        /* Variável para a checagem de existência do terceirizado.*/
 
         int vCheck = 0;
 
-        /**Variáveis de controle.*/
+        /* Variáveis de controle.*/
 
         int vDiasDeFerias = 0;
         float vDiasAdquiridos = 0;
@@ -105,31 +104,31 @@ public class RestituicaoFerias {
         int vControleMeses = 0;
         int vDiasSubperiodo = 0;
 
-        /**Variáveis auxiliares.*/
+        /* Variáveis auxiliares.*/
 
         float vIncidenciaFerias = 0;
         float vIncidenciaTerco = 0;
         float vTerco = 0;
         float vFerias = 0;
 
-        /**Checagem dos parâmetros passados.*/
-/*
-        if (pCodTerceirizadoContrato == null ||
-            pTipoRestituicao == null ||
-            pDiasVendidos == null ||
-            pInicioFerias == null ||
-            pFimFerias == null ||
-            pInicioPeriodoAquisitivo == null ||
-            pFimPeriodoAquisitivo == null) {
+        /* Checagem dos parâmetros passados.*/
+        /*
+                if (pCodTerceirizadoContrato == null ||
+                    pTipoRestituicao == null ||
+                    pDiasVendidos == null ||
+                    pInicioFerias == null ||
+                    pFimFerias == null ||
+                    pInicioPeriodoAquisitivo == null ||
+                    pFimPeriodoAquisitivo == null) {
 
-            return;
+                    return;
 
-        }
+                }
 
 
-*/
+        */
 
-        /**Atribuição do cod do tipo de restituição.*/
+        /* Atribuição do cod do tipo de restituição.*/
 
         try {
 
@@ -158,7 +157,7 @@ public class RestituicaoFerias {
 
         }
 
-        /**Checagem da existência do terceirizado no contrato.*/
+        /* Checagem da existência do terceirizado no contrato.*/
 
         try {
 
@@ -185,7 +184,7 @@ public class RestituicaoFerias {
 
         }
 
-        /**Carrega o código do contrato.*/
+        /* Carrega o código do contrato.*/
 
         try {
 
@@ -206,41 +205,41 @@ public class RestituicaoFerias {
 
         }
 
-        /**Define o valor das variáveis vMes e Vano de acordo com a adata de inínio do período aquisitivo.*/
+        /* Define o valor das variáveis vMes e Vano de acordo com a adata de inínio do período aquisitivo.*/
 
         vMes = pInicioPeriodoAquisitivo.toLocalDate().getMonthValue();
         vAno = pInicioPeriodoAquisitivo.toLocalDate().getYear();
 
-        /**Definição da data referência (sempre o primeiro dia do mês).*/
+        /* Definição da data referência (sempre o primeiro dia do mês).*/
 
         vDataReferencia = Date.valueOf(vAno + "-" + vMes + "-" + "01");
 
-        /**Início da contabilização de férias do período.*/
+        /* Início da contabilização de férias do período.*/
 
         do{
 
-            /**Reset das variáveis que contém valores parciais.*/
+            /* Reset das variáveis que contém valores parciais.*/
 
             vValorFerias = 0;
             vValorTercoConstitucional = 0;
             vValorIncidenciaFerias = 0;
             vValorIncidenciaTerco = 0;
 
-            /**Seleciona as funções que o terceirizado ocupou no mês avaliado.*/
+            /* Seleciona as funções que o terceirizado ocupou no mês avaliado.*/
 
             ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> tuplas = selecionaFuncaoContratoEFuncaoTerceirizado(pCodTerceirizadoContrato, vDataReferencia);
 
             Convencao convencao = new Convencao(connection);
 
-            /**Para cada função que o terceirizado ocupou no mês avaliado.*/
+            /* Para cada função que o terceirizado ocupou no mês avaliado.*/
 
             for(int i = 0; i < tuplas.size(); i++){
 
-                /**Caso não exista mais de uma remuneração vigente no mês e não tenha havido alteração nos percentuais do contrato ou nos percentuais estáticos.*/
+                /* Caso não exista mais de uma remuneração vigente no mês e não tenha havido alteração nos percentuais do contrato ou nos percentuais estáticos.*/
 
                 if(!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
-                    /**Define o valor da remuneração da função e dos percentuais do contrato.*/
+                    /* Define o valor da remuneração da função e dos percentuais do contrato.*/
 
                     vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 1, 2);
                     vPercentualFerias = percentual.RetornaPercentualContrato(vCodContrato, 1, vMes, vAno, 1, 2);
@@ -253,14 +252,14 @@ public class RestituicaoFerias {
 
                     }
 
-                    /**Cálculo do valor integral correspondente ao mês avaliado.*/
+                    /* Cálculo do valor integral correspondente ao mês avaliado.*/
 
                     vValorFerias = (vRemuneracao * (vPercentualFerias/100));
                     vValorTercoConstitucional = (vRemuneracao * (vPercentualTercoConstitucional/100));
                     vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
                     vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
 
-                    /**o caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
+                    /* o caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                     situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
                     if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
@@ -272,7 +271,7 @@ public class RestituicaoFerias {
 
                     }
 
-                    /**Contabilização do valor calculado.*/
+                    /* Contabilização do valor calculado.*/
 
                     vTotalFerias = vTotalFerias + vValorFerias;
                     vTotalTercoConstitucional = vTotalTercoConstitucional + vValorTercoConstitucional;
@@ -281,11 +280,11 @@ public class RestituicaoFerias {
 
                 }
 
-                /**Se existe apenas alteração de percentual no mês.*/
+                /* Se existe apenas alteração de percentual no mês.*/
 
                 if(!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
-                    /**Define a remuneração do cargo, que não se altera no período.*/
+                    /* Define a remuneração do cargo, que não se altera no período.*/
 
                     vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 1, 2);
 
@@ -295,15 +294,15 @@ public class RestituicaoFerias {
 
                     }
 
-                    /**Definição da data de início como sendo a data referência (primeiro dia do mês).*/
+                    /* Definição da data de início como sendo a data referência (primeiro dia do mês).*/
 
                     vDataInicio = vDataReferencia;
 
-                    /**Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
+                    /* Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
 
                     List<Date> datas = new ArrayList<>();
 
-                    /**Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.*/
+                    /* Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.*/
 
                     try {
 
@@ -379,11 +378,11 @@ public class RestituicaoFerias {
 
                     for (Date data: datas) {
 
-                        /**Definição da data fim do subperíodo.*/
+                        /* Definição da data fim do subperíodo.*/
 
                         vDataFim = data;
 
-                        /**Definição dos dias contidos no subperíodo*/
+                        /* Definição dos dias contidos no subperíodo*/
 
                         vDiasSubperiodo = (int)((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
 
@@ -405,20 +404,20 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Definição dos percentuais do subperíodo.*/
+                        /* Definição dos percentuais do subperíodo.*/
 
                         vPercentualFerias = percentual.RetornaPercentualContrato(vCodContrato, 1, vDataInicio, vDataFim, 2);
                         vPercentualTercoConstitucional = percentual.RetornaPercentualContrato(vCodContrato, 2, vDataInicio, vDataFim, 2);
                         vPercentualIncidencia = percentual.RetornaPercentualContrato(vCodContrato, 7, vDataInicio, vDataFim, 2);
 
-                        /**Calculo da porção correspondente ao subperíodo.*/
+                        /* Calculo da porção correspondente ao subperíodo.*/
 
                         vValorFerias = ((vRemuneracao * (vPercentualFerias/100))/30) * vDiasSubperiodo;
                         vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional/100))/30) * vDiasSubperiodo;
                         vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
                         vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
 
-                        /**No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
+                        /* No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 30 dias trabalhados.*/
 
                         if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
@@ -430,7 +429,7 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Contabilização do valor calculado.*/
+                        /* Contabilização do valor calculado.*/
 
                         vTotalFerias = vTotalFerias + vValorFerias;
                         vTotalTercoConstitucional = vTotalTercoConstitucional + vValorTercoConstitucional;
@@ -443,23 +442,23 @@ public class RestituicaoFerias {
 
                 }
 
-                /**Se existe alteração de remuneração apenas.*/
+                /* Se existe alteração de remuneração apenas.*/
 
                 if(convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
-                    /**Definição dos percentuais, que não se alteram no período.*/
+                    /* Definição dos percentuais, que não se alteram no período.*/
 
                     vPercentualFerias = percentual.RetornaPercentualContrato(vCodContrato, 1, vMes, vAno, 1, 2);
                     vPercentualTercoConstitucional = percentual.RetornaPercentualContrato(vCodContrato, 2, vMes, vAno, 1, 2);
                     vPercentualIncidencia = percentual.RetornaPercentualContrato(vCodContrato, 7, vMes, vAno, 1, 2);
 
-                    /**Definição da data de início como sendo a data referência (primeiro dia do mês).*/
+                    /* Definição da data de início como sendo a data referência (primeiro dia do mês).*/
 
                     vDataInicio = vDataReferencia;
 
-                    /**Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
+                    /* Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
 
-                    /**Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.*/
+                    /* Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.*/
 
                     List<Date> datas = new ArrayList<>();
 
@@ -527,11 +526,11 @@ public class RestituicaoFerias {
 
                     for (Date data: datas) {
 
-                        /**Definição da data fim do subperíodo.*/
+                        /* Definição da data fim do subperíodo.*/
 
                         vDataFim = data;
 
-                        /**Definição dos dias contidos no subperíodo*/
+                        /* Definição dos dias contidos no subperíodo*/
 
                         vDiasSubperiodo = (int)((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
 
@@ -553,7 +552,7 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Define a remuneração do cargo, que não se altera no período.*/
+                        /* Define a remuneração do cargo, que não se altera no período.*/
 
                         vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(),  vDataInicio, vDataFim, 2);
 
@@ -563,14 +562,14 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Calculo da porção correspondente ao subperíodo.*/
+                        /* Calculo da porção correspondente ao subperíodo.*/
 
                         vValorFerias = ((vRemuneracao * (vPercentualFerias/100))/30) * vDiasSubperiodo;
                         vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional/100))/30) * vDiasSubperiodo;
                         vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
                         vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
 
-                        /**No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
+                        /* No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
                         if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
@@ -582,7 +581,7 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Contabilização do valor calculado.*/
+                        /* Contabilização do valor calculado.*/
 
                         vTotalFerias = vTotalFerias + vValorFerias;
                         vTotalTercoConstitucional = vTotalTercoConstitucional + vValorTercoConstitucional;
@@ -595,11 +594,11 @@ public class RestituicaoFerias {
 
                 }
 
-                /**Se existe alteração na remuneração e nos percentuais.*/
+                /* Se existe alteração na remuneração e nos percentuais.*/
 
                 if(convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
-                    /**Definição da data de início como sendo a data referência (primeiro dia do mês).*/
+                    /* Definição da data de início como sendo a data referência (primeiro dia do mês).*/
 
                     vDataInicio = vDataReferencia;
 
@@ -706,11 +705,11 @@ public class RestituicaoFerias {
 
                     for (Date data: datas) {
 
-                        /**Definição da data fim do subperíodo.*/
+                        /* Definição da data fim do subperíodo.*/
 
                         vDataFim = data;
 
-                        /**Definição dos dias contidos no subperíodo*/
+                        /* Definição dos dias contidos no subperíodo*/
 
                         vDiasSubperiodo = (int)((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
 
@@ -732,7 +731,7 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Define a remuneração do cargo, que não se altera no período.*/
+                        /* Define a remuneração do cargo, que não se altera no período.*/
 
                         vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(),  vDataInicio, vDataFim, 2);
 
@@ -742,20 +741,20 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Definição dos percentuais do subperíodo.*/
+                        /* Definição dos percentuais do subperíodo.*/
 
                         vPercentualFerias = percentual.RetornaPercentualContrato(vCodContrato, 1, vDataInicio, vDataFim, 2);
                         vPercentualTercoConstitucional = percentual.RetornaPercentualContrato(vCodContrato, 2, vDataInicio, vDataFim, 2);
                         vPercentualIncidencia = percentual.RetornaPercentualContrato(vCodContrato, 7, vDataInicio, vDataFim, 2);
 
-                        /**Calculo da porção correspondente ao subperíodo.*/
+                        /* Calculo da porção correspondente ao subperíodo.*/
 
                         vValorFerias = ((vRemuneracao * (vPercentualFerias/100))/30) * vDiasSubperiodo;
                         vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional/100))/30) * vDiasSubperiodo;
                         vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
                         vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
 
-                        /**No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
+                        /* No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
                         if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
@@ -767,7 +766,7 @@ public class RestituicaoFerias {
 
                         }
 
-                        /**Contabilização do valor calculado.*/
+                        /* Contabilização do valor calculado.*/
 
                         vTotalFerias = vTotalFerias + vValorFerias;
                         vTotalTercoConstitucional = vTotalTercoConstitucional + vValorTercoConstitucional;
@@ -804,7 +803,7 @@ public class RestituicaoFerias {
   //      System.out.println(vTotalIncidenciaFerias);
    //     System.out.println(vTotalIncidenciaTerco);
 
-        /**Atribuição de valor a vDiasVendidos*/
+        /* Atribuição de valor a vDiasVendidos*/
 
         if (pDiasVendidos == 0) {
 
@@ -816,7 +815,7 @@ public class RestituicaoFerias {
 
         }
 
-        /**Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_ferias.*/
+        /* Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_ferias.*/
 
         try {
 
@@ -837,15 +836,15 @@ public class RestituicaoFerias {
 
         }
 
-        /**Dias de férias usufruídos para o cálculo proporcional.*/
+        /* Dias de férias usufruídos para o cálculo proporcional.*/
 
         vDiasDeFerias = (int)(ChronoUnit.DAYS.between(pInicioFerias.toLocalDate(), pFimFerias.toLocalDate()) + 1 + vDiasVendidos);
 
-        /**Dias de férias adquiridos no período aquisitivo.*/
+        /* Dias de férias adquiridos no período aquisitivo.*/
 
         vDiasAdquiridos = ferias.DiasPeriodoAquisitivo(pInicioPeriodoAquisitivo, pFimPeriodoAquisitivo);
 
-        /**Definição do montante proporcional a ser restituído*/
+        /* Definição do montante proporcional a ser restituído*/
 
         if (vDiasDeFerias > vDiasAdquiridos) {
 
@@ -857,7 +856,7 @@ public class RestituicaoFerias {
         vTotalIncidenciaFerias = (vTotalIncidenciaFerias/vDiasAdquiridos) * vDiasDeFerias;
         vTotalIncidenciaTerco = (vTotalIncidenciaTerco/vDiasAdquiridos) * vDiasDeFerias;
 
-        /**Cancelamento do terço constitucional para parcela diferente da única ou primeira.*/
+        /* Cancelamento do terço constitucional para parcela diferente da única ou primeira.*/
 
         if (ferias.ParcelasConcedidas(pCodTerceirizadoContrato, pInicioPeriodoAquisitivo, pFimPeriodoAquisitivo) > 0) {
 
@@ -865,7 +864,7 @@ public class RestituicaoFerias {
 
         }
 
-        /**Provisionamento da incidência para o saldo residual no caso de movimentação.*/
+        /* Provisionamento da incidência para o saldo residual no caso de movimentação.*/
 
         if (pTipoRestituicao == "MOVIMENTAÇÃO") {
 
@@ -886,7 +885,7 @@ public class RestituicaoFerias {
 
         }
 
-        /**Gravação no banco*/
+        /* Gravação no banco*/
 
         try {
 
@@ -972,11 +971,15 @@ public class RestituicaoFerias {
 
     }
 
-    /**Seleção do código da função terceirizado e da função contrato.*/
-
+    /**
+     * Seleção do código da função terceirizado e da função contrato
+     * @param pCodTerceirizadoContrato
+     * @param pDataReferencia
+     * @return tuplas
+     */
     ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> selecionaFuncaoContratoEFuncaoTerceirizado (int pCodTerceirizadoContrato, Date pDataReferencia) {
 
-        /**Busca as funções que um funcionário exerceu no mês de cálculo.*/
+        /* Busca as funções que um funcionário exerceu no mês de cálculo.*/
 
         ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> tuplas = new ArrayList<>();
 
