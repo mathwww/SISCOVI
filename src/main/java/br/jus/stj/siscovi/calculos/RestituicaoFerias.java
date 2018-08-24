@@ -1,11 +1,9 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
-import br.jus.stj.siscovi.model.CodTerceirizadoECodFuncaoTerceirizadoModel;
-import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
+import br.jus.stj.siscovi.model.ValorRestituicaoFeriasModel;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -26,25 +24,19 @@ public class RestituicaoFerias {
      * determinado período aquisitivo.
      *
      * @param pCodTerceirizadoContrato;
-     * @param pTipoRestituicao;
      * @param pDiasVendidos;
      * @param pInicioFerias;
      * @param pFimFerias;
      * @param pInicioPeriodoAquisitivo;
      * @param pFimPeriodoAquisitivo;
-     * @param pValorMovimentado;
-     * @param pProporcional;
      */
 
-    public void CalculaRestituicaoFerias (int pCodTerceirizadoContrato,
-                                          String pTipoRestituicao,
-                                          int pDiasVendidos,
-                                          Date pInicioFerias,
-                                          Date pFimFerias,
-                                          Date pInicioPeriodoAquisitivo,
-                                          Date pFimPeriodoAquisitivo,
-                                          float pValorMovimentado,
-                                          char pProporcional) {
+    public ValorRestituicaoFeriasModel CalculaRestituicaoFerias (int pCodTerceirizadoContrato,
+                                                                 int pDiasVendidos,
+                                                                 Date pInicioFerias,
+                                                                 Date pFimFerias,
+                                                                 Date pInicioPeriodoAquisitivo,
+                                                                 Date pFimPeriodoAquisitivo) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -57,8 +49,6 @@ public class RestituicaoFerias {
         /*Chaves primárias.*/
 
         int vCodContrato = 0;
-        int vCodTbRestituicaoFerias = 0;
-        int vCodTipoRestituicao = 0;
 
         /*Variáveis totalizadoras de valores.*/
 
@@ -98,27 +88,14 @@ public class RestituicaoFerias {
 
         /*Variáveis de controle.*/
 
+        int vDiasSubperiodo = 0;
         int vDiasDeFerias = 0;
         float vDiasAdquiridos = 0;
         int vDiasVendidos = 0;
-        int vNumeroDeMeses = 0;
-        int vControleMeses = 0;
-        int vDiasSubperiodo = 0;
-
-        /*Variáveis auxiliares.*/
-
-        float vIncidenciaFerias = 0;
-        float vIncidenciaTerco = 0;
-        float vTerco = 0;
-        float vFerias = 0;
 
         /*Checagem dos parâmetros passados.*/
 
-        if (pTipoRestituicao == null ||
-                pInicioFerias == null ||
-                pFimFerias == null ||
-                pInicioPeriodoAquisitivo == null ||
-                pFimPeriodoAquisitivo == null) {
+        if (pInicioFerias == null || pFimFerias == null || pInicioPeriodoAquisitivo == null || pFimPeriodoAquisitivo == null) {
 
             throw new NullPointerException("Erro na checagem dos parâmetros.");
 
@@ -137,35 +114,6 @@ public class RestituicaoFerias {
                 throw new NullPointerException("Período de usufruto informado é inconsistente (dentro do período aquisitivo).");
 
             }
-
-        }
-
-        /*Atribuição do cod do tipo de restituição.*/
-
-        try {
-
-            preparedStatement = connection.prepareStatement("SELECT COD" +
-                    " FROM TB_TIPO_RESTITUICAO" +
-                    " WHERE UPPER(nome) = UPPER(?)");
-
-            preparedStatement.setString(1, pTipoRestituicao);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                vCodTipoRestituicao = resultSet.getInt(1);
-
-            }
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
-
-        if (vCodTipoRestituicao == 0) {
-
-            throw new NullPointerException("Tipo de restituição não encontrada.");
 
         }
 
@@ -228,7 +176,7 @@ public class RestituicaoFerias {
 
         /*Início da contabilização de férias do período.*/
 
-        do{
+        do {
 
             /*Reset das variáveis que contém valores parciais.*/
 
@@ -245,11 +193,11 @@ public class RestituicaoFerias {
 
             /*Para cada função que o terceirizado ocupou no mês avaliado.*/
 
-            for(int i = 0; i < tuplas.size(); i++){
+            for (int i = 0; i < tuplas.size(); i++) {
 
                 /*Caso não exista mais de uma remuneração vigente no mês e não tenha havido alteração nos percentuais do contrato ou nos percentuais estáticos.*/
 
-                if(!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Define o valor da remuneração da função e dos percentuais do contrato.*/
 
@@ -266,20 +214,20 @@ public class RestituicaoFerias {
 
                     /*Cálculo do valor integral correspondente ao mês avaliado.*/
 
-                    vValorFerias = (vRemuneracao * (vPercentualFerias/100));
-                    vValorTercoConstitucional = (vRemuneracao * (vPercentualTercoConstitucional/100));
-                    vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
-                    vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
+                    vValorFerias = (vRemuneracao * (vPercentualFerias / 100));
+                    vValorTercoConstitucional = (vRemuneracao * (vPercentualTercoConstitucional / 100));
+                    vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia / 100));
+                    vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia / 100));
 
                     /*o caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                     situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
                     if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
 
-                        vValorFerias = (vValorFerias/30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
-                        vValorTercoConstitucional = (vValorTercoConstitucional/30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
-                        vValorIncidenciaFerias = (vValorIncidenciaFerias/30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
-                        vValorIncidenciaTerco = (vValorIncidenciaTerco/30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
+                        vValorFerias = (vValorFerias / 30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
+                        vValorTercoConstitucional = (vValorTercoConstitucional / 30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
+                        vValorIncidenciaFerias = (vValorIncidenciaFerias / 30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
+                        vValorIncidenciaTerco = (vValorIncidenciaTerco / 30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
 
                     }
 
@@ -294,7 +242,7 @@ public class RestituicaoFerias {
 
                 /*Se existe apenas alteração de percentual no mês.*/
 
-                if(!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Define a remuneração do cargo, que não se altera no período.*/
 
@@ -318,42 +266,7 @@ public class RestituicaoFerias {
 
                     try {
 
-                        preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" +
-                                " FROM tb_percentual_contrato" +
-                                " WHERE cod_contrato = ?" +
-                                " AND (MONTH(DATA_INICIO) = ?" +
-                                " AND \n" +
-                                " YEAR(DATA_INICIO) = ?)" +
-                                " UNION" +
-                                " SELECT data_fim AS data" +
-                                " FROM tb_percentual_contrato" +
-                                " WHERE cod_contrato = ?" +
-                                " AND (MONTH(DATA_FIM)=?" +
-                                " AND" +
-                                " YEAR(DATA_FIM) = ?)" +
-                                " UNION" +
-                                " SELECT data_inicio AS data" +
-                                " FROM tb_percentual_estatico" +
-                                " WHERE (MONTH(DATA_INICIO)=?" +
-                                " AND " +
-                                " YEAR(DATA_INICIO)=?)" +
-                                " UNION" +
-                                " SELECT data_fim AS data" +
-                                " FROM tb_percentual_estatico" +
-                                " WHERE (MONTH(DATA_FIM)=?" +
-                                " AND" +
-                                " YEAR(DATA_FIM)=?)" +
-                                " UNION" +
-                                " SELECT CASE WHEN ? = 2 THEN" +
-                                " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" +
-                                " ELSE" +
-                                " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" +
-                                " EXCEPT" +
-                                " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" +
-                                " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" +
-                                " ELSE" +
-                                " NULL END AS data" +
-                                " ORDER BY data ASC");
+                        preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_INICIO) = ?" + " AND \n" + " YEAR(DATA_INICIO) = ?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM) = ?)" + " UNION" + " SELECT data_inicio AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_INICIO)=?" + " AND " + " YEAR(DATA_INICIO)=?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM)=?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY data ASC");
 
                         preparedStatement.setInt(1, vCodContrato);
                         preparedStatement.setInt(2, vMes);
@@ -376,7 +289,7 @@ public class RestituicaoFerias {
                         preparedStatement.setInt(19, vAno);
                         resultSet = preparedStatement.executeQuery();
 
-                        while(resultSet.next()){
+                        while (resultSet.next()) {
 
                             datas.add(resultSet.getDate("data"));
 
@@ -388,7 +301,7 @@ public class RestituicaoFerias {
 
                     }
 
-                    for (Date data: datas) {
+                    for (Date data : datas) {
 
                         /*Definição da data fim do subperíodo.*/
 
@@ -396,7 +309,7 @@ public class RestituicaoFerias {
 
                         /*Definição dos dias contidos no subperíodo*/
 
-                        vDiasSubperiodo = (int)((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
+                        vDiasSubperiodo = (int) ((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
 
                         if (vMes == 2) {
 
@@ -424,20 +337,20 @@ public class RestituicaoFerias {
 
                         /*Calculo da porção correspondente ao subperíodo.*/
 
-                        vValorFerias = ((vRemuneracao * (vPercentualFerias/100))/30) * vDiasSubperiodo;
-                        vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional/100))/30) * vDiasSubperiodo;
-                        vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
-                        vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
+                        vValorFerias = ((vRemuneracao * (vPercentualFerias / 100)) / 30) * vDiasSubperiodo;
+                        vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional / 100)) / 30) * vDiasSubperiodo;
+                        vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia / 100));
+                        vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia / 100));
 
                         /*No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 30 dias trabalhados.*/
 
                         if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
 
-                            vValorFerias = (vValorFerias/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorTercoConstitucional = (vValorTercoConstitucional/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidenciaFerias = (vValorIncidenciaFerias/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidenciaTerco = (vValorIncidenciaTerco/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorFerias = (vValorFerias / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorTercoConstitucional = (vValorTercoConstitucional / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorIncidenciaFerias = (vValorIncidenciaFerias / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorIncidenciaTerco = (vValorIncidenciaTerco / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
 
                         }
 
@@ -456,7 +369,7 @@ public class RestituicaoFerias {
 
                 /*Se existe alteração de remuneração apenas.*/
 
-                if(convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Definição dos percentuais, que não se alteram no período.*/
 
@@ -476,34 +389,7 @@ public class RestituicaoFerias {
 
                     try {
 
-                        preparedStatement = connection.prepareStatement("SELECT rfc.data_inicio AS data" +
-                                " FROM tb_remuneracao_fun_con rfc\n" +
-                                " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
-                                " WHERE fc.cod_contrato = ?" +
-                                " AND fc.cod = ?" +
-                                " AND (MONTH(rfc.data_inicio) = ?" +
-                                " AND" +
-                                " YEAR(rfc.data_inicio) = ?)" +
-                                " UNION" +
-                                " SELECT rfc.data_fim AS data " +
-                                " FROM tb_remuneracao_fun_con rfc" +
-                                " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
-                                " WHERE fc.cod_contrato = ?" +
-                                " AND fc.cod = ?" +
-                                " AND (MONTH(rfc.data_fim) = ?" +
-                                " AND " +
-                                " YEAR(rfc.data_fim) = ?)" +
-                                " UNION" +
-                                " SELECT CASE WHEN ? = 2 THEN" +
-                                " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" +
-                                " ELSE" +
-                                " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" +
-                                " EXCEPT" +
-                                " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" +
-                                " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" +
-                                " ELSE" +
-                                " NULL END AS data" +
-                                " ORDER BY DATA ASC");
+                        preparedStatement = connection.prepareStatement("SELECT rfc.data_inicio AS data" + " FROM tb_remuneracao_fun_con rfc\n" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_inicio) = ?" + " AND" + " YEAR(rfc.data_inicio) = ?)" + " UNION" + " SELECT rfc.data_fim AS data " + " FROM tb_remuneracao_fun_con rfc" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_fim) = ?" + " AND " + " YEAR(rfc.data_fim) = ?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY DATA ASC");
 
                         preparedStatement.setInt(1, vCodContrato);
                         preparedStatement.setInt(2, tuplas.get(i).getCodFuncaoContrato());
@@ -531,12 +417,11 @@ public class RestituicaoFerias {
                         }
                     } catch (SQLException e) {
 
-                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de remuneração da função: " +
-                                tuplas.get(i).getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
+                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de remuneração da função: " + tuplas.get(i).getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
 
                     }
 
-                    for (Date data: datas) {
+                    for (Date data : datas) {
 
                         /*Definição da data fim do subperíodo.*/
 
@@ -544,7 +429,7 @@ public class RestituicaoFerias {
 
                         /*Definição dos dias contidos no subperíodo*/
 
-                        vDiasSubperiodo = (int)((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
+                        vDiasSubperiodo = (int) ((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
 
                         if (vMes == 2) {
 
@@ -566,7 +451,7 @@ public class RestituicaoFerias {
 
                         /*Define a remuneração do cargo, que não se altera no período.*/
 
-                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(),  vDataInicio, vDataFim, 2);
+                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vDataInicio, vDataFim, 2);
 
                         if (vRemuneracao == 0) {
 
@@ -576,20 +461,20 @@ public class RestituicaoFerias {
 
                         /*Calculo da porção correspondente ao subperíodo.*/
 
-                        vValorFerias = ((vRemuneracao * (vPercentualFerias/100))/30) * vDiasSubperiodo;
-                        vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional/100))/30) * vDiasSubperiodo;
-                        vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
-                        vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
+                        vValorFerias = ((vRemuneracao * (vPercentualFerias / 100)) / 30) * vDiasSubperiodo;
+                        vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional / 100)) / 30) * vDiasSubperiodo;
+                        vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia / 100));
+                        vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia / 100));
 
                         /*No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
                         if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
 
-                            vValorFerias = (vValorFerias/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorTercoConstitucional = (vValorTercoConstitucional/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidenciaFerias = (vValorIncidenciaFerias/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidenciaTerco = (vValorIncidenciaTerco/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorFerias = (vValorFerias / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorTercoConstitucional = (vValorTercoConstitucional / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorIncidenciaFerias = (vValorIncidenciaFerias / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorIncidenciaTerco = (vValorIncidenciaTerco / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
 
                         }
 
@@ -608,7 +493,7 @@ public class RestituicaoFerias {
 
                 /*Se existe alteração na remuneração e nos percentuais.*/
 
-                if(convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Definição da data de início como sendo a data referência (primeiro dia do mês).*/
 
@@ -618,60 +503,7 @@ public class RestituicaoFerias {
 
                     try {
 
-                        preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" +
-                                " FROM tb_percentual_contrato" +
-                                " WHERE cod_contrato = ?" +
-                                " AND (MONTH(DATA_INICIO) = ?" +
-                                " AND \n" +
-                                " YEAR(DATA_INICIO) = ?)" +
-                                " UNION" +
-                                " SELECT data_fim AS data" +
-                                " FROM tb_percentual_contrato" +
-                                " WHERE cod_contrato = ?" +
-                                " AND (MONTH(DATA_FIM)=?" +
-                                " AND" +
-                                " YEAR(DATA_FIM) = ?)" +
-                                " UNION" +
-                                " SELECT data_inicio AS data" +
-                                " FROM tb_percentual_estatico" +
-                                " WHERE (MONTH(DATA_INICIO)=?" +
-                                " AND " +
-                                " YEAR(DATA_INICIO)=?)" +
-                                " UNION" +
-                                " SELECT data_fim AS data" +
-                                " FROM tb_percentual_estatico" +
-                                " WHERE (MONTH(DATA_FIM)=?" +
-                                " AND" +
-                                " YEAR(DATA_FIM)=?)" +
-                                " UNION" +
-                                " SELECT rfc.data_inicio AS data" +
-                                " FROM tb_remuneracao_fun_con rfc\n" +
-                                " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
-                                " WHERE fc.cod_contrato = ?" +
-                                " AND fc.cod = ?" +
-                                " AND (MONTH(rfc.data_inicio) = ?" +
-                                " AND" +
-                                " YEAR(rfc.data_inicio) = ?)" +
-                                " UNION" +
-                                " SELECT rfc.data_fim AS data " +
-                                " FROM tb_remuneracao_fun_con rfc" +
-                                " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
-                                " WHERE fc.cod_contrato = ?" +
-                                " AND fc.cod = ?" +
-                                " AND (MONTH(rfc.data_fim) = ?" +
-                                " AND " +
-                                " YEAR(rfc.data_fim) = ?)" +
-                                " UNION" +
-                                " SELECT CASE WHEN ? = 2 THEN" +
-                                " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" +
-                                " ELSE" +
-                                " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" +
-                                " EXCEPT" +
-                                " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" +
-                                " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" +
-                                " ELSE" +
-                                " NULL END AS data" +
-                                " ORDER BY DATA ASC");
+                        preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_INICIO) = ?" + " AND \n" + " YEAR(DATA_INICIO) = ?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM) = ?)" + " UNION" + " SELECT data_inicio AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_INICIO)=?" + " AND " + " YEAR(DATA_INICIO)=?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM)=?)" + " UNION" + " SELECT rfc.data_inicio AS data" + " FROM tb_remuneracao_fun_con rfc\n" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_inicio) = ?" + " AND" + " YEAR(rfc.data_inicio) = ?)" + " UNION" + " SELECT rfc.data_fim AS data " + " FROM tb_remuneracao_fun_con rfc" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_fim) = ?" + " AND " + " YEAR(rfc.data_fim) = ?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY DATA ASC");
 
                         preparedStatement.setInt(1, vCodContrato);
                         preparedStatement.setInt(2, vMes);
@@ -710,12 +542,11 @@ public class RestituicaoFerias {
 
                     } catch (SQLException e) {
 
-                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de percentuais e da remuneração da função: " +
-                                tuplas.get(i).getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
+                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de percentuais e da remuneração da função: " + tuplas.get(i).getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
 
                     }
 
-                    for (Date data: datas) {
+                    for (Date data : datas) {
 
                         /*Definição da data fim do subperíodo.*/
 
@@ -723,7 +554,7 @@ public class RestituicaoFerias {
 
                         /*Definição dos dias contidos no subperíodo*/
 
-                        vDiasSubperiodo = (int)((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
+                        vDiasSubperiodo = (int) ((ChronoUnit.DAYS.between(vDataInicio.toLocalDate(), vDataFim.toLocalDate())) + 1);
 
                         if (vMes == 2) {
 
@@ -745,7 +576,7 @@ public class RestituicaoFerias {
 
                         /*Define a remuneração do cargo, que não se altera no período.*/
 
-                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(),  vDataInicio, vDataFim, 2);
+                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vDataInicio, vDataFim, 2);
 
                         if (vRemuneracao == 0) {
 
@@ -761,20 +592,20 @@ public class RestituicaoFerias {
 
                         /*Calculo da porção correspondente ao subperíodo.*/
 
-                        vValorFerias = ((vRemuneracao * (vPercentualFerias/100))/30) * vDiasSubperiodo;
-                        vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional/100))/30) * vDiasSubperiodo;
-                        vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia/100));
-                        vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia/100));
+                        vValorFerias = ((vRemuneracao * (vPercentualFerias / 100)) / 30) * vDiasSubperiodo;
+                        vValorTercoConstitucional = ((vRemuneracao * (vPercentualTercoConstitucional / 100)) / 30) * vDiasSubperiodo;
+                        vValorIncidenciaFerias = (vValorFerias * (vPercentualIncidencia / 100));
+                        vValorIncidenciaTerco = (vValorTercoConstitucional * (vPercentualIncidencia / 100));
 
                         /*No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
                         if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
 
-                            vValorFerias = (vValorFerias/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorTercoConstitucional = (vValorTercoConstitucional/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidenciaFerias = (vValorIncidenciaFerias/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidenciaTerco = (vValorIncidenciaTerco/vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorFerias = (vValorFerias / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorTercoConstitucional = (vValorTercoConstitucional / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorIncidenciaFerias = (vValorIncidenciaFerias / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorIncidenciaTerco = (vValorIncidenciaTerco / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
 
                         }
 
@@ -797,9 +628,7 @@ public class RestituicaoFerias {
             if (vMes != 12) {
 
                 vMes = vMes + 1;
-            }
-
-            else {
+            } else {
 
                 vMes = 1;
                 vAno = vAno + 1;
@@ -810,11 +639,6 @@ public class RestituicaoFerias {
 
         } while (vDataReferencia.before(pFimPeriodoAquisitivo) || vDataReferencia.equals(pFimPeriodoAquisitivo));
 
-//        System.out.println(vTotalFerias);
-        //       System.out.println(vTotalTercoConstitucional);
-        //      System.out.println(vTotalIncidenciaFerias);
-        //     System.out.println(vTotalIncidenciaTerco);
-
         /*Atribuição de valor a vDiasVendidos*/
 
         if (pDiasVendidos == 0) {
@@ -824,27 +648,6 @@ public class RestituicaoFerias {
         } else {
 
             vDiasVendidos = pDiasVendidos;
-
-        }
-
-        /*Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_ferias.*/
-
-        try {
-
-            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_RESTITUICAO_FERIAS')");
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                vCodTbRestituicaoFerias = resultSet.getInt(1);
-                vCodTbRestituicaoFerias = vCodTbRestituicaoFerias + 1;
-
-            }
-
-        } catch (SQLException sqle) {
-
-            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de restituição de férias.");
 
         }
 
@@ -876,24 +679,125 @@ public class RestituicaoFerias {
 
         }
 
+        ValorRestituicaoFeriasModel valorRestituicaoFerias = new ValorRestituicaoFeriasModel(vTotalFerias,
+                vTotalTercoConstitucional,
+                vTotalIncidenciaFerias,
+                vTotalIncidenciaTerco);
+
+        return valorRestituicaoFerias;
+
+    }
+
+    /**
+     * Método que registra o calculo do total de férias a ser restituído para um
+     * determinado período aquisitivo.
+     *
+     * @param pCodTerceirizadoContrato;
+     * @param pTipoRestituicao;
+     * @param pDiasVendidos;
+     * @param pInicioFerias;
+     * @param pFimFerias;
+     * @param pInicioPeriodoAquisitivo;
+     * @param pFimPeriodoAquisitivo;
+     * @param pValorMovimentado;
+     * @param pProporcional;
+     */
+
+    public void RegistraRestituicaoFerias (int pCodTerceirizadoContrato,
+                                           String pTipoRestituicao,
+                                           int pDiasVendidos,
+                                           Date pInicioFerias,
+                                           Date pFimFerias,
+                                           Date pInicioPeriodoAquisitivo,
+                                           Date pFimPeriodoAquisitivo,
+                                           char pProporcional,
+                                           float pValorMovimentado,
+                                           float pTotalFerias,
+                                           float pTotalTercoConstitucional,
+                                           float pTotalIncidenciaFerias,
+                                           float pTotalIncidenciaTerco) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        /*Chaves primárias.*/
+
+        int vCodTbRestituicaoFerias = 0;
+        int vCodTipoRestituicao = 0;
+
+        /*Variáveis auxiliares.*/
+
+        float vIncidenciaFerias = 0;
+        float vIncidenciaTerco = 0;
+        float vTerco = 0;
+        float vFerias = 0;
+
+        /*Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_ferias.*/
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_RESTITUICAO_FERIAS')");
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodTbRestituicaoFerias = resultSet.getInt(1);
+                vCodTbRestituicaoFerias = vCodTbRestituicaoFerias + 1;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de restituição de férias.");
+
+        }
+
+         /*Atribuição do cod do tipo de restituição.*/
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT COD" + " FROM TB_TIPO_RESTITUICAO" + " WHERE UPPER(nome) = UPPER(?)");
+
+            preparedStatement.setString(1, pTipoRestituicao);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodTipoRestituicao = resultSet.getInt(1);
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+        }
+
+        if (vCodTipoRestituicao == 0) {
+
+            throw new NullPointerException("Tipo de restituição não encontrada.");
+
+        }
+
         /*Provisionamento da incidência para o saldo residual no caso de movimentação.*/
 
         if (pTipoRestituicao == "MOVIMENTAÇÃO") {
 
-            vIncidenciaFerias = vTotalIncidenciaFerias;
-            vIncidenciaTerco = vTotalIncidenciaTerco;
+            vIncidenciaFerias = pTotalIncidenciaFerias;
+            vIncidenciaTerco = pTotalIncidenciaTerco;
 
-            vTerco = vTotalTercoConstitucional;
-            vFerias = vTotalFerias;
+            vTerco = pTotalTercoConstitucional;
+            vFerias = pTotalFerias;
 
-            vTotalTercoConstitucional = pValorMovimentado/4;
-            vTotalFerias = pValorMovimentado - vTotalTercoConstitucional;
+            pTotalTercoConstitucional = pValorMovimentado/4;
+            pTotalFerias = pValorMovimentado - pTotalTercoConstitucional;
 
-            vTerco = vTerco - vTotalTercoConstitucional;
-            vFerias = vFerias - vTotalFerias;
+            vTerco = vTerco - pTotalTercoConstitucional;
+            vFerias = vFerias - pTotalFerias;
 
-            vTotalIncidenciaFerias = 0;
-            vTotalIncidenciaTerco = 0;
+            pTotalIncidenciaFerias = 0;
+            pTotalIncidenciaTerco = 0;
 
         }
 
@@ -930,10 +834,10 @@ public class RestituicaoFerias {
             preparedStatement.setDate(5, pFimPeriodoAquisitivo);
             preparedStatement.setDate(6, pInicioFerias);
             preparedStatement.setDate(7, pFimFerias);
-            preparedStatement.setFloat(8, vTotalFerias);
-            preparedStatement.setFloat(9, vTotalTercoConstitucional);
-            preparedStatement.setFloat(10, vTotalIncidenciaFerias);
-            preparedStatement.setFloat(11, vTotalIncidenciaTerco);
+            preparedStatement.setFloat(8, pTotalFerias);
+            preparedStatement.setFloat(9, pTotalTercoConstitucional);
+            preparedStatement.setFloat(10, pTotalIncidenciaFerias);
+            preparedStatement.setFloat(11, pTotalIncidenciaTerco);
             preparedStatement.setString(12, String.valueOf(pProporcional));
             preparedStatement.setInt(13, pDiasVendidos);
             preparedStatement.executeUpdate();

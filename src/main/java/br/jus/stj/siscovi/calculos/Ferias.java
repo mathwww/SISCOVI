@@ -10,7 +10,7 @@ public class Ferias {
 
     private Connection connection;
 
-    Ferias(Connection connection) {
+    public Ferias(Connection connection) {
 
         this.connection = connection;
 
@@ -34,11 +34,11 @@ public class Ferias {
         Date vDataInicio = null;
         Date vDataFim = null;
 
-        /**Calcula o número de dias baseado no período aquisitivo.*/
+        /*Calcula o número de dias baseado no período aquisitivo.*/
 
         do {
 
-            /**Inicializa a data de início no primeiro laço.*/
+            /*Inicializa a data de início no primeiro laço.*/
 
             if (vDataInicio == null) {
 
@@ -46,7 +46,7 @@ public class Ferias {
 
             }
 
-            /**Define o fim do mês como dia 30 exceto para fevereiro.*/
+            /*Define o fim do mês como dia 30 exceto para fevereiro.*/
 
             if (vDataInicio.toLocalDate().getMonthValue() != 2) {
 
@@ -61,8 +61,8 @@ public class Ferias {
             /**Ajusta a data fim para o final do período aquisitivo no mês correspondente.*/
 
             if ((vDataFim.toLocalDate().getMonthValue() == pDataFim.toLocalDate().getMonthValue()) &&
-                (vDataFim.toLocalDate().getYear() == pDataFim.toLocalDate().getYear()) &&
-                (pDataFim.toLocalDate().getDayOfMonth() != 31)) {
+                    (vDataFim.toLocalDate().getYear() == pDataFim.toLocalDate().getYear()) &&
+                    (pDataFim.toLocalDate().getDayOfMonth() != 31)) {
 
                 vDataFim = pDataFim;
 
@@ -143,13 +143,13 @@ public class Ferias {
         try {
 
             preparedStatement = connection.prepareStatement("SELECT COUNT(cod)" +
-                                                                 " FROM tb_restituicao_ferias" +
-                                                                 " WHERE cod_terceirizado_contrato = ?" +
-                                                                   " AND data_inicio_periodo_aquisitivo = ?" +
-                                                                   " AND data_fim_periodo_aquisitivo = ?");
+                    " FROM tb_restituicao_ferias" +
+                    " WHERE cod_terceirizado_contrato = ?" +
+                    " AND data_inicio_periodo_aquisitivo = ?" +
+                    " AND data_fim_periodo_aquisitivo = ?");
 
             preparedStatement.setInt(1, pCodTerceirizadoContrato);
-            preparedStatement.setDate(2, pDataFim);
+            preparedStatement.setDate(2, pDataInicio);
             preparedStatement.setDate(3, pDataFim);
 
             resultSet = preparedStatement.executeQuery();
@@ -175,7 +175,7 @@ public class Ferias {
      * Função que retorna o início ou fim do período aquisitivo de férias.
      * @param pCodTerceirizadoContrato
      * @param pOperacao
-     * @return int
+     * @return Date
      */
 
     public Date DataPeriodoAquisitivo (int pCodTerceirizadoContrato, int pOperacao) {
@@ -293,6 +293,7 @@ public class Ferias {
         return null;
 
     }
+
 
     /**
      * Função que retorna se existe registro de férias para um terceirizado em um contrato.
