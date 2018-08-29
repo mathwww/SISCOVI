@@ -89,9 +89,10 @@ public class RestituicaoFerias {
         /*Variáveis de controle.*/
 
         int vDiasSubperiodo = 0;
-        int vDiasDeFerias = 0;
+        float vDiasDeFerias = 0;
         float vDiasAdquiridos = 0;
         int vDiasVendidos = 0;
+        boolean vFeriasMenorDeAno = false;
 
         /*Checagem dos parâmetros passados.*/
 
@@ -620,7 +621,6 @@ public class RestituicaoFerias {
 
                     }
 
-
                 }
 
             }
@@ -653,7 +653,7 @@ public class RestituicaoFerias {
 
         /*Dias de férias usufruídos para o cálculo proporcional.*/
 
-        vDiasDeFerias = (int)(ChronoUnit.DAYS.between(pInicioFerias.toLocalDate(), pFimFerias.toLocalDate()) + 1 + vDiasVendidos);
+        vDiasDeFerias = (ChronoUnit.DAYS.between(pInicioFerias.toLocalDate(), pFimFerias.toLocalDate()) + 1 + vDiasVendidos);
 
         /*Dias de férias adquiridos no período aquisitivo.*/
 
@@ -661,9 +661,17 @@ public class RestituicaoFerias {
 
         /*Definição do montante proporcional a ser restituído*/
 
-        if (vDiasDeFerias > vDiasAdquiridos) {
+        if ((vDiasDeFerias > vDiasAdquiridos) && vFeriasMenorDeAno == false) {
 
             throw new NullPointerException("Foram concedidos mais dias de férias do que o disponível para o período aquisitivo informado.");
+
+        } else {
+
+            if ((vDiasDeFerias > vDiasAdquiridos) && vFeriasMenorDeAno == true) {
+
+                vDiasDeFerias = (int) vDiasAdquiridos;
+
+            }
 
         }
 
