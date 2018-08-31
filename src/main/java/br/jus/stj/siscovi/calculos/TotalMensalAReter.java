@@ -146,7 +146,7 @@ public class TotalMensalAReter {
 
         }
 
-        /**Verificação da existência de cálculo para aquele mês e consequente deleção.*/
+        /* Verificação da existência de cálculo para aquele mês e consequente deleção.*/
 
         try {
 
@@ -166,7 +166,7 @@ public class TotalMensalAReter {
 
             if (vExisteCalculo > 0) {
 
-                /**Deleta as retroatividades associadas aquele mês/ano.*/
+                /* Deleta as retroatividades associadas aquele mês/ano.*/
 
                 preparedStatement = connection.prepareStatement("DELETE FROM TB_RETROATIVIDADE_TOTAL_MENSAL WHERE COD_TOTAL_MENSAL_A_RETER IN (SELECT TMR.COD" +
                         " FROM TB_TOTAL_MENSAL_A_RETER TMR JOIN TB_TERCEIRIZADO_CONTRATO TC ON TC.COD = TMR.COD_TERCEIRIZADO_CONTRATO" +
@@ -177,7 +177,7 @@ public class TotalMensalAReter {
                 preparedStatement.setInt(3, pCodContrato);
                 preparedStatement.executeUpdate();
 
-                /**Deleta os recolhimentos realizados naquele mês/ano.*/
+                /* Deleta os recolhimentos realizados naquele mês/ano. */
 
                 preparedStatement = connection.prepareStatement("DELETE FROM TB_TOTAL_MENSAL_A_RETER WHERE MONTH(DATA_REFERENCIA) = ? AND YEAR(DATA_REFERENCIA) = ?" +
                         " AND COD_TERCEIRIZADO_CONTRATO IN (SELECT TC.COD FROM TB_TERCEIRIZADO_CONTRATO TC WHERE TC.COD_CONTRATO = ?)");
@@ -195,7 +195,7 @@ public class TotalMensalAReter {
 
         }
 
-        /**Caso não hajam mudaças de percentual no mês designado carregam-se os valores.*/
+        /* Caso não hajam mudaças de percentual no mês designado carregam-se os valores. */
 
         if (!percentual.ExisteMudancaPercentual(pCodContrato, pMes, pAno, 1)) {
 
@@ -214,7 +214,7 @@ public class TotalMensalAReter {
 
         }
 
-        /**Busca funções do contrato.*/
+        /* Busca funções do contrato. */
 
         ArrayList<Integer> c1 = new ArrayList<>();
 
