@@ -794,7 +794,7 @@ public class RestituicaoFerias {
 
         /*Provisionamento da incidência para o saldo residual no caso de movimentação.*/
 
-        if (pTipoRestituicao == "MOVIMENTAÇÃO") {
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
 
             vIncidenciaFerias = pTotalIncidenciaFerias;
             vIncidenciaTerco = pTotalIncidenciaTerco;
@@ -862,7 +862,7 @@ public class RestituicaoFerias {
 
         }
 
-        if (pTipoRestituicao == "MOVIMENTAÇÃO") {
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
 
             try {
 
