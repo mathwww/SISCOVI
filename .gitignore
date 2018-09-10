@@ -17,7 +17,6 @@ src/main/java/br/jus/stj/siscovi/dao/ConnectSQLServer.java
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
