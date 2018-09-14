@@ -5,9 +5,6 @@ import br.jus.stj.siscovi.helpers.ConsultaTSQL;
 import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
 
 import java.sql.*;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
-import java.time.LocalDate;
 
 public class TesteRestituicaoDecimoTerceiro {
 
@@ -24,6 +21,7 @@ public class TesteRestituicaoDecimoTerceiro {
         int vCodContrato = consulta.RetornaCodContratoAleatorio();
         int vCodTerceirizadoContrato = consulta.RetornaCodTerceirizadoAleatorio(vCodContrato);
         String vTipoRestituicao = String.valueOf("RESGATE");
+        String vLoginAtualizacao = String.valueOf("VSSOUSA");
         float vValorMovimentado = 1500;
         int vNumeroParcela = 0;
         String sqlDelete = "DELETE FROM TB_SALDO_RESIDUAL_DEC_TER; DELETE FROM TB_RESTITUICAO_DECIMO_TERCEIRO;";
@@ -50,7 +48,8 @@ public class TesteRestituicaoDecimoTerceiro {
                 vDataInicioContagem,
                 restituicao.getValorDecimoTerceiro(),
                 restituicao.getValorIncidenciaDecimoTerceiro(),
-                vValorMovimentado);
+                vValorMovimentado,
+                vLoginAtualizacao);
 
         try {
 

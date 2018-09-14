@@ -616,7 +616,8 @@ public class RestituicaoDecimoTerceiro {
                                                    Date pInicioContagem,
                                                    float pValorDecimoTerceiro,
                                                    float pValorIncidencia,
-                                                   float pValorMovimentado) {
+                                                   float pValorMovimentado,
+                                                   String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -715,7 +716,7 @@ public class RestituicaoDecimoTerceiro {
                     " DATA_REFERENCIA," +
                     " LOGIN_ATUALIZACAO," +
                     " DATA_ATUALIZACAO)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), 'SYSTEM', CURRENT_TIMESTAMP);" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, CURRENT_TIMESTAMP);" +
                     " SET IDENTITY_INSERT tb_restituicao_decimo_terceiro OFF;";
 
             preparedStatement = connection.prepareStatement(sql);
@@ -727,6 +728,7 @@ public class RestituicaoDecimoTerceiro {
             preparedStatement.setDate(5, pInicioContagem);
             preparedStatement.setFloat(6, pValorDecimoTerceiro);
             preparedStatement.setFloat(7, pValorIncidencia);
+            preparedStatement.setString(8, pLoginAtualizacao);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -744,13 +746,14 @@ public class RestituicaoDecimoTerceiro {
                         " INCIDENCIA_SUBMODULO_4_1," +
                         " LOGIN_ATUALIZACAO," +
                         " DATA_ATUALIZACAO)" +
-                        " VALUES (?, ?, ?, 'SYSTEM', CURRENT_TIMESTAMP)";
+                        " VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
 
                 preparedStatement = connection.prepareStatement(sql);
 
                 preparedStatement.setInt(1, vCodTbRestituicao13);
                 preparedStatement.setFloat(2, vValor);
                 preparedStatement.setFloat(3, vIncidencia);
+                preparedStatement.setString(4, pLoginAtualizacao);
 
                 preparedStatement.executeUpdate();
 

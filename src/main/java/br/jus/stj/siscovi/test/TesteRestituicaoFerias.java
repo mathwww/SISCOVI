@@ -1,80 +1,66 @@
 package br.jus.stj.siscovi.calculos;
+import br.jus.stj.siscovi.helpers.ConsultaTSQL;
+import br.jus.stj.siscovi.model.ValorRestituicaoFeriasModel;
+
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
-import java.time.LocalDate;
+import java.sql.*;
 
 public class TesteRestituicaoFerias {
+
     public static void main(String[] args){
 
-        String result = null;
-        float dias = 0;
-        Date inicio = Date.valueOf("2017-08-05");
-        Date fim = Date.valueOf("2018-08-05");
-        int meses = 0;
-        boolean resultado;
-
-        float resultadoFloat = 0;
-
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
         RestituicaoFerias restituicaoFerias = new RestituicaoFerias(connectSQLServer.dbConnect());
-        Retencao retencao = new Retencao(connectSQLServer.dbConnect());
-        Periodos periodo = new Periodos(connectSQLServer.dbConnect());
+        ConsultaTSQL consulta = new ConsultaTSQL(connectSQLServer.dbConnect());
         Ferias ferias = new Ferias(connectSQLServer.dbConnect());
-        Remuneracao remuneracao = new Remuneracao(connectSQLServer.dbConnect());
-        Date vDataInicioContrato = Date.valueOf("2016-08-05");
 
+        int vCodContrato = consulta.RetornaCodContratoAleatorio();
+        int vCodTerceirizadoContrato = consulta.RetornaCodTerceirizadoAleatorio(vCodContrato);
+        String vTipoRestituicao = String.valueOf("MOVIMENTAÇÃO");
+        String vLoginAtualizacao = String.valueOf("VSSOUSA");
+        int vParcela = 0;
+        int vDiasVendidos = 0;
+        float vValorMovimentado = 12842;
+        String sqlDelete = "DELETE FROM TB_SALDO_RESIDUAL_FERIAS; DELETE FROM TB_RESTITUICAO_FERIAS;";
 
+        System.out.print("Dados do teste\nCOD_CONTRATO: " + vCodContrato + " COD_TERCEIRIZADO_CONTRATO: " +
+                vCodTerceirizadoContrato + "\n");
+        System.out.print("Tipo de restituição: " + vTipoRestituicao + "\nDias vendidos: " + vDiasVendidos + "\n");
 
-        //dias = ferias.DiasPeriodoAquisitivo(Date.valueOf("2016-01-01"),Date.valueOf("2016-07-25"));
-        //resultado = retencao.FuncaoRetencaoIntegral(53, 10, 2016);
+        Date vInicioFerias = Date.valueOf("2017-09-01");
+        Date vFimFerias = Date.valueOf("2017-09-30");;
+        Date vInicioPeriodoAquisitivo = ferias.DataPeriodoAquisitivo(vCodTerceirizadoContrato, 1);
+        Date vFimPeriodoAquisitivo = ferias.DataPeriodoAquisitivo(vCodTerceirizadoContrato, 2);
 
-        //System.out.printf("O valor da ação é %.2f %n", dias);
+        ValorRestituicaoFeriasModel restituicao  = restituicaoFerias.CalculaRestituicaoFerias(vCodTerceirizadoContrato,
+                vDiasVendidos, vInicioFerias, vFimFerias, vInicioPeriodoAquisitivo, vFimPeriodoAquisitivo);
 
-        //resultadoFloat = remuneracao.RetornaRemuneracaoPeriodo(145, 10, 2016, 1, 2);
+        System.out.println(restituicao.getValorFerias());
+        System.out.println(restituicao.getValorTercoConstitucional());
+        System.out.println(restituicao.getValorIncidenciaFerias());
+        System.out.println(restituicao.getValorIncidenciaTercoConstitucional());
 
-        System.out.print(Date.valueOf(vDataInicioContrato.toLocalDate().minusMonths(1).withDayOfMonth(vDataInicioContrato.toLocalDate().lengthOfMonth()).plusDays(1)));
+        restituicaoFerias.RegistraRestituicaoFerias(vCodTerceirizadoContrato, vTipoRestituicao, vDiasVendidos,
+                vInicioFerias, vFimFerias, vInicioPeriodoAquisitivo, vFimPeriodoAquisitivo, vParcela,
+                vValorMovimentado, restituicao.getValorFerias(), restituicao.getValorTercoConstitucional(),
+                restituicao.getValorIncidenciaFerias(), restituicao.getValorIncidenciaTercoConstitucional(), vLoginAtualizacao);
 
-        //restituicaoFerias.CalculaRestituicaoFerias(729, "RESGATE",0, Date.valueOf("2017-09-01"),Date.valueOf("2017-09-30"),Date.valueOf("2016-08-05"),Date.valueOf("2017-08-04"),0,'N');
-/*
         try {
 
-            result = retencao.TipoDeRestituicao(22);
+            preparedStatement = connectSQLServer.dbConnect().prepareStatement(sqlDelete);
+            preparedStatement.executeUpdate();
 
-            System.out.print(result);
+        } catch (SQLException sqle) {
 
-        } catch(SQLException sqle) {
-
-            throw new NullPointerException ("Falha no teste de recuperação do tipo de restituição.");
+            throw new NullPointerException("Não foi possível deletar os dados de teste inseridos no banco.");
 
         }
 
-        dias = ChronoUnit.DAYS.between(inicio.toLocalDate(), fim.toLocalDate());
-
-        System.out.print("\n");
-
-        System.out.println(dias);
-
-        //TotalMensalDAO totalMensalDAO  = new TotalMensalDAO(connectSQLServer.dbConnect());
-        //totalMensalDAO.recuperaAnosDeCalculosAnteriores(1);
-        //new TotalMensalController().getValoresCalculados(1,8);
-*/
-
-        //meses = (int)ChronoUnit.DAYS.between(inicio.toLocalDate(), fim.toLocalDate());
-
-        //System.out.println(meses);
-
-
-
     }
-
-
-
-
 
 }

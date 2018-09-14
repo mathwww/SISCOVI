@@ -107,6 +107,7 @@ public class RestituicaoFerias {
         if (pInicioFerias.before(pFimPeriodoAquisitivo) && ferias.ExisteFeriasTerceirizado(pCodTerceirizadoContrato) == false) {
 
             pFimPeriodoAquisitivo = Date.valueOf(pInicioFerias.toLocalDate().plusDays(-1));
+            vFeriasMenorDeAno = true;
 
         } else {
 
@@ -621,6 +622,7 @@ public class RestituicaoFerias {
 
                     }
 
+
                 }
 
             }
@@ -669,7 +671,7 @@ public class RestituicaoFerias {
 
             if ((vDiasDeFerias > vDiasAdquiridos) && vFeriasMenorDeAno == true) {
 
-                vDiasDeFerias = (int) vDiasAdquiridos;
+                vDiasDeFerias = vDiasAdquiridos;
 
             }
 
@@ -718,12 +720,13 @@ public class RestituicaoFerias {
                                            Date pFimFerias,
                                            Date pInicioPeriodoAquisitivo,
                                            Date pFimPeriodoAquisitivo,
-                                           char pProporcional,
+                                           int pParcela,
                                            float pValorMovimentado,
                                            float pTotalFerias,
                                            float pTotalTercoConstitucional,
                                            float pTotalIncidenciaFerias,
-                                           float pTotalIncidenciaTerco) {
+                                           float pTotalIncidenciaTerco,
+                                           String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -825,12 +828,12 @@ public class RestituicaoFerias {
                     " VALOR_TERCO_CONSTITUCIONAL," +
                     " INCID_SUBMOD_4_1_FERIAS," +
                     " INCID_SUBMOD_4_1_TERCO," +
-                    " SE_PROPORCIONAL," +
+                    " PARCELA," +
                     " DIAS_VENDIDOS," +
                     " DATA_REFERENCIA," +
                     " LOGIN_ATUALIZACAO," +
                     " DATA_ATUALIZACAO)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), 'SYSTEM', CURRENT_TIMESTAMP);" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, CURRENT_TIMESTAMP);" +
                     " SET IDENTITY_INSERT tb_restituicao_ferias OFF;";
 
             preparedStatement = connection.prepareStatement(sql);
@@ -846,8 +849,9 @@ public class RestituicaoFerias {
             preparedStatement.setFloat(9, pTotalTercoConstitucional);
             preparedStatement.setFloat(10, pTotalIncidenciaFerias);
             preparedStatement.setFloat(11, pTotalIncidenciaTerco);
-            preparedStatement.setString(12, String.valueOf(pProporcional));
+            preparedStatement.setInt(12, pParcela);
             preparedStatement.setInt(13, pDiasVendidos);
+            preparedStatement.setString(14, pLoginAtualizacao);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -867,10 +871,9 @@ public class RestituicaoFerias {
                         " VALOR_TERCO," +
                         " INCID_SUBMOD_4_1_FERIAS," +
                         " INCID_SUBMOD_4_1_TERCO," +
-                        " RESTITUIDO," +
                         " LOGIN_ATUALIZACAO," +
                         " DATA_ATUALIZACAO)" +
-                        " VALUES (?, ?, ?, ?, ?, ?, 'SYSTEM', CURRENT_TIMESTAMP)";
+                        " VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
 
                 preparedStatement = connection.prepareStatement(sql);
 
@@ -879,7 +882,7 @@ public class RestituicaoFerias {
                 preparedStatement.setFloat(3, vTerco);
                 preparedStatement.setFloat(4, vIncidenciaFerias);
                 preparedStatement.setFloat(5, vIncidenciaTerco);
-                preparedStatement.setString(6, String.valueOf("N"));
+                preparedStatement.setString(6, pLoginAtualizacao);
 
                 preparedStatement.executeUpdate();
 
