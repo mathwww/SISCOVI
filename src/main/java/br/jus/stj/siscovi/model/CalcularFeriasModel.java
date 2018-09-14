@@ -11,7 +11,7 @@ public class CalcularFeriasModel {
     private Date inicioPeriodoAquisitivo;
     private Date fimPeriodoAquisitivo;
     private float valorMovimentado;
-    private char proporcional;
+    private int parcelas;
     private float pValorMovimentado;
     private float pTotalFerias;
     private float pTotalTercoConstitucional;
@@ -26,7 +26,7 @@ public class CalcularFeriasModel {
                                Date inicioPeriodoAquisitivo,
                                Date fimPeriodoAquisitivo,
                                float valorMovimentado,
-                               char proporcional,
+                               int parcelas,
                                float pValorMovimentado,
                                float pTotalFerias,
                                float pTotalTercoConstitucional,
@@ -40,7 +40,7 @@ public class CalcularFeriasModel {
         this.inicioPeriodoAquisitivo = inicioPeriodoAquisitivo;
         this.fimPeriodoAquisitivo = fimPeriodoAquisitivo;
         this.valorMovimentado = valorMovimentado;
-        this.proporcional = proporcional;
+        this.parcelas = parcelas;
         this.pValorMovimentado = valorMovimentado;
         this.pTotalFerias = pTotalFerias;
         this.pValorMovimentado = pValorMovimentado;
@@ -81,8 +81,8 @@ public class CalcularFeriasModel {
         return valorMovimentado;
     }
 
-    public char getProporcional() {
-        return proporcional;
+    public int getParcelas() {
+        return parcelas;
     }
 
     public void setTipoRestituicao(String tipoRestituicao) {
@@ -120,7 +120,7 @@ public class CalcularFeriasModel {
                 ", inicioPeriodoAquisitivo=" + inicioPeriodoAquisitivo +
                 ", fimPeriodoAquisitivo=" + fimPeriodoAquisitivo +
                 ", valorMovimentado=" + valorMovimentado +
-                ", proporcional=" + proporcional +
+                ", parcelas=" + parcelas +
                 '}';
     }
 }

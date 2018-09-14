@@ -722,7 +722,7 @@ public class RestituicaoFerias {
                                            Date pFimFerias,
                                            Date pInicioPeriodoAquisitivo,
                                            Date pFimPeriodoAquisitivo,
-                                           char pProporcional,
+                                           int parcela,
                                            float pValorMovimentado,
                                            float pTotalFerias,
                                            float pTotalTercoConstitucional,
@@ -829,7 +829,7 @@ public class RestituicaoFerias {
                     " VALOR_TERCO_CONSTITUCIONAL," +
                     " INCID_SUBMOD_4_1_FERIAS," +
                     " INCID_SUBMOD_4_1_TERCO," +
-                    " SE_PROPORCIONAL," +
+                    " PARCELA," +
                     " DIAS_VENDIDOS," +
                     " DATA_REFERENCIA," +
                     " LOGIN_ATUALIZACAO," +
@@ -850,7 +850,7 @@ public class RestituicaoFerias {
             preparedStatement.setFloat(9, pTotalTercoConstitucional);
             preparedStatement.setFloat(10, pTotalIncidenciaFerias);
             preparedStatement.setFloat(11, pTotalIncidenciaTerco);
-            preparedStatement.setString(12, String.valueOf(pProporcional));
+            preparedStatement.setInt(12, parcela);
             preparedStatement.setInt(13, pDiasVendidos);
             preparedStatement.executeUpdate();
 

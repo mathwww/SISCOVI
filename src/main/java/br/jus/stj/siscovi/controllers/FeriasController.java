@@ -31,9 +31,7 @@ public class FeriasController {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         FeriasDAO feriasDAO= new FeriasDAO(connectSQLServer.dbConnect());
         String json = "";
-        if(tipoRestituicao.equals("MOVIMENTACAO")) {
-           json = gson.toJson(feriasDAO.getListaTerceirizadoParaCalculoDeFerias(codigoContrato));
-        }
+        json = gson.toJson(feriasDAO.getListaTerceirizadoParaCalculoDeFerias(codigoContrato));
         try {
             connectSQLServer.dbConnect().close();
         } catch (SQLException e) {
@@ -69,6 +67,7 @@ public class FeriasController {
         } catch (SQLException e) {
             System.err.println(e.toString());
         }catch(NullPointerException npe) {
+            npe.printStackTrace();
             System.err.println(npe.toString());
             ErrorMessage error = new ErrorMessage();
             error.error = npe.getMessage();
@@ -86,20 +85,39 @@ public class FeriasController {
         ArrayList<CalcularFeriasModel> listaTerceirizadosParaCalculo = gson.fromJson(object, new TypeToken<List<CalcularFeriasModel>>(){}.getType());
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         RestituicaoFerias restituicaoFerias = new RestituicaoFerias(connectSQLServer.dbConnect());
-       for(CalcularFeriasModel calcularFeriasModel : listaTerceirizadosParaCalculo){
-            restituicaoFerias.RegistraRestituicaoFerias(calcularFeriasModel.getCodTerceirizadoContrato(),
-                    calcularFeriasModel.getTipoRestituicao(),
-                    calcularFeriasModel.getDiasVendidos(),
-                    calcularFeriasModel.getInicioFerias(),
-                    calcularFeriasModel.getFimFerias(),
-                    calcularFeriasModel.getInicioPeriodoAquisitivo(),
-                    calcularFeriasModel.getFimPeriodoAquisitivo(),
-                    calcularFeriasModel.getProporcional(),
-                    calcularFeriasModel.getValorMovimentado(),
-                    calcularFeriasModel.getpTotalFerias(),
-                    calcularFeriasModel.getpTotalTercoConstitucional(),
-                    calcularFeriasModel.getpTotalIncidenciaFerias(),
-                    calcularFeriasModel.getpTotalIncidenciaTerco());
+        if (listaTerceirizadosParaCalculo.get(0).getTipoRestituicao().equals("RESGATE")) {
+            for (CalcularFeriasModel calcularFeriasModel : listaTerceirizadosParaCalculo) {
+                restituicaoFerias.RegistraRestituicaoFerias(calcularFeriasModel.getCodTerceirizadoContrato(),
+                        calcularFeriasModel.getTipoRestituicao(),
+                        calcularFeriasModel.getDiasVendidos(),
+                        calcularFeriasModel.getInicioFerias(),
+                        calcularFeriasModel.getFimFerias(),
+                        calcularFeriasModel.getInicioPeriodoAquisitivo(),
+                        calcularFeriasModel.getFimPeriodoAquisitivo(),
+                        calcularFeriasModel.getParcelas(),
+                        0,
+                        calcularFeriasModel.getpTotalFerias(),
+                        calcularFeriasModel.getpTotalTercoConstitucional(),
+                        calcularFeriasModel.getpTotalIncidenciaFerias(),
+                        calcularFeriasModel.getpTotalIncidenciaTerco());
+            }
+        }
+        if (listaTerceirizadosParaCalculo.get(0).getTipoRestituicao().equals("MOVIMENTAÇÃO")) {
+            for (CalcularFeriasModel calcularFeriasModel : listaTerceirizadosParaCalculo) {
+                restituicaoFerias.RegistraRestituicaoFerias(calcularFeriasModel.getCodTerceirizadoContrato(),
+                        calcularFeriasModel.getTipoRestituicao(),
+                        calcularFeriasModel.getDiasVendidos(),
+                        calcularFeriasModel.getInicioFerias(),
+                        calcularFeriasModel.getFimFerias(),
+                        calcularFeriasModel.getInicioPeriodoAquisitivo(),
+                        calcularFeriasModel.getFimPeriodoAquisitivo(),
+                        calcularFeriasModel.getParcelas(),
+                        calcularFeriasModel.getValorMovimentado(),
+                        calcularFeriasModel.getpTotalFerias(),
+                        calcularFeriasModel.getpTotalTercoConstitucional(),
+                        calcularFeriasModel.getpTotalIncidenciaFerias(),
+                        calcularFeriasModel.getpTotalIncidenciaTerco());
+            }
         }
         try {
             connectSQLServer.dbConnect().close();

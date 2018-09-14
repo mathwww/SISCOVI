@@ -74,7 +74,7 @@ public class FeriasDAO {
                 " rt.data_inicio_usufruto AS \"Início do usufruto\"," +
                 " rt.data_fim_usufruto AS \"Fim do usufruto\"," +
                 " rt.dias_vendidos AS \"Dias vendidos\"," +
-                " rt.se_proporcional AS \"Proporcional\"," +
+                " rt.parcela AS \"PARCELA\"," +
                 " rt.valor_ferias AS \"Valor de férias\"," +
                 " rt.valor_terco_constitucional AS \"Valor de 1/3\"," +
                 " rt.incid_submod_4_1_ferias AS \"Incidência sobre férias\"," +
@@ -113,7 +113,7 @@ public class FeriasDAO {
                             resultSet.getDate("Início do período aquisitivo"),
                             resultSet.getDate("Fim do período aquisitivo"),
                             0,
-                            resultSet.getString("Proporcional").charAt(0),
+                            resultSet.getInt("PARCELA"),
                             resultSet.getFloat("TOTAL"),
                             resultSet.getFloat("Valor de férias"),
                             resultSet.getFloat("Valor de 1/3"),
