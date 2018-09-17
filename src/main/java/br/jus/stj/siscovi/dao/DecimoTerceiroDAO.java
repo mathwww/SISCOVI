@@ -33,7 +33,11 @@ public class DecimoTerceiroDAO {
                 while (resultSet.next()) {
                     Date inicioContagem = decimoTerceiro.RetornaDataInicioContagem(resultSet.getInt("COD"));
                     vSaldoDecimoTericeiro = saldoDecimoTerceiro.SaldoContaVinculada(resultSet.getInt("COD"), inicioContagem.toLocalDate().getYear(), 1, 3);
-                    TerceirizadoDecimoTerceiro terceirizadoDecimoTerceiro = new TerceirizadoDecimoTerceiro(resultSet.getInt("COD"), resultSet.getString("NOME"), inicioContagem, vSaldoDecimoTericeiro);
+                    TerceirizadoDecimoTerceiro terceirizadoDecimoTerceiro = new TerceirizadoDecimoTerceiro(resultSet.getInt("COD"),
+                            resultSet.getString("NOME"),
+                            inicioContagem,
+                            vSaldoDecimoTericeiro,
+                            0);
                     terceirizados.add(terceirizadoDecimoTerceiro);
                 }
             }
