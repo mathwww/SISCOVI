@@ -72,12 +72,12 @@ public class Saldo {
 
             try {
 
-                preparedStatement = connection.prepareStatement("SELECT SUM(tmr.ferias + DECODE(rtm.ferias, NULL, 0, rtm.ferias)) AS \"Férias retido\",\n" +
-                        "           SUM(tmr.terco_constitucional + DECODE(rtm.terco_constitucional, NULL, 0, rtm.terco_constitucional))  AS \"Abono de férias retido\",\n" +
-                        "           SUM(tmr.decimo_terceiro + DECODE(rtm.decimo_terceiro, NULL, 0, rtm.decimo_terceiro)) AS \"Décimo terceiro retido\",\n" +
-                        "           SUM(tmr.incidencia_submodulo_4_1 + DECODE(rtm.incidencia_submodulo_4_1, NULL, 0, rtm.incidencia_submodulo_4_1)) AS \"Incid. do submód. 4.1 retido\",\n" +
+                preparedStatement = connection.prepareStatement("SELECT SUM(tmr.ferias + CASE WHEN rtm.ferias IS NULL THEN 0 ELSE rtm.ferias END) AS \"Férias retido\",\n" +
+                        "           SUM(tmr.terco_constitucional + CASE WHEN rtm.terco_constitucional IS NULL THEN 0 ELSE rtm.terco_constitucional END)  AS \"Abono de férias retido\",\n" +
+                        "           SUM(tmr.decimo_terceiro + CASE WHEN rtm.decimo_terceiro IS NULL THEN 0 ELSE rtm.decimo_terceiro END) AS \"Décimo terceiro retido\",\n" +
+                        "           SUM(tmr.incidencia_submodulo_4_1 + CASE WHEN rtm.incidencia_submodulo_4_1 IS NULL THEN 0 ELSE rtm.incidencia_submodulo_4_1 END) AS \"Incid. do submód. 4.1 retido\",\n" +
                         "           SUM(tmr.multa_fgts + DECODE(rtm.multa_fgts, NULL, 0, rtm.multa_fgts)) AS \"Multa do FGTS retido\",\n" +
-                        "           SUM(tmr.total + DECODE(rtm.total, NULL, 0, rtm.total)) AS \"Total retido\"\n" +
+                        "           SUM(tmr.total + CASE WHEN rtm.total IS NULL THEN 0 ELSE rtm.total END) AS \"Total retido\"\n" +
                         "      FROM tb_total_mensal_a_reter tmr\n" +
                         "        JOIN tb_terceirizado_contrato tc ON tc.cod = tmr.cod_terceirizado_contrato\n" +
                         "        LEFT JOIN tb_retroatividade_total_mensal rtm ON rtm.cod_total_mensal_a_reter = tmr.cod\n" +
