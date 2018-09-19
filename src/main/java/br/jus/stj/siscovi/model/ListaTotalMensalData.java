@@ -11,5 +11,7 @@ public class ListaTotalMensalData {
         this.dataReferencia = dataReferencia;
         this.totais = totais;
     }
-
+    public int getTotaisSize() {
+        return totais.size();
+    }
 }

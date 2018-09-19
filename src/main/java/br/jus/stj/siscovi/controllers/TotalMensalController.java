@@ -4,11 +4,12 @@ import br.jus.stj.siscovi.calculos.TotalMensalAReter;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.TotalMensalDAO;
+import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ListaTotalMensalData;
 import br.jus.stj.siscovi.model.TotalMensal;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.glassfish.jersey.jaxb.internal.XmlJaxbElementProvider;
+import com.google.gson.JsonObject;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,7 +28,7 @@ public class TotalMensalController {
     @GET
     @Path("/getValoresRetidos/{codigoContrato}/{codigoUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getValoresCalculados(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+    public Response getValoresRetidos(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
         Connection connection = new ConnectSQLServer().dbConnect();
         ContratoDAO contratoDAO = new ContratoDAO(connection);
         TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connection);
@@ -35,14 +36,18 @@ public class TotalMensalController {
         String json;
         ArrayList<ListaTotalMensalData> lista = totalMensalDAO.getValoresCalculadosAnteriormente(codigoContrato, contratoDAO.codigoGestorContrato(codigoUsuario, codigoContrato));
         if(lista.size() > 0) {
-           json = gson.toJson(lista);
+            if(lista.get(0).getTotaisSize() > 0) {
+                json = gson.toJson(lista);
+            } else {
+                json = gson.toJson(null);
+            }
         }else {
             json = gson.toJson(null);
         }
         try {
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println(e.getStackTrace());
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
@@ -52,16 +57,26 @@ public class TotalMensalController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response calcularTotalMensal(@PathParam("codigoUsuario") int codigoUsuario, @PathParam("codigoContrato") int codigoContrato, @PathParam("mes") int mes, @PathParam("ano") int ano){
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        new TotalMensalAReter(connectSQLServer.dbConnect()).CalculaTotalMensal(codigoContrato, mes, ano);
-        TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
+
 
         Gson gson = new Gson();
-        ArrayList<TotalMensal> totais = totalMensalDAO.getCalculoRealizado(new ContratoDAO(connectSQLServer.dbConnect()).codigoGestorContrato(codigoUsuario, codigoContrato), codigoContrato, mes, ano);
-        String json;
-        if(totais.size() > 0) {
-            json = gson.toJson(totais);
-        }else {
-            json = gson.toJson(null);
+        String json = null;
+        try {
+            new TotalMensalAReter(connectSQLServer.dbConnect()).CalculaTotalMensal(codigoContrato, mes, ano);
+            TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
+            ArrayList<TotalMensal> totais = totalMensalDAO.getCalculoRealizado(new ContratoDAO(connectSQLServer.dbConnect()).codigoGestorContrato(codigoUsuario, codigoContrato), codigoContrato, mes, ano);
+
+            if (totais.size() > 0) {
+                json = gson.toJson(totais);
+            }
+            connectSQLServer.dbConnect().close();
+        } catch(NullPointerException npe) {
+            System.err.println(npe.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.error = npe.getMessage();
+            json = gson.toJson(error);
+        } catch (SQLException e) {
+            System.err.println(e.toString());
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }

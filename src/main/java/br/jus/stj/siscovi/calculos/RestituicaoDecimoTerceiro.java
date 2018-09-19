@@ -32,7 +32,6 @@ public class RestituicaoDecimoTerceiro {
      * @param pFimContagem;
      * @param pValorMovimentado;
      */
-
     public void CalculaRestituicaoDecimoTerceiro (int pCodTerceirizadoContrato,
                                                   String pTipoRestituicao,
                                                   int pNumeroParcela,

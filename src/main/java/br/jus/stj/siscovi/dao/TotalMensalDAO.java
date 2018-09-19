@@ -46,8 +46,10 @@ public class TotalMensalDAO {
                     " AND YEAR(tmr.data_referencia) = ?" +
                     " AND hgc.cod_usuario = ?" +
                     " AND tmr.cod_funcao_terceirizado = ft.cod" +
-                    " GROUP BY u.nome,\n" +
-                    " c.nome_empresa,\n" +
+                    " AND tmr.retido = 'S'" +
+                    " AND tmr.autorizado = 'S'"+
+                    " GROUP BY u.nome," +
+                    " c.nome_empresa," +
                     " 'Contrato Nº: ' + c.numero_contrato," +
                     " f.nome," +
                     " tmr.data_referencia" +

@@ -16,7 +16,7 @@ public class TerceirizadoDecimoTerceiro {
         this.codigoTerceirizadoContrato = codigoTerceirizadoContrato;
         this.nomeTerceirizado = nomeTerceirizado;
         this.inicioContagem = inicioContagem;
-        this.valorDisponivel = valorDisponivel;
+        this.valorDisponivel = Math.round(valorDisponivel * 100.0f) / 100.0f;
         this.valorMovimentado = valorMovimentado;
     }
     public void setTipoRestituicao(String tipoRestituicao) {
@@ -27,5 +27,29 @@ public class TerceirizadoDecimoTerceiro {
     }
     public Date getFimContagem() {
         return fimContagem;
+    }
+
+    public int getCodigoTerceirizadoContrato() {
+        return codigoTerceirizadoContrato;
+    }
+
+    public String getNomeTerceirizado() {
+        return nomeTerceirizado;
+    }
+
+    public Date getInicioContagem() {
+        return inicioContagem;
+    }
+
+    public float getValorDisponivel() {
+        return valorDisponivel;
+    }
+
+    public String getTipoRestituicao() {
+        return tipoRestituicao;
+    }
+
+    public float getValorMovimentado() {
+        return valorMovimentado;
     }
 }
