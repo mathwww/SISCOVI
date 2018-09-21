@@ -1,4 +1,4 @@
-package br.jus.stj.siscovi.calculos;
+package br.jus.stj.siscovi.test;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 
@@ -15,9 +15,9 @@ public class TesteRestituicaoDecimoTerceiro {
 
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
 
-        RestituicaoDecimoTerceiro restituicaoDecimoTerceiro = new RestituicaoDecimoTerceiro(connectSQLServer.dbConnect());
+        // RestituicaoDecimoTerceiro restituicaoDecimoTerceiro = new RestituicaoDecimoTerceiro(connectSQLServer.dbConnect());
 
-        restituicaoDecimoTerceiro.CalculaRestituicaoDecimoTerceiro(729, "RESGATE",0, Date.valueOf("2016-08-05"),Date.valueOf("2016-12-31"),0);
+        // restituicaoDecimoTerceiro.CalculaRestituicaoDecimoTerceiro(729, "RESGATE",0, Date.valueOf("2016-08-05"),Date.valueOf("2016-12-31"),0);
 
     }
 

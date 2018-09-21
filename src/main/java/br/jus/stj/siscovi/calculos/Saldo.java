@@ -74,7 +74,7 @@ public class Saldo {
                         " SUM(tmr.terco_constitucional + CASE WHEN rtm.terco_constitucional IS NULL THEN 0 ELSE rtm.terco_constitucional END)  AS \"Abono de férias retido\"," +
                         " SUM(tmr.decimo_terceiro + CASE WHEN rtm.decimo_terceiro IS NULL THEN 0 ELSE rtm.decimo_terceiro END) AS \"Décimo terceiro retido\"," +
                         " SUM(tmr.incidencia_submodulo_4_1 + CASE WHEN rtm.incidencia_submodulo_4_1 IS NULL THEN 0 ELSE rtm.incidencia_submodulo_4_1 END) AS \"Incid. do submód. 4.1 retido\"," +
-                        " SUM(tmr.multa_fgts + CASE rtm.multa_fgts IS NULL THEN 0 ELSE rtm.multa_fgts END) AS \"Multa do FGTS retido\"," +
+                        " SUM(tmr.multa_fgts + CASE WHEN rtm.multa_fgts IS NULL THEN 0 ELSE rtm.multa_fgts END) AS \"Multa do FGTS retido\"," +
                         " SUM(tmr.total + CASE WHEN rtm.total IS NULL THEN 0 ELSE rtm.total END) AS \"Total retido\"" +
                         " FROM tb_total_mensal_a_reter tmr" +
                         " JOIN tb_terceirizado_contrato tc ON tc.cod = tmr.cod_terceirizado_contrato" +

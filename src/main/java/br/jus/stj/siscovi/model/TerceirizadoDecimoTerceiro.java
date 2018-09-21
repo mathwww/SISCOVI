@@ -11,6 +11,8 @@ public class TerceirizadoDecimoTerceiro {
     private final float valorMovimentado;
     private int parcelas;
     private Date fimContagem;
+    private ValorRestituicaoDecimoTerceiroModel valoresDecimoTerceiro;
+    private String id;
 
     public TerceirizadoDecimoTerceiro(int codigoTerceirizadoContrato, String nomeTerceirizado, Date inicioContagem, float valorDisponivel, float valorMovimentado) {
         this.codigoTerceirizadoContrato = codigoTerceirizadoContrato;
@@ -25,8 +27,8 @@ public class TerceirizadoDecimoTerceiro {
     public int getParcelas() {
         return parcelas;
     }
-    public Date getFimContagem() {
-        return fimContagem;
+    public void setFimContagem(Date fimContagem) {
+        this.fimContagem = fimContagem;
     }
 
     public int getCodigoTerceirizadoContrato() {
@@ -51,5 +53,17 @@ public class TerceirizadoDecimoTerceiro {
 
     public float getValorMovimentado() {
         return valorMovimentado;
+    }
+
+    public void setValoresDecimoTerceiro(ValorRestituicaoDecimoTerceiroModel valoresDecimoTerceiro) {
+        this.valoresDecimoTerceiro = valoresDecimoTerceiro;
+    }
+
+    public ValorRestituicaoDecimoTerceiroModel getValoresDecimoTerceiro() {
+        return valoresDecimoTerceiro;
+    }
+
+    public String getId() {
+        return id;
     }
 }
