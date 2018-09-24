@@ -17,6 +17,7 @@ public class CalcularFeriasModel {
     private float pTotalTercoConstitucional;
     private float pTotalIncidenciaFerias;
     private float pTotalIncidenciaTerco;
+    private String username;
 
     public CalcularFeriasModel(int codTerceirizadoContrato,
                                String tipoRestituicao,
@@ -107,6 +108,10 @@ public class CalcularFeriasModel {
 
     public float getpTotalIncidenciaTerco() {
         return pTotalIncidenciaTerco;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     @Override

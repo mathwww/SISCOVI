@@ -2,28 +2,40 @@ package br.jus.stj.siscovi.controllers;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.RescisaoDAO;
+import br.jus.stj.siscovi.model.TerceirizadoRescisao;
 import com.google.gson.Gson;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/rescisao")
 public class RescisaoController {
     @GET
-    @Path("/getTerceirizadoRescisao={codigoContrato}/{tipoRestituicao}")
+    @Path("/getTerceirizadosRescisao={codigoContrato}/{tipoRestituicao}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTerceirizadosParaRescisao (@PathParam("codigoContrato") int codigoContrato,
                                                   @PathParam("tipoRestituicao") String tipoRestituicao) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         RescisaoDAO rescisaoDAO = new RescisaoDAO(connectSQLServer.dbConnect());
         String json = "";
-        if (tipoRestituicao.equals("MOVIMENTAÇÃO")) {
-            json = gson.toJson(rescisaoDAO.getListaTerceirizadoParaCalculoDeRescisao(codigoContrato));
-        }
+        json = gson.toJson(rescisaoDAO.getListaTerceirizadoParaCalculoDeRescisao(codigoContrato));
+
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/calculaRescisaoTerceirizados")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response calculaRescisaoTerceirizados(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        List<TerceirizadoRescisao> lista = gson.fromJson(object, new TypeToken<List<TerceirizadoRescisao>>(){}.getType());
+        
+        return Response.ok().build();
     }
 }

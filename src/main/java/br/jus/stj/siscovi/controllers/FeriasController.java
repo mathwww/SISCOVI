@@ -99,7 +99,8 @@ public class FeriasController {
                         calcularFeriasModel.getpTotalFerias(),
                         calcularFeriasModel.getpTotalTercoConstitucional(),
                         calcularFeriasModel.getpTotalIncidenciaFerias(),
-                        calcularFeriasModel.getpTotalIncidenciaTerco());
+                        calcularFeriasModel.getpTotalIncidenciaTerco(),
+                        calcularFeriasModel.getUsername().toUpperCase());
             }
         }
         if (listaTerceirizadosParaCalculo.get(0).getTipoRestituicao().equals("MOVIMENTAÇÃO")) {
@@ -116,7 +117,8 @@ public class FeriasController {
                         calcularFeriasModel.getpTotalFerias(),
                         calcularFeriasModel.getpTotalTercoConstitucional(),
                         calcularFeriasModel.getpTotalIncidenciaFerias(),
-                        calcularFeriasModel.getpTotalIncidenciaTerco());
+                        calcularFeriasModel.getpTotalIncidenciaTerco(),
+                        calcularFeriasModel.getUsername().toUpperCase());
             }
         }
         try {
