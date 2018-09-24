@@ -1,7 +1,7 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
-import br.jus.stj.siscovi.helpers.ConsultaTSQL;
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.model.ValorRestituicaoRescisaoModel;
 
 import java.sql.Date;

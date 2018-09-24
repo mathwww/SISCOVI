@@ -2,6 +2,7 @@ package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
 import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
+import br.jus.stj.siscovi.dao.sql.*;
 
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
@@ -40,10 +41,11 @@ public class RestituicaoDecimoTerceiro {
         Percentual percentual = new Percentual(connection);
         Periodos periodo = new Periodos(connection);
         Remuneracao remuneracao = new Remuneracao(connection);
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
 
         /*Chaves primárias.*/
 
-        int vCodContrato = 0;
+        int vCodContrato;
 
         /*Variáveis totalizadoras de valores.*/
 
@@ -52,25 +54,25 @@ public class RestituicaoDecimoTerceiro {
 
         /*Variáveis de valores parciais.*/
 
-        float vValorDecimoTerceiro = 0;
-        float vValorIncidencia = 0;
+        float vValorDecimoTerceiro;
+        float vValorIncidencia;
 
         /*Variáveis de percentuais.*/
 
-        float vPercentualDecimoTerceiro = 0;
-        float vPercentualIncidencia = 0;
+        float vPercentualDecimoTerceiro;
+        float vPercentualIncidencia;
 
         /*Variável de remuneração da função.*/
 
-        float vRemuneracao = 0;
+        float vRemuneracao;
 
         /*Variáveis de data.*/
 
-        Date vDataReferencia = null;
-        Date vDataInicio = null;
-        Date vDataFim = null;
-        int vAno = 0;
-        int vMes = 0;
+        Date vDataReferencia;
+        Date vDataInicio;
+        Date vDataFim;
+        int vAno;
+        int vMes;
 
         /*Variável para a checagem de existência do terceirizado.*/
 
@@ -78,7 +80,7 @@ public class RestituicaoDecimoTerceiro {
 
         /*Variáveis de controle.*/
 
-        int vDiasSubperiodo = 0;
+        int vDiasSubperiodo;
 
         /*Checagem dos parâmetros passados.*/
 
@@ -117,24 +119,7 @@ public class RestituicaoDecimoTerceiro {
 
         /*Carrega o código do contrato.*/
 
-        try {
-
-            preparedStatement = connection.prepareStatement("SELECT tc.cod_contrato FROM tb_terceirizado_contrato tc WHERE tc.cod=?");
-
-            preparedStatement.setInt(1, pCodTerceirizadoContrato);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                vCodContrato = resultSet.getInt(1);
-
-            }
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
+        vCodContrato = consulta.RetornaContratoTerceirizado(pCodTerceirizadoContrato);
 
         /*Define o valor das variáveis vMes e Vano de acordo com a adata de inínio do período aquisitivo.*/
 
@@ -151,21 +136,21 @@ public class RestituicaoDecimoTerceiro {
 
             /*Seleciona as funções que o terceirizado ocupou no mês avaliado.*/
 
-            ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> tuplas = selecionaFuncaoContratoEFuncaoTerceirizado(pCodTerceirizadoContrato, vDataReferencia);
+            ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> tuplas = consulta.SelecionaFuncaoContratoEFuncaoTerceirizado(pCodTerceirizadoContrato, vDataReferencia);
 
             Convencao convencao = new Convencao(connection);
 
             /*Para cada função que o terceirizado ocupou no mês avaliado.*/
 
-            for (int i = 0; i < tuplas.size(); i++) {
+            for (CodFuncaoContratoECodFuncaoTerceirizadoModel tupla : tuplas) {
 
                 /*Caso não exista mais de uma remuneração vigente no mês e não tenha havido alteração nos percentuais do contrato ou nos percentuais estáticos.*/
 
-                if (!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (!convencao.ExisteDuplaConvencao(tupla.getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Define o valor da remuneração da função e dos percentuais do contrato.*/
 
-                    vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 1, 2);
+                    vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tupla.getCodFuncaoContrato(), vMes, vAno, 1, 2);
                     vPercentualDecimoTerceiro = percentual.RetornaPercentualContrato(vCodContrato, 3, vMes, vAno, 1, 2);
                     vPercentualIncidencia = percentual.RetornaPercentualContrato(vCodContrato, 7, vMes, vAno, 1, 2);
 
@@ -183,10 +168,10 @@ public class RestituicaoDecimoTerceiro {
                     /*o caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                      situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
-                    if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
+                    if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tupla.getCod(), vMes, vAno)) {
 
-                        vValorDecimoTerceiro = (vValorDecimoTerceiro / 30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
-                        vValorIncidencia = (vValorIncidencia / 30) * periodo.DiasTrabalhadosMes(tuplas.get(i).getCod(), vMes, vAno);
+                        vValorDecimoTerceiro = (vValorDecimoTerceiro / 30) * periodo.DiasTrabalhadosMes(tupla.getCod(), vMes, vAno);
+                        vValorIncidencia = (vValorIncidencia / 30) * periodo.DiasTrabalhadosMes(tupla.getCod(), vMes, vAno);
 
                     }
 
@@ -199,11 +184,11 @@ public class RestituicaoDecimoTerceiro {
 
                 /*Se existe apenas alteração de percentual no mês.*/
 
-                if (!convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (!convencao.ExisteDuplaConvencao(tupla.getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Define a remuneração do cargo, que não se altera no período.*/
 
-                    vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 1, 2);
+                    vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tupla.getCodFuncaoContrato(), vMes, vAno, 1, 2);
 
                     if (vRemuneracao == 0) {
 
@@ -299,10 +284,10 @@ public class RestituicaoDecimoTerceiro {
                         /*No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 30 dias trabalhados.*/
 
-                        if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
+                        if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tupla.getCod(), vMes, vAno)) {
 
-                            vValorDecimoTerceiro = (vValorDecimoTerceiro / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidencia = (vValorIncidencia / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorDecimoTerceiro = (vValorDecimoTerceiro / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tupla.getCod(), vDataInicio, vDataFim);
+                            vValorIncidencia = (vValorIncidencia / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tupla.getCod(), vDataInicio, vDataFim);
 
                         }
 
@@ -319,7 +304,7 @@ public class RestituicaoDecimoTerceiro {
 
                 /*Se existe alteração de remuneração apenas.*/
 
-                if (convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (convencao.ExisteDuplaConvencao(tupla.getCodFuncaoContrato(), vMes, vAno, 2) && !percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Definição dos percentuais, que não se alteram no período.*/
 
@@ -341,11 +326,11 @@ public class RestituicaoDecimoTerceiro {
                         preparedStatement = connection.prepareStatement("SELECT rfc.data_inicio AS data" + " FROM tb_remuneracao_fun_con rfc\n" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_inicio) = ?" + " AND" + " YEAR(rfc.data_inicio) = ?)" + " UNION" + " SELECT rfc.data_fim AS data " + " FROM tb_remuneracao_fun_con rfc" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_fim) = ?" + " AND " + " YEAR(rfc.data_fim) = ?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY DATA ASC");
 
                         preparedStatement.setInt(1, vCodContrato);
-                        preparedStatement.setInt(2, tuplas.get(i).getCodFuncaoContrato());
+                        preparedStatement.setInt(2, tupla.getCodFuncaoContrato());
                         preparedStatement.setInt(3, vMes);
                         preparedStatement.setInt(4, vAno);
                         preparedStatement.setInt(5, vCodContrato);
-                        preparedStatement.setInt(6, tuplas.get(i).getCodFuncaoContrato());
+                        preparedStatement.setInt(6, tupla.getCodFuncaoContrato());
                         preparedStatement.setInt(7, vMes);
                         preparedStatement.setInt(8, vAno);
                         preparedStatement.setInt(9, vMes);
@@ -367,7 +352,7 @@ public class RestituicaoDecimoTerceiro {
 
                     } catch (SQLException e) {
 
-                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de remuneração da função: " + tuplas.get(i).getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
+                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de remuneração da função: " + tupla.getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
 
                     }
 
@@ -401,7 +386,7 @@ public class RestituicaoDecimoTerceiro {
 
                         /*Define a remuneração do cargo, que não se altera no período.*/
 
-                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vDataInicio, vDataFim, 2);
+                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tupla.getCodFuncaoContrato(), vDataInicio, vDataFim, 2);
 
                         if (vRemuneracao == 0) {
 
@@ -417,10 +402,10 @@ public class RestituicaoDecimoTerceiro {
                         /*No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
-                        if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
+                        if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tupla.getCod(), vMes, vAno)) {
 
-                            vValorDecimoTerceiro = (vValorDecimoTerceiro / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidencia = (vValorIncidencia / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorDecimoTerceiro = (vValorDecimoTerceiro / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tupla.getCod(), vDataInicio, vDataFim);
+                            vValorIncidencia = (vValorIncidencia / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tupla.getCod(), vDataInicio, vDataFim);
 
                         }
 
@@ -437,7 +422,7 @@ public class RestituicaoDecimoTerceiro {
 
                 /*Se existe alteração na remuneração e nos percentuais.*/
 
-                if (convencao.ExisteDuplaConvencao(tuplas.get(i).getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
+                if (convencao.ExisteDuplaConvencao(tupla.getCodFuncaoContrato(), vMes, vAno, 2) && percentual.ExisteMudancaPercentual(vCodContrato, vMes, vAno, 2)) {
 
                     /*Definição da data de início como sendo a data referência (primeiro dia do mês).*/
 
@@ -460,11 +445,11 @@ public class RestituicaoDecimoTerceiro {
                         preparedStatement.setInt(9, vMes);
                         preparedStatement.setInt(10, vAno);
                         preparedStatement.setInt(11, vCodContrato);
-                        preparedStatement.setInt(12, tuplas.get(i).getCodFuncaoContrato());
+                        preparedStatement.setInt(12, tupla.getCodFuncaoContrato());
                         preparedStatement.setInt(13, vMes);
                         preparedStatement.setInt(14, vAno);
                         preparedStatement.setInt(15, vCodContrato);
-                        preparedStatement.setInt(16, tuplas.get(i).getCodFuncaoContrato());
+                        preparedStatement.setInt(16, tupla.getCodFuncaoContrato());
                         preparedStatement.setInt(17, vMes);
                         preparedStatement.setInt(18, vAno);
                         preparedStatement.setInt(19, vMes);
@@ -486,7 +471,7 @@ public class RestituicaoDecimoTerceiro {
 
                     } catch (SQLException e) {
 
-                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de percentuais e da remuneração da função: " + tuplas.get(i).getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
+                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de percentuais e da remuneração da função: " + tupla.getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
 
                     }
 
@@ -520,7 +505,7 @@ public class RestituicaoDecimoTerceiro {
 
                         /*Define a remuneração do cargo, que não se altera no período.*/
 
-                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tuplas.get(i).getCodFuncaoContrato(), vDataInicio, vDataFim, 2);
+                        vRemuneracao = remuneracao.RetornaRemuneracaoPeriodo(tupla.getCodFuncaoContrato(), vDataInicio, vDataFim, 2);
 
                         if (vRemuneracao == 0) {
 
@@ -541,10 +526,10 @@ public class RestituicaoDecimoTerceiro {
                         /*No caso de mudança de função temos um recolhimento proporcional ao dias trabalhados no cargo,
                          situação similar para a retenção proporcional por menos de 14 dias trabalhados.*/
 
-                        if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tuplas.get(i).getCod(), vMes, vAno)) {
+                        if (retencao.ExisteMudancaFuncao(pCodTerceirizadoContrato, vMes, vAno) || !retencao.FuncaoRetencaoIntegral(tupla.getCod(), vMes, vAno)) {
 
-                            vValorDecimoTerceiro = (vValorDecimoTerceiro / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
-                            vValorIncidencia = (vValorIncidencia / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tuplas.get(i).getCod(), vDataInicio, vDataFim);
+                            vValorDecimoTerceiro = (vValorDecimoTerceiro / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tupla.getCod(), vDataInicio, vDataFim);
+                            vValorIncidencia = (vValorIncidencia / vDiasSubperiodo) * periodo.DiasTrabalhadosPeriodo(tupla.getCod(), vDataInicio, vDataFim);
 
                         }
 
@@ -590,11 +575,8 @@ public class RestituicaoDecimoTerceiro {
 
         }
 
-        ValorRestituicaoDecimoTerceiroModel valorRestituicaoDecimoTerceiroModel =
-                new ValorRestituicaoDecimoTerceiroModel(vTotalDecimoTerceiro,
-                        vTotalIncidencia);
-
-        return valorRestituicaoDecimoTerceiroModel;
+        return new ValorRestituicaoDecimoTerceiroModel(vTotalDecimoTerceiro,
+                vTotalIncidencia);
 
     }
 
@@ -608,24 +590,27 @@ public class RestituicaoDecimoTerceiro {
      * @param pNumeroParcela;
      * @param pValorDecimoTerceiro;
      * @param pValorIncidencia;
+     * @param pLoginAtualizacao;
      */
 
-    public void RegistraRestituicaoDecimoTerceiro (int pCodTerceirizadoContrato,
-                                                   String pTipoRestituicao,
-                                                   int pNumeroParcela,
-                                                   Date pInicioContagem,
-                                                   float pValorDecimoTerceiro,
-                                                   float pValorIncidencia,
-                                                   float pValorMovimentado,
-                                                   String pLoginAtualizacao) {
+    public Integer RegistraRestituicaoDecimoTerceiro (int pCodTerceirizadoContrato,
+                                                      String pTipoRestituicao,
+                                                      int pNumeroParcela,
+                                                      Date pInicioContagem,
+                                                      float pValorDecimoTerceiro,
+                                                      float pValorIncidencia,
+                                                      float pValorMovimentado,
+                                                      String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+        InsertTSQL insert = new InsertTSQL(connection);
 
         /*Chaves primárias.*/
 
         int vCodTbRestituicao13 = 0;
-        int vCodTipoRestituicao = 0;
+        int vCodTipoRestituicao;
 
         /*Variáveis auxiliares.*/
 
@@ -634,24 +619,7 @@ public class RestituicaoDecimoTerceiro {
 
         /*Atribuição do cod do tipo de restituição.*/
 
-        try {
-
-            preparedStatement = connection.prepareStatement("SELECT COD" + " FROM TB_TIPO_RESTITUICAO" + " WHERE UPPER(nome) = UPPER(?)");
-
-            preparedStatement.setString(1, pTipoRestituicao);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                vCodTipoRestituicao = resultSet.getInt(1);
-
-            }
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
+        vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
 
         if (vCodTipoRestituicao == 0) {
 
@@ -661,29 +629,12 @@ public class RestituicaoDecimoTerceiro {
 
         /*Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_decimo_terceiro.*/
 
-        try {
 
-            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_RESTITUICAO_DECIMO_TERCEIRO')");
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                vCodTbRestituicao13 = resultSet.getInt(1);
-                vCodTbRestituicao13 = vCodTbRestituicao13 + 1;
-
-            }
-
-        } catch (SQLException sqle) {
-
-            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de restituição de férias.");
-
-        }
 
         /*No caso de segunda parcela a movimentação gera resíduos referentes ao
          valor do décimo terceiro que é afetado pelos descontos (IRPF, INSS e etc.)*/
 
-        if ((pNumeroParcela == 2 || pNumeroParcela == 0) && (pTipoRestituicao == "MOVIMENTAÇÃO")) {
+        if ((pNumeroParcela == 2 || pNumeroParcela == 0) && (pTipoRestituicao.equals("MOVIMENTAÇÃO"))) {
 
             vValor = pValorDecimoTerceiro - pValorMovimentado;
 
@@ -693,7 +644,7 @@ public class RestituicaoDecimoTerceiro {
 
         /*Provisionamento da incidência para o saldo residual no caso de movimentação.*/
 
-        if (pTipoRestituicao == "MOVIMENTAÇÃO") {
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
 
             vIncidencia = pValorIncidencia;
 
@@ -703,116 +654,24 @@ public class RestituicaoDecimoTerceiro {
 
         /*Gravação no banco*/
 
-        try {
+        vCodTbRestituicao13 = insert.InsertRestituicaoDecimoTerceiro(pCodTerceirizadoContrato,
+                vCodTipoRestituicao,
+                pNumeroParcela,
+                pInicioContagem,
+                pValorDecimoTerceiro,
+                pValorIncidencia,
+                pLoginAtualizacao);
 
-            String sql = "SET IDENTITY_INSERT tb_restituicao_decimo_terceiro ON; " +
-                    "INSERT INTO TB_RESTITUICAO_DECIMO_TERCEIRO (COD,"+
-                    " COD_TERCEIRIZADO_CONTRATO," +
-                    " COD_TIPO_RESTITUICAO," +
-                    " PARCELA," +
-                    " DATA_INICIO_CONTAGEM," +
-                    " VALOR," +
-                    " INCIDENCIA_SUBMODULO_4_1," +
-                    " DATA_REFERENCIA," +
-                    " LOGIN_ATUALIZACAO," +
-                    " DATA_ATUALIZACAO)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, CURRENT_TIMESTAMP);" +
-                    " SET IDENTITY_INSERT tb_restituicao_decimo_terceiro OFF;";
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
 
-            preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, vCodTbRestituicao13);
-            preparedStatement.setInt(2, pCodTerceirizadoContrato);
-            preparedStatement.setInt(3, vCodTipoRestituicao);
-            preparedStatement.setInt(4, pNumeroParcela);
-            preparedStatement.setDate(5, pInicioContagem);
-            preparedStatement.setFloat(6, pValorDecimoTerceiro);
-            preparedStatement.setFloat(7, pValorIncidencia);
-            preparedStatement.setString(8, pLoginAtualizacao);
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-
-            throw new RuntimeException("Erro ao tentar inserir os resultados do cálculo de 13° no banco de dados!");
+            insert.InsertSaldoResidualDecimoTerceiro(vCodTbRestituicao13,
+                    vValor,
+                    vIncidencia,
+                    pLoginAtualizacao);
 
         }
 
-        if (pTipoRestituicao == "MOVIMENTAÇÃO") {
-
-            try {
-
-                String sql = "INSERT INTO TB_SALDO_RESIDUAL_DEC_TER (COD_RESTITUICAO_DEC_TERCEIRO," +
-                        " VALOR," +
-                        " INCIDENCIA_SUBMODULO_4_1," +
-                        " LOGIN_ATUALIZACAO," +
-                        " DATA_ATUALIZACAO)" +
-                        " VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
-
-                preparedStatement = connection.prepareStatement(sql);
-
-                preparedStatement.setInt(1, vCodTbRestituicao13);
-                preparedStatement.setFloat(2, vValor);
-                preparedStatement.setFloat(3, vIncidencia);
-                preparedStatement.setString(4, pLoginAtualizacao);
-
-                preparedStatement.executeUpdate();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-
-                throw new RuntimeException("Erro ao tentar inserir os resultados do cálculo de 13º no banco de dados!");
-
-            }
-
-        }
-
-    }
-
-    /*Seleção do código da função terceirizado e da função contrato.*/
-
-    ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> selecionaFuncaoContratoEFuncaoTerceirizado (int pCodTerceirizadoContrato, Date pDataReferencia) {
-
-        /*Busca as funções que um funcionário exerceu no mês de cálculo.*/
-
-        ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> tuplas = new ArrayList<>();
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ft.cod_funcao_contrato, " +
-                "ft.cod" +
-                " FROM tb_funcao_terceirizado ft" +
-                " WHERE ft.cod_terceirizado_contrato = ?" +
-                " AND ((((CONVERT(date, CONVERT(varchar, year(ft.data_inicio)) + '-' + CONVERT(varchar, month(ft.data_inicio)) + '-01')) <= ?)" +
-                " AND" +
-                " (ft.data_fim >= ?))" +
-                " OR" +
-                " (((CONVERT(date, CONVERT(varchar, year(ft.data_inicio)) + '-' + CONVERT(varchar, month(ft.data_inicio)) + '-01')) <= ?) " +
-                "AND" +
-                " (ft.data_fim IS NULL)))")){
-
-            preparedStatement.setInt(1, pCodTerceirizadoContrato);
-            preparedStatement.setDate(2, pDataReferencia);
-            preparedStatement.setDate(3, pDataReferencia);
-            preparedStatement.setDate(4, pDataReferencia);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
-                while (resultSet.next()) {
-
-                    CodFuncaoContratoECodFuncaoTerceirizadoModel tupla = new CodFuncaoContratoECodFuncaoTerceirizadoModel(resultSet.getInt("COD"), resultSet.getInt("COD_FUNCAO_CONTRATO"));
-
-                    tuplas.add(tupla);
-
-                }
-
-            }
-
-        } catch(SQLException slqe) {
-            //slqe.printStackTrace();
-            throw new NullPointerException("Problemas durante a consulta ao banco em relação ao terceirizado: " + pCodTerceirizadoContrato);
-
-        }
-
-        return tuplas;
+        return vCodTbRestituicao13;
 
     }
 

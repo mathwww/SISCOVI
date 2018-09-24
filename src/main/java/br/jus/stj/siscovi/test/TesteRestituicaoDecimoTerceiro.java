@@ -1,7 +1,8 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
-import br.jus.stj.siscovi.helpers.ConsultaTSQL;
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
+import br.jus.stj.siscovi.dao.sql.DeleteTSQL;
 import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
 
 import java.sql.*;
@@ -17,14 +18,15 @@ public class TesteRestituicaoDecimoTerceiro {
         RestituicaoDecimoTerceiro restituicaoDecimoTerceiro = new RestituicaoDecimoTerceiro(connectSQLServer.dbConnect());
         ConsultaTSQL consulta = new ConsultaTSQL(connectSQLServer.dbConnect());
         DecimoTerceiro decimoTerceiro = new DecimoTerceiro(connectSQLServer.dbConnect());
+        DeleteTSQL delete = new DeleteTSQL(connectSQLServer.dbConnect());
 
         int vCodContrato = consulta.RetornaCodContratoAleatorio();
+        Integer retorno;
         int vCodTerceirizadoContrato = consulta.RetornaCodTerceirizadoAleatorio(vCodContrato);
-        String vTipoRestituicao = String.valueOf("RESGATE");
+        String vTipoRestituicao = String.valueOf("MOVIMENTAÇÃO");
         String vLoginAtualizacao = String.valueOf("VSSOUSA");
         float vValorMovimentado = 1500;
         int vNumeroParcela = 0;
-        String sqlDelete = "DELETE FROM TB_SALDO_RESIDUAL_DEC_TER; DELETE FROM TB_RESTITUICAO_DECIMO_TERCEIRO;";
         Date vDataInicioContagem = decimoTerceiro.RetornaDataInicioContagem(vCodTerceirizadoContrato);
         String vDataFim = String.valueOf(vDataInicioContagem.toLocalDate().getYear()) + "-12-31";
 
@@ -42,7 +44,7 @@ public class TesteRestituicaoDecimoTerceiro {
         System.out.println(restituicao.getValorDecimoTerceiro());
         System.out.println(restituicao.getValorIncidenciaDecimoTerceiro());
 
-        restituicaoDecimoTerceiro.RegistraRestituicaoDecimoTerceiro(vCodTerceirizadoContrato,
+        retorno = restituicaoDecimoTerceiro.RegistraRestituicaoDecimoTerceiro(vCodTerceirizadoContrato,
                 vTipoRestituicao,
                 vNumeroParcela,
                 vDataInicioContagem,
@@ -51,16 +53,8 @@ public class TesteRestituicaoDecimoTerceiro {
                 vValorMovimentado,
                 vLoginAtualizacao);
 
-        try {
-
-            preparedStatement = connectSQLServer.dbConnect().prepareStatement(sqlDelete);
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException sqle) {
-
-            throw new NullPointerException("Não foi possível deletar os dados de teste inseridos no banco.");
-
-        }
+        delete.DeleteSaldoResidualDecimoTerceiro(retorno);
+        delete.DeleteRestituicaoDecimoTerceiro(retorno);
 
     }
 
