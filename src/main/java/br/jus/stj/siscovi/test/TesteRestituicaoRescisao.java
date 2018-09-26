@@ -1,5 +1,6 @@
-package br.jus.stj.siscovi.calculos;
+package br.jus.stj.siscovi.test;
 
+import br.jus.stj.siscovi.calculos.RestituicaoRescisao;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 
 import java.sql.Connection;
@@ -9,6 +10,7 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDate;
 
+
 public class TesteRestituicaoRescisao {
 
     public static void main(String[] args){
@@ -17,7 +19,7 @@ public class TesteRestituicaoRescisao {
 
         RestituicaoRescisao restituicaoRescisao = new RestituicaoRescisao(connectSQLServer.dbConnect());
 
-        restituicaoRescisao.CalculaRestituicaoRescisao(742, "RESGATE",Date.valueOf("2016-12-31"), "A PEDIDO");
+        //restituicaoRescisao.CalculaRestituicaoRescisao(742, "RESGATE",Date.valueOf("2016-12-31"), "A PEDIDO");
 
     }
 

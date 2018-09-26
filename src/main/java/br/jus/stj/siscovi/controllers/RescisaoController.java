@@ -1,8 +1,12 @@
 package br.jus.stj.siscovi.controllers;
 
+import br.jus.stj.siscovi.calculos.RestituicaoRescisao;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.RescisaoDAO;
+import br.jus.stj.siscovi.helpers.ErrorMessage;
+import br.jus.stj.siscovi.model.CalculoRestituicaoRescisaoModel;
 import br.jus.stj.siscovi.model.TerceirizadoRescisao;
+import br.jus.stj.siscovi.model.ValorRestituicaoRescisaoModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -10,6 +14,8 @@ import com.google.gson.reflect.TypeToken;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/rescisao")
@@ -35,7 +41,41 @@ public class RescisaoController {
     public Response calculaRescisaoTerceirizados(String object) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         List<TerceirizadoRescisao> lista = gson.fromJson(object, new TypeToken<List<TerceirizadoRescisao>>(){}.getType());
-        
-        return Response.ok().build();
+        List<CalculoRestituicaoRescisaoModel> lista1 = new ArrayList<>();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        RestituicaoRescisao restituicaoRescisao = new RestituicaoRescisao(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            for (TerceirizadoRescisao terceirizadoRescisao : lista) {
+                ValorRestituicaoRescisaoModel valorRestituicaoRescisaoModel = restituicaoRescisao.CalculaRestituicaoRescisao(terceirizadoRescisao.getCodTerceirizadoContrato(), terceirizadoRescisao.getDataDesligamento());
+                CalculoRestituicaoRescisaoModel crrm = new CalculoRestituicaoRescisaoModel(terceirizadoRescisao, valorRestituicaoRescisaoModel);
+                lista1.add(crrm);
+            }
+        }catch (NullPointerException npe) {
+            json = gson.toJson(handleError(npe));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }catch(RuntimeException rte) {
+            json = gson.toJson(handleError(rte));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        try {
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+            System.err.println(sqle.getStackTrace());
+            System.err.println(sqle.toString());
+            return Response.status(500).build();
+        }
+        json = gson.toJson(lista1);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    private ErrorMessage handleError(Exception e) {
+        e.printStackTrace();
+        System.err.println(e.toString());
+        System.err.println(e.getStackTrace());
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.error = e.getMessage();
+        return errorMessage;
     }
 }

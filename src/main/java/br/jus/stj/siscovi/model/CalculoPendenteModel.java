@@ -1,7 +1,5 @@
 package br.jus.stj.siscovi.model;
 
-import java.sql.Date;
-
 public class CalculoPendenteModel {
     private final CalcularFeriasModel calcularFeriasModel;
     private final String nomeTerceirizado;
@@ -15,5 +13,4 @@ public class CalculoPendenteModel {
         this.status = status;
         this.total = total;
     }
-
 }

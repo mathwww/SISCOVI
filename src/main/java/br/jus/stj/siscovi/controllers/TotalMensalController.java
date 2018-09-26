@@ -80,5 +80,11 @@ public class TotalMensalController {
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+    @GET
+    @Path("/total-mensal-a-reter/getValoresPendentes/{codigoContrato}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getValoresPendentes(@PathParam("codigoContrato") int codigoContrato) {
 
+        return Response.ok().build();
+    }
 }
