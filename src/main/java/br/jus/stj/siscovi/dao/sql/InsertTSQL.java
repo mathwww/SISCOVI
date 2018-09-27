@@ -214,4 +214,140 @@ public class InsertTSQL {
 
     }
 
+    public int InsertRestituicaoRescisao (int pCodTerceirizadoContrato,
+                                          int pCodTipoRestituicao,
+                                          int pCodTipoRescisao,
+                                          Date pDataDesligamento,
+                                          float pValorDecimoTerceiro,
+                                          float pValorIncidenciaDecimoTerceiro,
+                                          float pValorFGTSDecimoTerceiro,
+                                          float pValorFerias,
+                                          float pValorTerco,
+                                          float pValorIncidenciaFerias,
+                                          float pValorIncidenciaTerco,
+                                          float pValorFGTSFerias,
+                                          float pValorFGTSTerco,
+                                          float pValorFGTSSalario,
+                                          String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+
+        int vCodTbRestituicaoRescisao = consulta.RetornaCodSequenceTbRestituicaoRescisao();
+
+        try {
+
+            String sql = "SET IDENTITY_INSERT tb_restituicao_rescisao ON;" +
+                    " INSERT INTO tb_restituicao_rescisao (COD,"+
+                    " COD_TERCEIRIZADO_CONTRATO," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " COD_TIPO_RESCISAO," +
+                    " DATA_DESLIGAMENTO," +
+                    " VALOR_DECIMO_TERCEIRO," +
+                    " INCID_SUBMOD_4_1_DEC_TERCEIRO," +
+                    " INCID_MULTA_FGTS_DEC_TERCEIRO," +
+                    " VALOR_FERIAS," +
+                    " VALOR_TERCO," +
+                    " INCID_SUBMOD_4_1_FERIAS," +
+                    " INCID_SUBMOD_4_1_TERCO," +
+                    " INCID_MULTA_FGTS_FERIAS," +
+                    " INCID_MULTA_FGTS_TERCO," +
+                    " MULTA_FGTS_SALARIO," +
+                    " DATA_REFERENCIA," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, CURRENT_TIMESTAMP);" +
+                    " SET IDENTITY_INSERT tb_restituicao_rescisao OFF;";
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, vCodTbRestituicaoRescisao);
+            preparedStatement.setInt(2, pCodTerceirizadoContrato);
+            preparedStatement.setInt(3, pCodTipoRestituicao);
+            preparedStatement.setInt(4, pCodTipoRescisao);
+            preparedStatement.setDate(5, pDataDesligamento);
+            preparedStatement.setFloat(6, pValorDecimoTerceiro);
+            preparedStatement.setFloat(7, pValorIncidenciaDecimoTerceiro);
+            preparedStatement.setFloat(8, pValorFGTSDecimoTerceiro);
+            preparedStatement.setFloat(9, pValorFerias);
+            preparedStatement.setFloat(10, pValorTerco);
+            preparedStatement.setFloat(11, pValorIncidenciaFerias);
+            preparedStatement.setFloat(12, pValorIncidenciaTerco);
+            preparedStatement.setFloat(13, pValorFGTSFerias);
+            preparedStatement.setFloat(14, pValorFGTSTerco);
+            preparedStatement.setFloat(15, pValorFGTSSalario);
+            preparedStatement.setString(16, pLoginAtualizacao);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+            throw new RuntimeException("Erro ao tentar inserir dados na tabela de restituição de rescisão.");
+
+        }
+
+        return vCodTbRestituicaoRescisao;
+
+    }
+
+    public void InsertSaldoResidualRescisao (int pCodRestituicaoRescisao,
+                                             float pValorDecimoTerceiro,
+                                             float pValorIncidenciaDecimoTerceiro,
+                                             float pValorFGTSDecimoTerceiro,
+                                             float pValorFerias,
+                                             float pValorTerco,
+                                             float pValorIncidenciaFerias,
+                                             float pValorIncidenciaTerco,
+                                             float pValorFGTSFerias,
+                                             float pValorFGTSTerco,
+                                             float pValorFGTSSalario,
+                                             String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+
+        try {
+
+            String sql = "INSERT INTO TB_SALDO_RESIDUAL_RESCISAO (cod_restituicao_rescisao," +
+                    " valor_decimo_terceiro," +
+                    " incid_submod_4_1_dec_terceiro," +
+                    " incid_multa_fgts_dec_terceiro," +
+                    " valor_ferias," +
+                    " valor_terco," +
+                    " incid_submod_4_1_ferias," +
+                    " incid_submod_4_1_terco," +
+                    " incid_multa_fgts_ferias," +
+                    " incid_multa_fgts_terco," +
+                    " multa_fgts_salario," +
+                    " login_atualizacao," +
+                    " data_atualizacao)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, pCodRestituicaoRescisao);
+            preparedStatement.setFloat(2, pValorDecimoTerceiro);
+            preparedStatement.setFloat(3, pValorIncidenciaDecimoTerceiro);
+            preparedStatement.setFloat(4, pValorFGTSDecimoTerceiro);
+            preparedStatement.setFloat(5, pValorFerias);
+            preparedStatement.setFloat(6, pValorTerco);
+            preparedStatement.setFloat(7, pValorIncidenciaFerias);
+            preparedStatement.setFloat(8, pValorIncidenciaTerco);
+            preparedStatement.setFloat(9, pValorFGTSFerias);
+            preparedStatement.setFloat(10, pValorFGTSTerco);
+            preparedStatement.setFloat(11, pValorFGTSSalario);
+            preparedStatement.setString(12, pLoginAtualizacao);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+            throw new RuntimeException("Erro ao tentar inserir dados na tabela de saldo residual de rescisão.");
+
+        }
+
+    }
+
 }

@@ -2,6 +2,8 @@ package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
+import br.jus.stj.siscovi.dao.sql.DeleteTSQL;
+import br.jus.stj.siscovi.dao.sql.InsertTSQL;
 import br.jus.stj.siscovi.model.ValorRestituicaoRescisaoModel;
 
 import java.sql.Date;
@@ -19,14 +21,15 @@ public class TesteRestituicaoRescisao {
 
         RestituicaoRescisao restituicaoRescisao = new RestituicaoRescisao(connectSQLServer.dbConnect());
         ConsultaTSQL consulta = new ConsultaTSQL(connectSQLServer.dbConnect());
+        DeleteTSQL delete = new DeleteTSQL(connectSQLServer.dbConnect());
 
         int vCodContrato = consulta.RetornaCodContratoAleatorio();
         int vCodTerceirizadoContrato = consulta.RetornaCodTerceirizadoAleatorio(vCodContrato);
+        int vRetorno;
         String vTipoRestituicao = String.valueOf("RESGATE");
         String vTipoRescisao = String.valueOf("SEM JUSTA CAUSA");
         String vLoginAtualizacao = String.valueOf("VSSOUSA");
         Date vDataDesligamento = Date.valueOf("2016-12-31");
-        String sqlDelete = "DELETE FROM TB_SALDO_RESIDUAL_RESCISAO; DELETE FROM TB_RESTITUICAO_RESCISAO;";
 
         System.out.print("Dados do teste\nCOD_CONTRATO: " + vCodContrato + " COD_TERCEIRIZADO_CONTRATO: " +
                 vCodTerceirizadoContrato + "\n");
@@ -47,7 +50,7 @@ public class TesteRestituicaoRescisao {
         System.out.println(restituicao.getValorFGTSTerco());
         System.out.println(restituicao.getValorFGTSSalario());
 
-        restituicaoRescisao.RegistrarRestituicaoRescisao(vCodTerceirizadoContrato,
+        vRetorno = restituicaoRescisao.RegistrarRestituicaoRescisao(vCodTerceirizadoContrato,
                 vTipoRestituicao,
                 vTipoRescisao,
                 vDataDesligamento,
@@ -63,16 +66,10 @@ public class TesteRestituicaoRescisao {
                 restituicao.getValorFGTSSalario(),
                 vLoginAtualizacao);
 
-        try {
+        delete.DeleteSaldoResidualRescisao(vRetorno);
+        delete.DeleteRestituicaoRescisao(vRetorno);
 
-            preparedStatement = connectSQLServer.dbConnect().prepareStatement(sqlDelete);
-            preparedStatement.executeUpdate();
 
-        } catch (SQLException sqle) {
-
-            throw new NullPointerException("Não foi possível deletar os dados de teste inseridos no banco.");
-
-        }
 
     }
 
