@@ -5,12 +5,15 @@ import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.TotalMensalDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
+import br.jus.stj.siscovi.model.CalculoPendenteModel;
 import br.jus.stj.siscovi.model.ListaTotalMensalData;
 import br.jus.stj.siscovi.model.TotalMensal;
+import br.jus.stj.siscovi.model.TotalMensalPendenteModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import javax.validation.constraints.Null;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,7 +35,7 @@ public class TotalMensalController {
         Connection connection = new ConnectSQLServer().dbConnect();
         ContratoDAO contratoDAO = new ContratoDAO(connection);
         TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connection);
-        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("dd/MM/yyyy").create();
+        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
         String json;
         ArrayList<ListaTotalMensalData> lista = totalMensalDAO.getValoresCalculadosAnteriormente(codigoContrato, contratoDAO.codigoGestorContrato(codigoUsuario, codigoContrato));
         if(lista.size() > 0) {
@@ -81,10 +84,34 @@ public class TotalMensalController {
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
     @GET
-    @Path("/total-mensal-a-reter/getValoresPendentes/{codigoContrato}")
+    @Path("/getValoresPendentes/{codigoContrato}/{codigoUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getValoresPendentes(@PathParam("codigoContrato") int codigoContrato) {
+    public Response getValoresPendentes(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            ArrayList<TotalMensalPendenteModel> calculosPendentes  = totalMensalDAO.getTotalMensalPendente(codigoContrato, codigoUsuario);
+            if(calculosPendentes == null || calculosPendentes.size() == 0) {
+                json = gson.toJson(null);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+           json = gson.toJson(calculosPendentes);
 
-        return Response.ok().build();
+        }catch(RuntimeException rte){
+            System.err.println(rte.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = rte.getMessage();
+            json = gson.toJson(errorMessage);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        try {
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            System.err.println(sqle.getStackTrace());
+            return  Response.status(500).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

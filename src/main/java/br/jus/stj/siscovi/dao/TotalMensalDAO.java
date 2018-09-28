@@ -2,6 +2,7 @@ package br.jus.stj.siscovi.dao;
 
 import br.jus.stj.siscovi.model.*;
 
+import javax.management.relation.RoleUnresolved;
 import javax.xml.transform.Result;
 import javax.xml.ws.Response;
 import java.sql.*;
@@ -143,14 +144,58 @@ public class TotalMensalDAO {
         }
         return lista;
     }
-    public ArrayList<TotalMensalPendenteModel> getTotalMensalPendente(String perfil, int codContrato, int codGestor) {
+    public ArrayList<TotalMensalPendenteModel> getTotalMensalPendente(int codContrato, int codUsuario) {
+        int codGestor = 0;
+        String perfil = "";
+        String perfilUsuario = "";
+        String sql = "SELECT SIGLA FROM TB_USUARIO U JOIN TB_PERFIL_USUARIO PU ON PU.COD=U.COD_PERFIL WHERE U.COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codUsuario);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                   perfil =  resultSet.getString("SIGLA");
+                }
+            }
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        sql = "SELECT PG.SIGLA FROM TB_CONTRATO CO JOIN TB_HISTORICO_GESTAO_CONTRATO HGC ON HGC.COD_CONTRATO=CO.COD JOIN tb_perfil_gestao PG ON PG.COD=HGC.COD_PERFIL_GESTAO WHERE HGC.COD_USUARIO=? AND CO.COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codUsuario);
+            preparedStatement.setInt(2, codContrato);
+            try(ResultSet resultSet  = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    perfilUsuario = resultSet.getString("SIGLA");
+                }
+            }
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        if(perfil.equals("ADMINISTRADOR") || perfilUsuario.equals("1° SUBSTITUTO") || perfilUsuario.equals("2° SUBSTITUTO")) {
+            sql = "SELECT HGC.COD_USUARIO FROM TB_CONTRATO CO JOIN tb_historico_gestao_contrato HGC ON HGC.COD_CONTRATO=CO.COD WHERE COD_CONTRATO=?";
+            try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                preparedStatement.setInt(1, codContrato);
+                try(ResultSet resultSet = preparedStatement.executeQuery()){
+                    if(resultSet.next()) {
+                        codGestor = resultSet.getInt("COD_USUARIO");
+                    }
+                }
+            }catch(SQLException sqle) {
+                sqle.printStackTrace();
+            }
+        }else {
+            if(perfilUsuario.equals("GESTOR")) {
+                codGestor = codUsuario;
+            }else {
+                System.err.println("Ação maliciosa detectada. Codigo Usuário: " + codUsuario + ". Codigo do Contrato da tentativa de  acesso: " + codContrato);
+                throw new RuntimeException("Acesso negado ! Entre em contato com o responsável pelo Sistema");
+            }
+        }
         ArrayList<DatasDeCalculoModel> datasDeCalculo = recuperaAnosDeCalculosAnteriores(codContrato);
-        ArrayList<ListaTotalMensalData> totalMensalData = new ArrayList<>();
-        ArrayList<TotalMensal> totaisMensais = new ArrayList<>();
         ArrayList<TotalMensalPendenteModel> lista = new ArrayList<>();
         for(int i = 0; i < datasDeCalculo.size(); i++) {
         ArrayList<TotalMensal> totais = new ArrayList<>();
-        String sql = "SELECT u.nome AS \"Gestor\"," +
+        sql = "SELECT u.nome AS \"Gestor\"," +
                 " c.nome_empresa AS \"Empresa\"," +
                 " 'Contrato Nº: ' + c.numero_contrato AS \"Contrato\"," +
                 " f.nome AS \"Função\"," +
@@ -194,14 +239,19 @@ public class TotalMensalDAO {
                                 resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"));
                         totais.add(totalMensal);
                     }
+                    if(totais.size() <= 0) {
+                        return null;
+                    }
                     Date dataReferencia = Date.valueOf(datasDeCalculo.get(i).getAno() + "-" + datasDeCalculo.get(i).getMes() + "-01");
                     ListaTotalMensalData listaTotalMensalData = new ListaTotalMensalData(dataReferencia, totais);
-
+                    TotalMensalPendenteModel totalMensalPendenteModel = new TotalMensalPendenteModel(listaTotalMensalData, "EM ANÁLISE");
+                    lista.add(totalMensalPendenteModel);
                 }
             } catch (SQLException sqle) {
-                sqle.printStackTrace();
+                System.err.println(sqle.getStackTrace());
+                throw new RuntimeException("Houve um erro ao tentar recuperar os cálculos de Total Mensal a Reter !");
             }
         }
-        return null;
+        return lista;
     }
 }
