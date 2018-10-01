@@ -114,4 +114,36 @@ public class TotalMensalController {
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
+    @GET
+    @Path("/getValoresPendentesExecucao/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getValoresPendentesExecucao(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            ArrayList<TotalMensalPendenteModel> calculosPendentes  = totalMensalDAO.getTotalMensalPendenteExecucao(codigoContrato, codigoUsuario);
+            if(calculosPendentes == null || calculosPendentes.size() == 0) {
+                json = gson.toJson(null);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+            json = gson.toJson(calculosPendentes);
+
+        }catch(RuntimeException rtel) {
+            System.err.println(rtel.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = rtel.getMessage();
+            json = gson.toJson(errorMessage);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        try {
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            System.err.println(sqle.getStackTrace());
+            return  Response.status(500).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
 }
