@@ -350,4 +350,160 @@ public class InsertTSQL {
 
     }
 
+    public Integer InsertHistoricoRestituicaoDecimoTerceiro (int pCodTbRestituicaoFerias,
+                                                             int pCodTipoRestituicao,
+                                                             Date pInicioPeriodoAquisitivo,
+                                                             Date pFimPeriodoAquisitivo,
+                                                             Date pInicioFerias,
+                                                             Date pFimFerias,
+                                                             float pTotalFerias,
+                                                             float pTotalTercoConstitucional,
+                                                             float pTotalIncidenciaFerias,
+                                                             float pTotalIncidenciaTerco,
+                                                             int pParcela,
+                                                             Date pDataReferencia,
+                                                             int pDiasVendidos,
+                                                             String pAutorizado,
+                                                             String pRestituido,
+                                                             String pObservacao,
+                                                             String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+
+        int vCodTbHistRestituicaoFerias = consulta.RetornaCodSequenceTbHistRestituicaoFerias();
+
+        try {
+
+            String sql = "INSERT INTO TB_HIST_RESTITUICAO_FERIAS (COD_RESTITUICAO_FERIAS," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " DATA_INICIO_PERIODO_AQUISITIVO," +
+                    " DATA_FIM_PERIODO_AQUISITIVO," +
+                    " DATA_INICIO_USUFRUTO," +
+                    " DATA_FIM_USUFRUTO," +
+                    " VALOR_FERIAS," +
+                    " VALOR_TERCO_CONSTITUCIONAL," +
+                    " INCID_SUBMOD_4_1_FERIAS," +
+                    " INCID_SUBMOD_4_1_TERCO," +
+                    " PARCELA," +
+                    " DIAS_VENDIDOS," +
+                    " DATA_REFERENCIA," +
+                    " AUTORIZADO," +
+                    " RESTITUIDO," +
+                    " OBSERVACAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, pCodTbRestituicaoFerias);
+            preparedStatement.setInt(2, pCodTipoRestituicao);
+            preparedStatement.setDate(3, pInicioPeriodoAquisitivo);
+            preparedStatement.setDate(4, pFimPeriodoAquisitivo);
+            preparedStatement.setDate(5, pInicioFerias);
+            preparedStatement.setDate(6, pFimFerias);
+            preparedStatement.setFloat(7, pTotalFerias);
+            preparedStatement.setFloat(8, pTotalTercoConstitucional);
+            preparedStatement.setFloat(9, pTotalIncidenciaFerias);
+            preparedStatement.setFloat(10, pTotalIncidenciaTerco);
+            preparedStatement.setInt(11, pParcela);
+            preparedStatement.setInt(12, pDiasVendidos);
+            preparedStatement.setDate(13, pDataReferencia);
+            preparedStatement.setString(14, pAutorizado);
+            preparedStatement.setString(15, pRestituido);
+            preparedStatement.setString(16, pObservacao);
+            preparedStatement.setString(17, pLoginAtualizacao);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível inserir dados na tabela de histórico de restituição de férias.");
+
+        }
+
+        return vCodTbHistRestituicaoFerias;
+
+    }
+
+    public Integer InsertHistoricoRestituicaoFerias (int pCodTbRestituicaoFerias,
+                                                     int pCodTipoRestituicao,
+                                                     Date pInicioPeriodoAquisitivo,
+                                                     Date pFimPeriodoAquisitivo,
+                                                     Date pInicioFerias,
+                                                     Date pFimFerias,
+                                                     float pTotalFerias,
+                                                     float pTotalTercoConstitucional,
+                                                     float pTotalIncidenciaFerias,
+                                                     float pTotalIncidenciaTerco,
+                                                     int pParcela,
+                                                     Date pDataReferencia,
+                                                     int pDiasVendidos,
+                                                     String pAutorizado,
+                                                     String pRestituido,
+                                                     String pObservacao,
+                                                     String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+
+        int vCodTbHistRestituicaoFerias = consulta.RetornaCodSequenceTbHistRestituicaoFerias();
+
+        try {
+
+            String sql = "INSERT INTO TB_HIST_RESTITUICAO_FERIAS (COD_RESTITUICAO_FERIAS," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " DATA_INICIO_PERIODO_AQUISITIVO," +
+                    " DATA_FIM_PERIODO_AQUISITIVO," +
+                    " DATA_INICIO_USUFRUTO," +
+                    " DATA_FIM_USUFRUTO," +
+                    " VALOR_FERIAS," +
+                    " VALOR_TERCO_CONSTITUCIONAL," +
+                    " INCID_SUBMOD_4_1_FERIAS," +
+                    " INCID_SUBMOD_4_1_TERCO," +
+                    " PARCELA," +
+                    " DIAS_VENDIDOS," +
+                    " DATA_REFERENCIA," +
+                    " AUTORIZADO," +
+                    " RESTITUIDO," +
+                    " OBSERVACAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, pCodTbRestituicaoFerias);
+            preparedStatement.setInt(2, pCodTipoRestituicao);
+            preparedStatement.setDate(3, pInicioPeriodoAquisitivo);
+            preparedStatement.setDate(4, pFimPeriodoAquisitivo);
+            preparedStatement.setDate(5, pInicioFerias);
+            preparedStatement.setDate(6, pFimFerias);
+            preparedStatement.setFloat(7, pTotalFerias);
+            preparedStatement.setFloat(8, pTotalTercoConstitucional);
+            preparedStatement.setFloat(9, pTotalIncidenciaFerias);
+            preparedStatement.setFloat(10, pTotalIncidenciaTerco);
+            preparedStatement.setInt(11, pParcela);
+            preparedStatement.setInt(12, pDiasVendidos);
+            preparedStatement.setDate(13, pDataReferencia);
+            preparedStatement.setString(14, pAutorizado);
+            preparedStatement.setString(15, pRestituido);
+            preparedStatement.setString(16, pObservacao);
+            preparedStatement.setString(17, pLoginAtualizacao);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível inserir dados na tabela de histórico de restituição de férias.");
+
+        }
+
+        return vCodTbHistRestituicaoFerias;
+
+    }
+
+
+
 }

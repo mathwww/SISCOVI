@@ -182,4 +182,32 @@ public class DeleteTSQL {
 
     }
 
+    /**
+     * Método que exclui um registro da tabela de saldo de histórico de restituição de férias.
+     *
+     * @param pCodRestituicaoFerias;
+     */
+
+    public void DeleteHistRestituicaoFerias (int pCodRestituicaoFerias) {
+
+        PreparedStatement preparedStatement;
+
+        String query = "DELETE FROM tb_hist_restituicao_ferias WHERE COD_RESTITUICAO_FERIAS = ?";
+
+        try {
+
+            preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1, pCodRestituicaoFerias);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            throw new RuntimeException("Não foi possível deletar o registro solicitado do histórico de restituição de férias.");
+
+        }
+
+    }
+
 }
