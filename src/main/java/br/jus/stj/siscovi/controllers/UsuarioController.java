@@ -25,7 +25,7 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() throws SQLException {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         String json = null;
         UsuarioDAO usuarioDAO = new UsuarioDAO(connectSQLServer.dbConnect());
         json = gson.toJson(usuarioDAO.getAllUsers());

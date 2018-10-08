@@ -48,4 +48,16 @@ public class TotalMensal {
         return total;
     }
 
+    @Override
+    public String toString() {
+        return "TotalMensal{" +
+                "funcao='" + funcao + '\'' +
+                ", ferias=" + ferias +
+                ", tercoConstitucional=" + tercoConstitucional +
+                ", decimoTerceiro=" + decimoTerceiro +
+                ", incidencia=" + incidencia +
+                ", multaFGTS=" + multaFGTS +
+                ", total=" + total +
+                '}';
+    }
 }

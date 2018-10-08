@@ -5,24 +5,24 @@ import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.TotalMensalDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
-import br.jus.stj.siscovi.model.CalculoPendenteModel;
+import br.jus.stj.siscovi.model.AvaliacaoTotalMensal;
 import br.jus.stj.siscovi.model.ListaTotalMensalData;
 import br.jus.stj.siscovi.model.TotalMensal;
 import br.jus.stj.siscovi.model.TotalMensalPendenteModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.sun.research.ws.wadl.Param;
 
-import javax.validation.constraints.Null;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.validation.Valid;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Path("/total-mensal-a-reter")
@@ -100,6 +100,7 @@ public class TotalMensalController {
            json = gson.toJson(calculosPendentes);
 
         }catch(RuntimeException rte){
+            rte.printStackTrace();
             System.err.println(rte.toString());
             ErrorMessage errorMessage = new ErrorMessage();
             errorMessage.error = rte.getMessage();
@@ -133,9 +134,7 @@ public class TotalMensalController {
 
         }catch(RuntimeException rtel) {
             System.err.println(rtel.toString());
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.error = rtel.getMessage();
-            json = gson.toJson(errorMessage);
+            json = gson.toJson(new ErrorMessage().handleError(rtel));
             return Response.ok(json, MediaType.APPLICATION_JSON).build();
         }
         try {
@@ -143,6 +142,60 @@ public class TotalMensalController {
         }catch (SQLException sqle) {
             System.err.println(sqle.getStackTrace());
             return  Response.status(500).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/enviarAvaliacaoCalculosTotalMensal/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response recebeAvaliacaoCalculos(String object) {
+       Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
+       AvaliacaoTotalMensal calculosAvaliados = gson.fromJson(object, AvaliacaoTotalMensal.class);
+       ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+       String json = "";
+        if(new TotalMensalDAO(connectSQLServer.dbConnect()).salvaAvaliacaoCalculosPendentes(calculosAvaliados.getCodigoContrato(), calculosAvaliados.getTotalMensalPendenteModels(), calculosAvaliados.getUser())) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
+            json = gson.toJson(jsonObject);
+        }else {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as avaliações. Tente novamente mais tarde";
+            json = gson.toJson(errorMessage);
+        }
+        try {
+           connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            json = gson.toJson(ErrorMessage.handleError(sqle));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+    @POST
+    @Path("/enviarAvaliacaoCalculosExecutadosTotalMensal")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response receveAvaliacaoCalculosExecucao(String object){
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        AvaliacaoTotalMensal avaliacaoTotalMensal = gson.fromJson(object, AvaliacaoTotalMensal.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json = "";
+        if(new TotalMensalDAO(connectSQLServer.dbConnect()).salvaAvaliacaoCalculosPendentesExecucao(avaliacaoTotalMensal.getCodigoContrato(), avaliacaoTotalMensal.getTotalMensalPendenteModels(),
+                avaliacaoTotalMensal.getUser())) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
+            json = gson.toJson(jsonObject);
+        }else {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+        }
+        try{
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            json = gson.toJson(ErrorMessage.handleError(sqle));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }

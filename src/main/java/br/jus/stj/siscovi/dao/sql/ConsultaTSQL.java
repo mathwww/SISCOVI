@@ -1,13 +1,19 @@
 package br.jus.stj.siscovi.dao.sql;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
+import br.jus.stj.siscovi.model.CalcularFeriasModel;
+import br.jus.stj.siscovi.model.RegistroDeDecimoTerceiroModel;
+import br.jus.stj.siscovi.model.RegistroDeFeriasModel;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ConsultaTSQL {
 
@@ -233,6 +239,51 @@ public class ConsultaTSQL {
     }
 
     /**
+     *Função que retorna o tipo de restituição correspondente a um código.
+     *
+     * @param pCodTipoRestituicao;
+     *
+     * @return O tipo (string) do registro correspondente a um cod de tipo de restituição.
+     */
+
+    public String RetornaTipoRestituicao (int pCodTipoRestituicao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+        String vTipoRestituicao = null;
+
+        /*Atribuição do tipo de restituição.*/
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT NOME" + " FROM TB_TIPO_RESTITUICAO" + " WHERE cod = ?");
+
+            preparedStatement.setInt(1, pCodTipoRestituicao);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vTipoRestituicao = resultSet.getString(1);
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+        }
+
+        if (vTipoRestituicao == null) {
+
+            throw new NullPointerException("Tipo de restituição não encontrada.");
+
+        }
+
+        return vTipoRestituicao;
+
+    }
+
+    /**
      *Função que retorna o código de um tipo de rescisão.
      *
      * @param pTipoRescisao;
@@ -277,7 +328,15 @@ public class ConsultaTSQL {
 
     }
 
-    /*Seleção do código da função terceirizado e da função contrato.*/
+    /**
+     *Função que retorna a lista de código "função terceirizado" e o códgigo de sua "função" de um
+     * terceirizado em uma determinada data.
+     *
+     * @param pCodTerceirizadoContrato;
+     * @param pDataReferencia;
+     *
+     * @return Lista contendo o código "função terceirizado" (cod) e o código de "função" (cod_funcao) de um terceirizado.
+     */
 
     public ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> SelecionaFuncaoContratoEFuncaoTerceirizado (int pCodTerceirizadoContrato, Date pDataReferencia) {
 
@@ -324,7 +383,13 @@ public class ConsultaTSQL {
 
     }
 
-    //Retorna o cod contrato do registro contido em tb_terceirizado_contrato com cod correspondente a pCodTerceirizadoContrato.
+    /**
+     *Função que retorna o código do contrato de um terceirizado alocado em um contrato específico.
+     *
+     * @param pCodTerceirizadoContrato;
+     *
+     * @return O cod_contrato contido no registro da tabela tb_terceirizado_contrato.
+     */
 
     public int RetornaContratoTerceirizado (int pCodTerceirizadoContrato) {
 
@@ -359,9 +424,9 @@ public class ConsultaTSQL {
      * Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_ferias.
      *
      * @return Próximo valor de sequência da chave primária da tabela.
-     * */
+     */
 
-    public int RetornaCodSequenceTbRestituicaoFerias () {
+    int RetornaCodSequenceTbRestituicaoFerias() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -398,12 +463,12 @@ public class ConsultaTSQL {
     }
 
     /**
-     * Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_ferias.
+     * Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_decimo_terceiro.
      *
      * @return Próximo valor de sequência da chave primária da tabela.
-     * */
+     */
 
-    public int RetornaCodSequenceTbRestituicaoDecimoTerceiro () {
+    int RetornaCodSequenceTbRestituicaoDecimoTerceiro () {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -432,5 +497,568 @@ public class ConsultaTSQL {
         return vCodTbRestituicaoDecimoTerceiro;
 
     }
+
+    /**
+     * Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_rescisao.
+     *
+     * @return Próximo valor de sequência da chave primária da tabela.
+     */
+
+    int RetornaCodSequenceTbRestituicaoRescisao () {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        int vCodTbRestituicaoRescisao = 0;
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_RESTITUICAO_RESCISAO')");
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodTbRestituicaoRescisao = resultSet.getInt(1);
+                vCodTbRestituicaoRescisao = vCodTbRestituicaoRescisao + 1;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de restituição de férias.");
+
+        }
+
+        return vCodTbRestituicaoRescisao;
+
+    }
+
+    /**
+     * Recuparação do próximo valor da sequência da chave primária da tabela tb_hist_restituicao_ferias.
+     *
+     * @return Próximo valor de sequência da chave primária da tabela.
+     */
+
+    int RetornaCodSequenceTbHistRestituicaoFerias () {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        int vCodTbHistRestituicaoFerias = 0;
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_HIST_RESTITUICAO_FERIAS')");
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodTbHistRestituicaoFerias = resultSet.getInt(1);
+                vCodTbHistRestituicaoFerias = vCodTbHistRestituicaoFerias + 1;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de histórico restituição de férias.");
+
+        }
+
+        return vCodTbHistRestituicaoFerias;
+
+    }
+
+    /**
+     * Recuparação do próximo valor da sequência da chave primária da tabela tb_hist_restituicao_dec_ter.
+     *
+     * @return Próximo valor de sequência da chave primária da tabela.
+     */
+
+    int RetornaCodSequenceTbHistRestituicaoDecTer () {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        int vCodTbHistRestituicaoDecTer = 0;
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_HIST_RESTITUICAO_DEC_TER')");
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodTbHistRestituicaoDecTer = resultSet.getInt(1);
+                vCodTbHistRestituicaoDecTer = vCodTbHistRestituicaoDecTer + 1;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de histórico de restituição de décimo terceiro.");
+
+        }
+
+        return vCodTbHistRestituicaoDecTer;
+
+    }
+
+    /**
+     * Retorna as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.
+     *
+     * @param pCodContrato;
+     * @param pMes;
+     * @param pAno;
+     * @param pDataReferencia;
+     *
+     * @return Lista de datas.
+     */
+
+    public List<Date> RetornaSubperiodosMesPercentual (int pCodContrato,
+                                                       int pMes,
+                                                       int pAno,
+                                                       Date pDataReferencia) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        List<Date> datas = new ArrayList<>();
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" +
+                    " FROM tb_percentual_contrato" +
+                    " WHERE cod_contrato = ?" +
+                    " AND (MONTH(DATA_INICIO) = ?" +
+                    " AND \n" +
+                    " YEAR(DATA_INICIO) = ?)" +
+                    " UNION" +
+                    " SELECT data_fim AS data" +
+                    " FROM tb_percentual_contrato" +
+                    " WHERE cod_contrato = ?" +
+                    " AND (MONTH(DATA_FIM)=?" +
+                    " AND" + " YEAR(DATA_FIM) = ?)" +
+                    " UNION" +
+                    " SELECT data_inicio AS data" +
+                    " FROM tb_percentual_estatico" +
+                    " WHERE (MONTH(DATA_INICIO) = ?" +
+                    " AND " + " YEAR(DATA_INICIO) = ?)" +
+                    " UNION" +
+                    " SELECT data_fim AS data" +
+                    " FROM tb_percentual_estatico" +
+                    " WHERE (MONTH(DATA_FIM)=?" +
+                    " AND" + " YEAR(DATA_FIM)=?)" +
+                    " UNION" +
+                    " SELECT CASE WHEN ? = 2 THEN" +
+                    " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" +
+                    " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" +
+                    " EXCEPT" +
+                    " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" +
+                    " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" +
+                    " ELSE" + " NULL END AS data" +
+                    " ORDER BY data ASC");
+
+            preparedStatement.setInt(1, pCodContrato);
+            preparedStatement.setInt(2, pMes);
+            preparedStatement.setInt(3, pAno);
+            preparedStatement.setInt(4, pCodContrato);
+            preparedStatement.setInt(5, pMes);
+            preparedStatement.setInt(6, pAno);
+            preparedStatement.setInt(7, pMes);
+            preparedStatement.setInt(8, pAno);
+            preparedStatement.setInt(9, pMes);
+            preparedStatement.setInt(10, pAno);
+            preparedStatement.setInt(11, pMes);
+            preparedStatement.setInt(12, pMes);
+            preparedStatement.setInt(13, pAno);
+            preparedStatement.setInt(14, pMes);
+            preparedStatement.setInt(15, pAno);
+            preparedStatement.setInt(16, pMes);
+            preparedStatement.setInt(17, pAno);
+            preparedStatement.setInt(18, pMes);
+            preparedStatement.setInt(19, pAno);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                datas.add(resultSet.getDate("data"));
+
+            }
+
+        } catch (SQLException e) {
+
+            throw new NullPointerException("Erro ao tentar carregar as datas referentes ao percentuais. " + " Contrato: " + pCodContrato + ". No perídodo: " + pDataReferencia.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        }
+
+        return datas;
+
+    }
+
+    /**
+     * Retorna as datas que compõem os subperíodos gerados pelas alterações de remuneração no mês.
+     *
+     * @param pCodContrato;
+     * @param pMes;
+     * @param pAno;
+     * @param pCodFuncaoContrato;
+     * @param pDataReferencia;
+     *
+     * @return Lista de datas.
+     */
+
+    public List<Date> RetornaSubperiodosMesRemuneracao (int pCodContrato,
+                                                        int pMes,
+                                                        int pAno,
+                                                        int pCodFuncaoContrato,
+                                                        Date pDataReferencia) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        List<Date> datas = new ArrayList<>();
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT rfc.data_inicio AS data" +
+                    " FROM tb_remuneracao_fun_con rfc\n" +
+                    " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
+                    " WHERE fc.cod_contrato = ?" +
+                    " AND fc.cod = ?" +
+                    " AND (MONTH(rfc.data_inicio) = ?" +
+                    " AND" +
+                    " YEAR(rfc.data_inicio) = ?)" +
+                    " UNION" +
+                    " SELECT rfc.data_fim AS data " +
+                    " FROM tb_remuneracao_fun_con rfc" +
+                    " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
+                    " WHERE fc.cod_contrato = ?" +
+                    " AND fc.cod = ?" +
+                    " AND (MONTH(rfc.data_fim) = ?" +
+                    " AND " +
+                    " YEAR(rfc.data_fim) = ?)" +
+                    " UNION" +
+                    " SELECT CASE WHEN ? = 2 THEN" +
+                    " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" +
+                    " ELSE" +
+                    " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" +
+                    " EXCEPT" +
+                    " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" +
+                    " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" +
+                    " ELSE" +
+                    " NULL END AS data" +
+                    " ORDER BY DATA ASC");
+
+            preparedStatement.setInt(1, pCodContrato);
+            preparedStatement.setInt(2, pCodFuncaoContrato);
+            preparedStatement.setInt(3, pMes);
+            preparedStatement.setInt(4, pAno);
+            preparedStatement.setInt(5, pCodContrato);
+            preparedStatement.setInt(6, pCodFuncaoContrato);
+            preparedStatement.setInt(7, pMes);
+            preparedStatement.setInt(8, pAno);
+            preparedStatement.setInt(9, pMes);
+            preparedStatement.setInt(10, pMes);
+            preparedStatement.setInt(11, pAno);
+            preparedStatement.setInt(12, pMes);
+            preparedStatement.setInt(13, pAno);
+            preparedStatement.setInt(14, pMes);
+            preparedStatement.setInt(15, pAno);
+            preparedStatement.setInt(16, pMes);
+            preparedStatement.setInt(17, pAno);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                datas.add(resultSet.getDate("data"));
+
+            }
+
+        } catch (SQLException e) {
+
+            throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de remuneração da função: " + pCodFuncaoContrato + " na data referência: " + pDataReferencia);
+
+        }
+
+        return datas;
+
+    }
+
+    /**
+     * Retorna as datas que compõem os subperíodos gerados pelas alterações de percentual e remuneração no mês.
+     *
+     * @param pCodContrato;
+     * @param pMes;
+     * @param pAno;
+     * @param pCodFuncaoContrato;
+     * @param pDataReferencia;
+     *
+     * @return Lista de datas.
+     */
+
+    public List<Date> RetornaSubperiodosMesPercentualRemuneracao (int pCodContrato,
+                                                                  int pMes,
+                                                                  int pAno,
+                                                                  int pCodFuncaoContrato,
+                                                                  Date pDataReferencia) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        List<Date> datas = new ArrayList<>();
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" +
+                    " FROM tb_percentual_contrato" +
+                    " WHERE cod_contrato = ?" +
+                    " AND (MONTH(DATA_INICIO) = ?" +
+                    " AND " +
+                    " YEAR(DATA_INICIO) = ?)" +
+                    " UNION" +
+                    " SELECT data_fim AS data" +
+                    " FROM tb_percentual_contrato" +
+                    " WHERE cod_contrato = ?" +
+                    " AND (MONTH(DATA_FIM)=?" +
+                    " AND" +
+                    " YEAR(DATA_FIM) = ?)" +
+                    " UNION" +
+                    " SELECT data_inicio AS data" +
+                    " FROM tb_percentual_estatico" +
+                    " WHERE (MONTH(DATA_INICIO) = ?" +
+                    " AND " +
+                    " YEAR(DATA_INICIO) = ?)" +
+                    " UNION" +
+                    " SELECT data_fim AS data" +
+                    " FROM tb_percentual_estatico" +
+                    " WHERE (MONTH(DATA_FIM)=?" +
+                    " AND" +
+                    " YEAR(DATA_FIM)=?)" +
+                    " UNION" +
+                    " SELECT rfc.data_inicio AS data" +
+                    " FROM tb_remuneracao_fun_con rfc" +
+                    " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
+                    " WHERE fc.cod_contrato = ?" +
+                    " AND fc.cod = ?" +
+                    " AND (MONTH(rfc.data_inicio) = ?" +
+                    " AND" +
+                    " YEAR(rfc.data_inicio) = ?)" +
+                    " UNION" +
+                    " SELECT rfc.data_fim AS data " +
+                    " FROM tb_remuneracao_fun_con rfc" +
+                    " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" +
+                    " WHERE fc.cod_contrato = ?" +
+                    " AND fc.cod = ?" +
+                    " AND (MONTH(rfc.data_fim) = ?" +
+                    " AND " +
+                    " YEAR(rfc.data_fim) = ?)" +
+                    " UNION" +
+                    " SELECT CASE WHEN ? = 2 THEN" +
+                    " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" +
+                    " ELSE" +
+                    " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" +
+                    " EXCEPT" +
+                    " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" +
+                    " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" +
+                    " ELSE" +
+                    " NULL END AS data" +
+                    " ORDER BY DATA ASC");
+
+            preparedStatement.setInt(1, pCodContrato);
+            preparedStatement.setInt(2, pMes);
+            preparedStatement.setInt(3, pAno);
+            preparedStatement.setInt(4, pCodContrato);
+            preparedStatement.setInt(5, pMes);
+            preparedStatement.setInt(6, pAno);
+            preparedStatement.setInt(7, pMes);
+            preparedStatement.setInt(8, pAno);
+            preparedStatement.setInt(9, pMes);
+            preparedStatement.setInt(10, pAno);
+            preparedStatement.setInt(11, pCodContrato);
+            preparedStatement.setInt(12, pCodFuncaoContrato);
+            preparedStatement.setInt(13, pMes);
+            preparedStatement.setInt(14, pAno);
+            preparedStatement.setInt(15, pCodContrato);
+            preparedStatement.setInt(16, pCodFuncaoContrato);
+            preparedStatement.setInt(17, pMes);
+            preparedStatement.setInt(18, pAno);
+            preparedStatement.setInt(19, pMes);
+            preparedStatement.setInt(20, pMes);
+            preparedStatement.setInt(21, pAno);
+            preparedStatement.setInt(22, pMes);
+            preparedStatement.setInt(23, pAno);
+            preparedStatement.setInt(24, pMes);
+            preparedStatement.setInt(25, pAno);
+            preparedStatement.setInt(26, pMes);
+            preparedStatement.setInt(27, pAno);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                datas.add(resultSet.getDate("data"));
+
+            }
+
+        } catch (SQLException e) {
+
+            throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de percentuais e da remuneração da função: " + pCodFuncaoContrato + " na data referência: " + pDataReferencia);
+
+        }
+
+        return datas;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_restituicao_ferias..
+     *
+     * @param pCodRestituicaoFerias;
+     *
+     * @return Um registro de restituição de férias no model.
+     */
+
+    public RegistroDeFeriasModel RetornaRegistroRestituicaoFerias (int pCodRestituicaoFerias) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroDeFeriasModel registro = null;
+
+        try {
+
+            String sql = "SELECT COD," +
+                    " COD_TERCEIRIZADO_CONTRATO," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " DATA_INICIO_PERIODO_AQUISITIVO," +
+                    " DATA_FIM_PERIODO_AQUISITIVO," +
+                    " DATA_INICIO_USUFRUTO," +
+                    " DATA_FIM_USUFRUTO," +
+                    " DIAS_VENDIDOS," +
+                    " VALOR_FERIAS," +
+                    " VALOR_TERCO_CONSTITUCIONAL," +
+                    " INCID_SUBMOD_4_1_FERIAS," +
+                    " INCID_SUBMOD_4_1_TERCO," +
+                    " PARCELA," +
+                    " DATA_REFERENCIA," +
+                    " AUTORIZADO," +
+                    " RESTITUIDO," +
+                    " OBSERVACAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO" +
+                    " FROM TB_RESTITUICAO_FERIAS" +
+                    " WHERE COD = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRestituicaoFerias);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroDeFeriasModel(resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getDate(4),
+                        resultSet.getDate(5),
+                        resultSet.getDate(6),
+                        resultSet.getDate(7),
+                        resultSet.getInt(8),
+                        resultSet.getFloat(9),
+                        resultSet.getFloat(10),
+                        resultSet.getFloat(11),
+                        resultSet.getFloat(12),
+                        resultSet.getInt(13),
+                        resultSet.getDate(14),
+                        resultSet.getString(15),
+                        resultSet.getString(16),
+                        resultSet.getString(17),
+                        resultSet.getString(18),
+                        resultSet.getTimestamp(19));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de restituição de férias.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_restituicao_decimo_terceiro.
+     *
+     * @param pCodRestituicaoDecimoTerceiro;
+     *
+     * @return Um registro de restituição de décimo terceiro no model.
+     */
+
+    public RegistroDeDecimoTerceiroModel RetornaRegistroRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroDeDecimoTerceiroModel registro = null;
+
+        try {
+
+            String sql = "SELECT COD," +
+                    " COD_TERCEIRIZADO_CONTRATO," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " PARCELA," +
+                    " DATA_INICIO_CONTAGEM," +
+                    " VALOR," +
+                    " INCIDENCIA_SUBMODULO_4_1," +
+                    " DATA_REFERENCIA," +
+                    " AUTORIZADO," +
+                    " RESTITUIDO," +
+                    " OBSERVACAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO" +
+                    " FROM TB_RESTITUICAO_DECIMO_TERCEIRO" +
+                    " WHERE COD = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRestituicaoDecimoTerceiro);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroDeDecimoTerceiroModel(resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getInt(4),
+                        resultSet.getDate(5),
+                        resultSet.getFloat(6),
+                        resultSet.getFloat(7),
+                        resultSet.getDate(8),
+                        resultSet.getString(9),
+                        resultSet.getString(10),
+                        resultSet.getString(11),
+                        resultSet.getString(12),
+                        resultSet.getTimestamp(13));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de restituição de férias.");
+
+        }
+
+        return registro;
+
+    }
+
 
 }

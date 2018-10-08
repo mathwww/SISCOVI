@@ -19,7 +19,7 @@ public class UpdateTSQL {
      * Método que atualiza um registro da tabela de restituição de férias.
      *
      * @param pCodRestituicaoFerias;
-     * @param pTipoRestituicao;
+     * @param pCodTipoRestituicao;
      * @param pInicioPeriodoAquisitivo;
      * @param pFimPeriodoAquisitivo;
      * @param pInicioFerias;
@@ -30,7 +30,6 @@ public class UpdateTSQL {
      * @param pTotalIncidenciaFerias;
      * @param pTotalIncidenciaTerco;
      * @param pParcela;
-     * @param pDataReferencia;
      * @param pAutorizado;
      * @param pRestituido;
      * @param pObservacao;
@@ -38,7 +37,7 @@ public class UpdateTSQL {
      */
 
     public void UpdateRestituicaoFerias (int pCodRestituicaoFerias,
-                                         String pTipoRestituicao,
+                                         int pCodTipoRestituicao,
                                          Date pInicioPeriodoAquisitivo,
                                          Date pFimPeriodoAquisitivo,
                                          Date pInicioFerias,
@@ -49,15 +48,19 @@ public class UpdateTSQL {
                                          float pTotalIncidenciaFerias,
                                          float pTotalIncidenciaTerco,
                                          int pParcela,
-                                         Date pDataReferencia,
-                                         char pAutorizado,
-                                         char pRestituido,
+                                         String pAutorizado,
+                                         String pRestituido,
                                          String pObservacao,
                                          String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);
-        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
+
+        if (pRestituido.length() > 1 || pAutorizado.length() > 1) {
+
+            throw new NullPointerException("Argumento em autorizado ou restituído está fora do padrão esperado (S ou N).");
+
+        }
 
         String vSQLQuerry = "UPDATE tb_restituicao_ferias" +
                 " SET COD_TIPO_RESTITUICAO = ?," +
@@ -71,7 +74,7 @@ public class UpdateTSQL {
                 " INCID_SUBMOD_4_1_FERIAS = ?," +
                 " INCID_SUBMOD_4_1_TERCO = ?," +
                 " PARCELA = ?," +
-                " DATA_REFERENCIA = ?," +
+                " DATA_REFERENCIA = GETDATE()," +
                 " AUTORIZADO = ?," +
                 " RESTITUIDO = ?," +
                 " OBSERVACAO = ?," +
@@ -82,7 +85,7 @@ public class UpdateTSQL {
         try {
 
             preparedStatement = connection.prepareStatement(vSQLQuerry);
-            preparedStatement.setInt(1, vCodTipoRestituicao);
+            preparedStatement.setInt(1, pCodTipoRestituicao);
             preparedStatement.setDate(2, pInicioPeriodoAquisitivo);
             preparedStatement.setDate(3, pFimPeriodoAquisitivo);
             preparedStatement.setDate(4, pInicioFerias);
@@ -93,16 +96,17 @@ public class UpdateTSQL {
             preparedStatement.setFloat(9, pTotalIncidenciaFerias);
             preparedStatement.setFloat(10, pTotalIncidenciaTerco);
             preparedStatement.setInt(11, pParcela);
-            preparedStatement.setDate(12, pDataReferencia);
-            preparedStatement.setString(13,String.valueOf(pAutorizado));
-            preparedStatement.setString(14, String.valueOf(pRestituido));
-            preparedStatement.setString(15, pObservacao);
-            preparedStatement.setString(16, pLoginAtualizacao);
-            preparedStatement.setInt(17, pCodRestituicaoFerias);
+            preparedStatement.setString(12, pAutorizado);
+            preparedStatement.setString(13, pRestituido);
+            preparedStatement.setString(14, pObservacao);
+            preparedStatement.setString(15, pLoginAtualizacao);
+            preparedStatement.setInt(16, pCodRestituicaoFerias);
 
             preparedStatement.executeUpdate();
 
         } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
 
             throw new NullPointerException("Erro na execução da atualização dos dados da restiuição de férias.");
 
@@ -133,14 +137,20 @@ public class UpdateTSQL {
                                                  float pValorDecimoTerceiro,
                                                  float pValorIncidencia,
                                                  Date pDataReferencia,
-                                                 char pAutorizado,
-                                                 char pRestituido,
+                                                 String pAutorizado,
+                                                 String pRestituido,
                                                  String pObservacao,
                                                  String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);
         int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
+
+        if (pRestituido.length() > 1 || pAutorizado.length() > 1) {
+
+            throw new NullPointerException("Argumento em autorizado ou restituído está fora do padrão esperado (S ou N).");
+
+        }
 
         String vSQLQuerry = "UPDATE tb_restituicao_decimo_terceiro" +
                 " SET COD_TIPO_RESTITUICAO = ?," +
@@ -165,8 +175,8 @@ public class UpdateTSQL {
             preparedStatement.setFloat(4, pValorDecimoTerceiro);
             preparedStatement.setFloat(5, pValorIncidencia);
             preparedStatement.setDate(6, pDataReferencia);
-            preparedStatement.setString(7,String.valueOf(pAutorizado));
-            preparedStatement.setString(8, String.valueOf(pRestituido));
+            preparedStatement.setString(7, pAutorizado);
+            preparedStatement.setString(8, pRestituido);
             preparedStatement.setString(9, pObservacao);
             preparedStatement.setString(10, pLoginAtualizacao);
             preparedStatement.setInt(11, pCodRestituicaoDecimoTerceiro);

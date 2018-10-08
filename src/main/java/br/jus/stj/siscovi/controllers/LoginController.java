@@ -7,6 +7,7 @@ import br.jus.stj.siscovi.helpers.Token;
 import br.jus.stj.siscovi.model.*;
 import com.google.gson.Gson;
 import br.jus.stj.siscovi.dao.LoginDAO;
+import com.google.gson.GsonBuilder;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -73,7 +74,7 @@ public class LoginController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response geraToken(String object) throws SQLException, UnsupportedEncodingException, NoSuchAlgorithmException{
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ResponseLoginModel rlm = new ResponseLoginModel();
         ContratoDAO contratoDAO;
         LoginModel loginModel = gson.fromJson(object,LoginModel.class);

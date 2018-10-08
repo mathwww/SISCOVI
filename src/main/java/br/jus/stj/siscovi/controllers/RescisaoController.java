@@ -52,10 +52,10 @@ public class RescisaoController {
                 lista1.add(crrm);
             }
         }catch (NullPointerException npe) {
-            json = gson.toJson(handleError(npe));
+            json = gson.toJson(new ErrorMessage().handleError(npe));
             return Response.ok(json, MediaType.APPLICATION_JSON).build();
         }catch(RuntimeException rte) {
-            json = gson.toJson(handleError(rte));
+            json = gson.toJson(new ErrorMessage().handleError(rte));
             return Response.ok(json, MediaType.APPLICATION_JSON).build();
         }
         try {
@@ -70,12 +70,4 @@ public class RescisaoController {
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
-    private ErrorMessage handleError(Exception e) {
-        e.printStackTrace();
-        System.err.println(e.toString());
-        System.err.println(e.getStackTrace());
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.error = e.getMessage();
-        return errorMessage;
-    }
 }

@@ -29,7 +29,7 @@ public class TotalMensalAReter {
 
     public void CalculaTotalMensal (int pCodContrato, int pMes, int pAno) {
 
-        //Checked.
+        // Checked.
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -38,7 +38,7 @@ public class TotalMensalAReter {
         Periodos periodo = new Periodos(connection);
         Remuneracao remuneracao = new Remuneracao(connection);
 
-        /*Variáveis totalizadoras de valores.*/
+        /* Variáveis totalizadoras de valores.*/
 
         float vTotalFerias = 0;
         float vTotalTercoConstitucional = 0;
@@ -47,7 +47,7 @@ public class TotalMensalAReter {
         float vTotalIndenizacao = 0;
         float vTotal = 0;
 
-        /*Variáveis de valores parciais.*/
+        /* Variáveis de valores parciais.*/
 
         float vValorFerias = 0;
         float vValorTercoConstitucional = 0;
@@ -55,7 +55,7 @@ public class TotalMensalAReter {
         float vValorIncidencia = 0;
         float vValorIndenizacao = 0 ;
 
-        /*Variáveis de percentuais.*/
+        /* Variáveis de percentuais.*/
 
         float vPercentualFerias = 0;
         float vPercentualTercoConstitucional = 0;
@@ -65,15 +65,15 @@ public class TotalMensalAReter {
         float vPercentualPenalidadeFGTS = 0;
         float vPercentualMultaFGTS = 0;
 
-        /*Variável da remuneração da função do contrato.*/
+        /* Variável da remuneração da função do contrato.*/
 
         float vRemuneracao = 0;
 
-        /*Variável para a verificação de existência da cálculos realizados.*/
+        /* Variável para a verificação de existência da cálculos realizados.*/
 
         int vExisteCalculo = 0;
 
-        /*Variáveis de datas.*/
+        /* Variáveis de datas.*/
 
         Date vDataReferencia = Date.valueOf(pAno + "-" + pMes + "-01");
         Date vDataInicio = null;
@@ -82,12 +82,12 @@ public class TotalMensalAReter {
         Date vDataFimContrato = null;
 
 
-        /*Variável de checagem da existência do contrato.*/
+        /* Variável de checagem da existência do contrato.*/
 
         int vCheck = 0;
         int vDiasSubperiodo = 0;
 
-        /**Checagem da validade do contrato passado (existe).*/
+        /* Checagem da validade do contrato passado (existe).*/
 
         try {
 
@@ -113,7 +113,7 @@ public class TotalMensalAReter {
 
         }
 
-        /**Se a data passada for anterior ao contrato ou posterior ao seu termino aborta-se.*/
+        /* Se a data passada for anterior ao contrato ou posterior ao seu termino aborta-se.*/
 
         try {
 
