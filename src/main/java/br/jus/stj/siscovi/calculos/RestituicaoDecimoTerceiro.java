@@ -1,6 +1,7 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
+import br.jus.stj.siscovi.model.RegistroDeDecimoTerceiroModel;
 import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
 import br.jus.stj.siscovi.dao.sql.*;
 
@@ -455,8 +456,6 @@ public class RestituicaoDecimoTerceiro {
 
         /*Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_decimo_terceiro.*/
 
-
-
         /*No caso de segunda parcela a movimentação gera resíduos referentes ao
          valor do décimo terceiro que é afetado pelos descontos (IRPF, INSS e etc.)*/
 
@@ -498,6 +497,95 @@ public class RestituicaoDecimoTerceiro {
         }
 
         return vCodTbRestituicao13;
+
+    }
+
+    public Integer RecalculoRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro,
+                                                       String pTipoRestituicao,
+                                                       int pNumeroParcela,
+                                                       Date pInicioContagem,
+                                                       float pValorDecimoTerceiro,
+                                                       float pValorIncidencia,
+                                                       float pValorMovimentado,
+                                                       String pLoginAtualizacao) {
+
+        int vRetornoChavePrimaria;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+        InsertTSQL insert = new InsertTSQL(connection);
+        UpdateTSQL update = new UpdateTSQL(connection);
+        DeleteTSQL delete = new DeleteTSQL(connection);
+
+        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
+
+        RegistroDeDecimoTerceiroModel registro = consulta.RetornaRegistroRestituicaoDecimoTerceiro(pCodRestituicaoDecimoTerceiro);
+
+        if (registro == null) {
+
+            throw new NullPointerException("Registro anterior não encontrado.");
+
+        }
+
+        vRetornoChavePrimaria = insert.InsertHistoricoRestituicaoDecimoTerceiro(registro.getpCod(),
+                registro.getpCodTipoRestituicao(),
+                registro.getpParcela(),
+                registro.getpDataInicioContagem(),
+                registro.getpValor(),
+                registro.getpIncidenciaSubmod41(),
+                registro.getpDataReferencia(),
+                registro.getpAutorizado(),
+                registro.getpRestituido(),
+                registro.getpObservacao(),
+                registro.getpLoginAtualizacao());
+
+        delete.DeleteSaldoResidualRescisao(pCodRestituicaoDecimoTerceiro);
+
+        /*Variáveis auxiliares.*/
+
+        float vValor = 0;
+        float vIncidencia = 0;
+
+        /*No caso de segunda parcela a movimentação gera resíduos referentes ao
+         valor do décimo terceiro que é afetado pelos descontos (IRPF, INSS e etc.)*/
+
+        if ((pNumeroParcela == 2 || pNumeroParcela == 0) && (pTipoRestituicao.equals("MOVIMENTAÇÃO"))) {
+
+            vValor = pValorDecimoTerceiro - pValorMovimentado;
+
+            pValorDecimoTerceiro = pValorMovimentado;
+
+        }
+
+        /*Provisionamento da incidência para o saldo residual no caso de movimentação.*/
+
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
+
+            vIncidencia = pValorIncidencia;
+
+            pValorIncidencia = 0;
+
+        }
+
+        update.UpdateRestituicaoDecimoTerceiro(pCodRestituicaoDecimoTerceiro,
+                vCodTipoRestituicao,
+                pNumeroParcela,
+                pInicioContagem,
+                pValorDecimoTerceiro,
+                pValorIncidencia,
+                "",
+                "",
+                "",
+                pLoginAtualizacao);
+
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
+
+            insert.InsertSaldoResidualDecimoTerceiro(pCodRestituicaoDecimoTerceiro,
+                    vValor,
+                    vIncidencia,
+                    pLoginAtualizacao);
+
+        }
+
+        return vRetornoChavePrimaria;
 
     }
 

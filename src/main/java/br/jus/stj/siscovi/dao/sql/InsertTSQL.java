@@ -350,19 +350,13 @@ public class InsertTSQL {
 
     }
 
-    public Integer InsertHistoricoRestituicaoDecimoTerceiro (int pCodTbRestituicaoFerias,
+    public Integer InsertHistoricoRestituicaoDecimoTerceiro (int pCodTbRestituicaoDecTer,
                                                              int pCodTipoRestituicao,
-                                                             Date pInicioPeriodoAquisitivo,
-                                                             Date pFimPeriodoAquisitivo,
-                                                             Date pInicioFerias,
-                                                             Date pFimFerias,
-                                                             float pTotalFerias,
-                                                             float pTotalTercoConstitucional,
-                                                             float pTotalIncidenciaFerias,
-                                                             float pTotalIncidenciaTerco,
                                                              int pParcela,
+                                                             Date pDataInicioContagem,
+                                                             float pValor,
+                                                             float pIncidenciaSubmodulo41,
                                                              Date pDataReferencia,
-                                                             int pDiasVendidos,
                                                              String pAutorizado,
                                                              String pRestituido,
                                                              String pObservacao,
@@ -371,59 +365,53 @@ public class InsertTSQL {
         PreparedStatement preparedStatement;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);
 
-        int vCodTbHistRestituicaoFerias = consulta.RetornaCodSequenceTbHistRestituicaoFerias();
+        int vCodTbHistRestituicaoDecTer = consulta.RetornaCodSequenceTbHistRestituicaoDecTer();
 
         try {
 
-            String sql = "INSERT INTO TB_HIST_RESTITUICAO_FERIAS (COD_RESTITUICAO_FERIAS," +
+            String sql = "SET IDENTITY_INSERT TB_HIST_RESTITUICAO_DEC_TER ON;" +
+                    " INSERT INTO TB_HIST_RESTITUICAO_DEC_TER (COD," +
+                    " COD_RESTITUICAO_DEC_TERCEIRO," +
                     " COD_TIPO_RESTITUICAO," +
-                    " DATA_INICIO_PERIODO_AQUISITIVO," +
-                    " DATA_FIM_PERIODO_AQUISITIVO," +
-                    " DATA_INICIO_USUFRUTO," +
-                    " DATA_FIM_USUFRUTO," +
-                    " VALOR_FERIAS," +
-                    " VALOR_TERCO_CONSTITUCIONAL," +
-                    " INCID_SUBMOD_4_1_FERIAS," +
-                    " INCID_SUBMOD_4_1_TERCO," +
                     " PARCELA," +
-                    " DIAS_VENDIDOS," +
+                    " DATA_INICIO_CONTAGEM," +
+                    " VALOR," +
+                    " INCIDENCIA_SUBMODULO_4_1," +
                     " DATA_REFERENCIA," +
                     " AUTORIZADO," +
                     " RESTITUIDO," +
                     " OBSERVACAO," +
                     " LOGIN_ATUALIZACAO," +
                     " DATA_ATUALIZACAO)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);" +
+                    " SET IDENTITY_INSERT TB_HIST_RESTITUICAO_DEC_TER OFF;";
 
             preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setInt(1, pCodTbRestituicaoFerias);
-            preparedStatement.setInt(2, pCodTipoRestituicao);
-            preparedStatement.setDate(3, pInicioPeriodoAquisitivo);
-            preparedStatement.setDate(4, pFimPeriodoAquisitivo);
-            preparedStatement.setDate(5, pInicioFerias);
-            preparedStatement.setDate(6, pFimFerias);
-            preparedStatement.setFloat(7, pTotalFerias);
-            preparedStatement.setFloat(8, pTotalTercoConstitucional);
-            preparedStatement.setFloat(9, pTotalIncidenciaFerias);
-            preparedStatement.setFloat(10, pTotalIncidenciaTerco);
-            preparedStatement.setInt(11, pParcela);
-            preparedStatement.setInt(12, pDiasVendidos);
-            preparedStatement.setDate(13, pDataReferencia);
-            preparedStatement.setString(14, pAutorizado);
-            preparedStatement.setString(15, pRestituido);
-            preparedStatement.setString(16, pObservacao);
-            preparedStatement.setString(17, pLoginAtualizacao);
+            preparedStatement.setInt(1, vCodTbHistRestituicaoDecTer);
+            preparedStatement.setInt(2, pCodTbRestituicaoDecTer);
+            preparedStatement.setInt(3, pCodTipoRestituicao);
+            preparedStatement.setInt(4, pParcela);
+            preparedStatement.setDate(5, pDataInicioContagem);
+            preparedStatement.setFloat(6, pValor);
+            preparedStatement.setFloat(7, pIncidenciaSubmodulo41);
+            preparedStatement.setDate(8, pDataReferencia);
+            preparedStatement.setString(9, pAutorizado);
+            preparedStatement.setString(10, pRestituido);
+            preparedStatement.setString(11, pObservacao);
+            preparedStatement.setString(12, pLoginAtualizacao);
 
             preparedStatement.executeUpdate();
 
         } catch (SQLException sqle) {
 
-            throw new NullPointerException("Não foi possível inserir dados na tabela de histórico de restituição de férias.");
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível inserir dados na tabela de histórico de restituição de décimo terceiro.");
 
         }
 
-        return vCodTbHistRestituicaoFerias;
+        return vCodTbHistRestituicaoDecTer;
 
     }
 
@@ -452,7 +440,9 @@ public class InsertTSQL {
 
         try {
 
-            String sql = "INSERT INTO TB_HIST_RESTITUICAO_FERIAS (COD_RESTITUICAO_FERIAS," +
+            String sql = "SET IDENTITY_INSERT TB_HIST_RESTITUICAO_FERIAS ON;" +
+                    " INSERT INTO TB_HIST_RESTITUICAO_FERIAS (COD," +
+                    " COD_RESTITUICAO_FERIAS," +
                     " COD_TIPO_RESTITUICAO," +
                     " DATA_INICIO_PERIODO_AQUISITIVO," +
                     " DATA_FIM_PERIODO_AQUISITIVO," +
@@ -470,27 +460,29 @@ public class InsertTSQL {
                     " OBSERVACAO," +
                     " LOGIN_ATUALIZACAO," +
                     " DATA_ATUALIZACAO)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);" +
+                    " SET IDENTITY_INSERT TB_HIST_RESTITUICAO_FERIAS OFF;";
 
             preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setInt(1, pCodTbRestituicaoFerias);
-            preparedStatement.setInt(2, pCodTipoRestituicao);
-            preparedStatement.setDate(3, pInicioPeriodoAquisitivo);
-            preparedStatement.setDate(4, pFimPeriodoAquisitivo);
-            preparedStatement.setDate(5, pInicioFerias);
-            preparedStatement.setDate(6, pFimFerias);
-            preparedStatement.setFloat(7, pTotalFerias);
-            preparedStatement.setFloat(8, pTotalTercoConstitucional);
-            preparedStatement.setFloat(9, pTotalIncidenciaFerias);
-            preparedStatement.setFloat(10, pTotalIncidenciaTerco);
-            preparedStatement.setInt(11, pParcela);
-            preparedStatement.setInt(12, pDiasVendidos);
-            preparedStatement.setDate(13, pDataReferencia);
-            preparedStatement.setString(14, pAutorizado);
-            preparedStatement.setString(15, pRestituido);
-            preparedStatement.setString(16, pObservacao);
-            preparedStatement.setString(17, pLoginAtualizacao);
+            preparedStatement.setInt(1, vCodTbHistRestituicaoFerias);
+            preparedStatement.setInt(2, pCodTbRestituicaoFerias);
+            preparedStatement.setInt(3, pCodTipoRestituicao);
+            preparedStatement.setDate(4, pInicioPeriodoAquisitivo);
+            preparedStatement.setDate(5, pFimPeriodoAquisitivo);
+            preparedStatement.setDate(6, pInicioFerias);
+            preparedStatement.setDate(7, pFimFerias);
+            preparedStatement.setFloat(8, pTotalFerias);
+            preparedStatement.setFloat(9, pTotalTercoConstitucional);
+            preparedStatement.setFloat(10, pTotalIncidenciaFerias);
+            preparedStatement.setFloat(11, pTotalIncidenciaTerco);
+            preparedStatement.setInt(12, pParcela);
+            preparedStatement.setInt(13, pDiasVendidos);
+            preparedStatement.setDate(14, pDataReferencia);
+            preparedStatement.setString(15, pAutorizado);
+            preparedStatement.setString(16, pRestituido);
+            preparedStatement.setString(17, pObservacao);
+            preparedStatement.setString(18, pLoginAtualizacao);
 
             preparedStatement.executeUpdate();
 
@@ -503,7 +495,5 @@ public class InsertTSQL {
         return vCodTbHistRestituicaoFerias;
 
     }
-
-
 
 }

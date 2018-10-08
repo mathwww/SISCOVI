@@ -183,7 +183,7 @@ public class DeleteTSQL {
     }
 
     /**
-     * Método que exclui um registro da tabela de saldo de histórico de restituição de férias.
+     * Método que exclui um registro da tabela de histórico de restituição de férias.
      *
      * @param pCodRestituicaoFerias;
      */
@@ -205,6 +205,34 @@ public class DeleteTSQL {
         } catch (SQLException sqle) {
 
             throw new RuntimeException("Não foi possível deletar o registro solicitado do histórico de restituição de férias.");
+
+        }
+
+    }
+
+    /**
+     * Método que exclui um registro da tabela de histórico de restituição de décimo terceiro.
+     *
+     * @param pCodRestituicaoDecimoTerceiro;
+     */
+
+    public void DeleteHistRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro) {
+
+        PreparedStatement preparedStatement;
+
+        String query = "DELETE FROM tb_hist_restituicao_dec_ter WHERE COD_RESTITUICAO_DEC_TERCEIRO = ?";
+
+        try {
+
+            preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1, pCodRestituicaoDecimoTerceiro);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            throw new RuntimeException("Não foi possível deletar o registro solicitado do histórico de restituição de décimo terceiro.");
 
         }
 

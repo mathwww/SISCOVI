@@ -54,7 +54,6 @@ public class UpdateTSQL {
                                          String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
-        ConsultaTSQL consulta = new ConsultaTSQL(connection);
 
         if (pRestituido.length() > 1 || pAutorizado.length() > 1) {
 
@@ -123,7 +122,6 @@ public class UpdateTSQL {
      * @param pInicioContagem;
      * @param pValorDecimoTerceiro;
      * @param pValorIncidencia;
-     * @param pDataReferencia;
      * @param pAutorizado;
      * @param pRestituido;
      * @param pObservacao;
@@ -131,20 +129,17 @@ public class UpdateTSQL {
      */
 
     public void UpdateRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro,
-                                                 String pTipoRestituicao,
+                                                 int pTipoRestituicao,
                                                  int pParcela,
                                                  Date pInicioContagem,
                                                  float pValorDecimoTerceiro,
                                                  float pValorIncidencia,
-                                                 Date pDataReferencia,
                                                  String pAutorizado,
                                                  String pRestituido,
                                                  String pObservacao,
                                                  String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
-        ConsultaTSQL consulta = new ConsultaTSQL(connection);
-        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
 
         if (pRestituido.length() > 1 || pAutorizado.length() > 1) {
 
@@ -158,7 +153,7 @@ public class UpdateTSQL {
                 " DATA_INICIO_CONTAGEM = ?," +
                 " VALOR = ?," +
                 " INCIDENCIA_SUBMODULO_4_1 = ?," +
-                " DATA_REFERENCIA = ?," +
+                " DATA_REFERENCIA = GETDATE()," +
                 " AUTORIZADO = ?," +
                 " RESTITUIDO = ?," +
                 " OBSERVACAO = ?," +
@@ -169,17 +164,16 @@ public class UpdateTSQL {
         try {
 
             preparedStatement = connection.prepareStatement(vSQLQuerry);
-            preparedStatement.setInt(1, vCodTipoRestituicao);
+            preparedStatement.setInt(1, pTipoRestituicao);
             preparedStatement.setInt(2, pParcela);
             preparedStatement.setDate(3, pInicioContagem);
             preparedStatement.setFloat(4, pValorDecimoTerceiro);
             preparedStatement.setFloat(5, pValorIncidencia);
-            preparedStatement.setDate(6, pDataReferencia);
-            preparedStatement.setString(7, pAutorizado);
-            preparedStatement.setString(8, pRestituido);
-            preparedStatement.setString(9, pObservacao);
-            preparedStatement.setString(10, pLoginAtualizacao);
-            preparedStatement.setInt(11, pCodRestituicaoDecimoTerceiro);
+            preparedStatement.setString(6, pAutorizado);
+            preparedStatement.setString(7, pRestituido);
+            preparedStatement.setString(8, pObservacao);
+            preparedStatement.setString(9, pLoginAtualizacao);
+            preparedStatement.setInt(10, pCodRestituicaoDecimoTerceiro);
 
             preparedStatement.executeUpdate();
 

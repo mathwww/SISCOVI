@@ -1,11 +1,9 @@
 package br.jus.stj.siscovi.dao.sql;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
-import br.jus.stj.siscovi.model.CalcularFeriasModel;
 import br.jus.stj.siscovi.model.RegistroDeDecimoTerceiroModel;
 import br.jus.stj.siscovi.model.RegistroDeFeriasModel;
 
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1059,6 +1057,5 @@ public class ConsultaTSQL {
         return registro;
 
     }
-
 
 }

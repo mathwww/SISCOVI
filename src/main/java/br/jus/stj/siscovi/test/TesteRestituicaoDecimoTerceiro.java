@@ -53,6 +53,9 @@ public class TesteRestituicaoDecimoTerceiro {
                 vValorMovimentado,
                 vLoginAtualizacao);
 
+        restituicaoDecimoTerceiro.RecalculoRestituicaoDecimoTerceiro(retorno, vTipoRestituicao,0,vDataInicioContagem,0,0,0,"SYSTEM" );
+
+        delete.DeleteHistRestituicaoDecimoTerceiro(retorno);
         delete.DeleteSaldoResidualDecimoTerceiro(retorno);
         delete.DeleteRestituicaoDecimoTerceiro(retorno);
 
