@@ -1,8 +1,6 @@
 package br.jus.stj.siscovi.dao.sql;
 
-import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
-import br.jus.stj.siscovi.model.RegistroDeDecimoTerceiroModel;
-import br.jus.stj.siscovi.model.RegistroDeFeriasModel;
+import br.jus.stj.siscovi.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -605,6 +603,42 @@ public class ConsultaTSQL {
     }
 
     /**
+     * Recuparação do próximo valor da sequência da chave primária da tabela tb_hist_restituicao_rescisao.
+     *
+     * @return Próximo valor de sequência da chave primária da tabela.
+     */
+
+    int RetornaCodSequenceTbHistRestituicaoRescisao () {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        int vCodTbHistRestituicaoRescisao = 0;
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT ident_current ('TB_HIST_RESTITUICAO_RESCISAO')");
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodTbHistRestituicaoRescisao = resultSet.getInt(1);
+                vCodTbHistRestituicaoRescisao = vCodTbHistRestituicaoRescisao + 1;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela de histórico de restituição de rescisão.");
+
+        }
+
+        return vCodTbHistRestituicaoRescisao;
+
+    }
+
+    /**
      * Retorna as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.
      *
      * @param pCodContrato;
@@ -1051,6 +1085,92 @@ public class ConsultaTSQL {
             sqle.printStackTrace();
 
             throw new NullPointerException("Não foi possível recuperar o registro de restituição de férias.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_restituicao_rescisao.
+     *
+     * @param pCodRestituicaoRescisao;
+     *
+     * @return Um registro de restituição de rescisão no model.
+     */
+
+    public RegistroDeRescisaoModel RetornaRegistroRestituicaoRescisao (int pCodRestituicaoRescisao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroDeRescisaoModel registro = null;
+
+        try {
+
+            String sql = "SELECT COD," +
+                    " COD_TERCEIRIZADO_CONTRATO," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " COD_TIPO_RESCISAO," +
+                    " DATA_DESLIGAMENTO," +
+                    " DATA_INICIO_FERIAS," +
+                    " VALOR_DECIMO_TERCEIRO," +
+                    " INCID_SUBMOD_4_1_DEC_TERCEIRO," +
+                    " INCID_MULTA_FGTS_DEC_TERCEIRO," +
+                    " VALOR_FERIAS," +
+                    " VALOR_TERCO," +
+                    " INCID_SUBMOD_4_1_FERIAS," +
+                    " INCID_SUBMOD_4_1_DEC_TERCEIRO," +
+                    " INCID_MULTA_FGTS_FERIAS," +
+                    " INCID_MULTA_FGTS_TERCO," +
+                    " MULTA_FGTS_SALARIO," +
+                    " DATA_REFERENCIA," +
+                    " AUTORIZADO," +
+                    " RESTITUIDO," +
+                    " OBSERVACAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO" +
+                    " FROM TB_RESTITUICAO_RESCISAO" +
+                    " WHERE COD = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRestituicaoRescisao);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroDeRescisaoModel(resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getInt(4),
+                        resultSet.getDate(5),
+                        resultSet.getDate(6),
+                        resultSet.getFloat(7),
+                        resultSet.getFloat(8),
+                        resultSet.getFloat(9),
+                        resultSet.getFloat(10),
+                        resultSet.getFloat(11),
+                        resultSet.getFloat(12),
+                        resultSet.getFloat(13),
+                        resultSet.getFloat(14),
+                        resultSet.getFloat(15),
+                        resultSet.getFloat(16),
+                        resultSet.getDate(17),
+                        resultSet.getString(18),
+                        resultSet.getString(19),
+                        resultSet.getString(20),
+                        resultSet.getString(21),
+                        resultSet.getTimestamp(22));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de restituição de rescisão.");
 
         }
 

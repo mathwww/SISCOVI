@@ -30,6 +30,7 @@ public class TesteRestituicaoRescisao {
         String vTipoRescisao = String.valueOf("SEM JUSTA CAUSA");
         String vLoginAtualizacao = String.valueOf("VSSOUSA");
         Date vDataDesligamento = Date.valueOf("2016-12-31");
+        Date vDataInicioFerias = Date.valueOf("2016-12-31");
 
         System.out.print("Dados do teste\nCOD_CONTRATO: " + vCodContrato + " COD_TERCEIRIZADO_CONTRATO: " +
                 vCodTerceirizadoContrato + "\n");
@@ -54,6 +55,7 @@ public class TesteRestituicaoRescisao {
                 vTipoRestituicao,
                 vTipoRescisao,
                 vDataDesligamento,
+                vDataInicioFerias,
                 restituicao.getValorDecimoTerceiro(),
                 restituicao.getValorIncidenciaDecimoTerceiro(),
                 restituicao.getValorFGTSDecimoTerceiro(),
@@ -61,15 +63,16 @@ public class TesteRestituicaoRescisao {
                 restituicao.getValorTerco(),
                 restituicao.getValorIncidenciaFerias(),
                 restituicao.getValorIncidenciaTerco(),
-                restituicao.getValorFerias(),
+                restituicao.getValorFGTSFerias(),
                 restituicao.getValorFGTSTerco(),
                 restituicao.getValorFGTSSalario(),
                 vLoginAtualizacao);
 
+        restituicaoRescisao.RecalculoRestituicaoRescisao(vRetorno, "RESGATE", vTipoRescisao, vDataDesligamento, vDataInicioFerias, 0, 0, 0, 0, 0,0 ,0,0,0, 0, "SYSTEM");
+
+        delete.DeleteHistRestituicaoRescisao(vRetorno);
         delete.DeleteSaldoResidualRescisao(vRetorno);
         delete.DeleteRestituicaoRescisao(vRetorno);
-
-
 
     }
 

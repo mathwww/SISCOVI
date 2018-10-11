@@ -189,9 +189,10 @@ public class UpdateTSQL {
      * Método que atualiza um registro da tabela de restituição de férias.
      *
      * @param pCodRestituicaoRescisao;
-     * @param pTipoRestituicao;
-     * @param pTipoRescisao;
+     * @param pCodTipoRestituicao;
+     * @param pCodTipoRescisao;
      * @param pDataDesligamento;
+     * @param pDataInicioFerias;
      * @param pValorDecimoTerceiro;
      * @param pValorIncidenciaDecimoTerceiro;
      * @param pValorFGTSDecimoTerceiro;
@@ -202,7 +203,6 @@ public class UpdateTSQL {
      * @param pValorFGTSFerias;
      * @param pValorFGTSTerco;
      * @param pValorFGTSSalario;
-     * @param pDataReferencia;
      * @param pAutorizado;
      * @param pRestituido;
      * @param pObservacao;
@@ -210,9 +210,10 @@ public class UpdateTSQL {
      */
 
     public void UpdateRestituicaoRescisao (int pCodRestituicaoRescisao,
-                                           String pTipoRestituicao,
-                                           String pTipoRescisao,
+                                           int pCodTipoRestituicao,
+                                           int pCodTipoRescisao,
                                            Date pDataDesligamento,
+                                           Date pDataInicioFerias,
                                            float pValorDecimoTerceiro,
                                            float pValorIncidenciaDecimoTerceiro,
                                            float pValorFGTSDecimoTerceiro,
@@ -223,21 +224,19 @@ public class UpdateTSQL {
                                            float pValorFGTSFerias,
                                            float pValorFGTSTerco,
                                            float pValorFGTSSalario,
-                                           Date pDataReferencia,
-                                           char pAutorizado,
-                                           char pRestituido,
+                                           String pAutorizado,
+                                           String pRestituido,
                                            String pObservacao,
                                            String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);
-        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
-        int vCodTipoRescisao = consulta.RetornaCodTipoRescisao(pTipoRescisao);
 
         String vSQLQuery = "UPDATE tb_restituicao_rescisao" +
                 " SET COD_TIPO_RESTITUICAO = ?," +
                 " COD_TIPO_RESCISAO = ?," +
                 " DATA_DESLIGAMENTO = ?," +
+                " DATA_INICIO_FERIAS = ?," +
                 " VALOR_DECIMO_TERCEIRO = ?," +
                 " INCID_SUBMOD_4_1_DEC_TERCEIRO = ?," +
                 " INCID_MULTA_FGTS_DEC_TERCEIRO = ?," +
@@ -248,7 +247,7 @@ public class UpdateTSQL {
                 " INCID_MULTA_FGTS_FERIAS = ?," +
                 " INCID_MULTA_FGTS_TERCO = ?," +
                 " MULTA_FGTS_SALARIO = ?," +
-                " DATA_REFERENCIA = ?," +
+                " DATA_REFERENCIA = GETDATE()," +
                 " AUTORIZADO = ?," +
                 " RESTITUIDO = ?," +
                 " OBSERVACAO = ?," +
@@ -259,20 +258,20 @@ public class UpdateTSQL {
         try {
 
             preparedStatement = connection.prepareStatement(vSQLQuery);
-            preparedStatement.setInt(1, vCodTipoRestituicao);
-            preparedStatement.setInt(2, vCodTipoRescisao);
+            preparedStatement.setInt(1, pCodTipoRestituicao);
+            preparedStatement.setInt(2, pCodTipoRescisao);
             preparedStatement.setDate(3, pDataDesligamento);
-            preparedStatement.setFloat(4, pValorDecimoTerceiro);
-            preparedStatement.setFloat(5, pValorIncidenciaDecimoTerceiro);
-            preparedStatement.setFloat(6, pValorFGTSDecimoTerceiro);
-            preparedStatement.setFloat(7, pValorFerias);
-            preparedStatement.setFloat(8, pValorTerco);
-            preparedStatement.setFloat(9, pValorIncidenciaFerias);
-            preparedStatement.setFloat(10, pValorIncidenciaTerco);
-            preparedStatement.setFloat(11, pValorFGTSFerias);
-            preparedStatement.setFloat(12, pValorFGTSTerco);
-            preparedStatement.setFloat(13, pValorFGTSSalario);
-            preparedStatement.setDate(14, pDataReferencia);
+            preparedStatement.setDate(4, pDataInicioFerias);
+            preparedStatement.setFloat(5, pValorDecimoTerceiro);
+            preparedStatement.setFloat(6, pValorIncidenciaDecimoTerceiro);
+            preparedStatement.setFloat(7, pValorFGTSDecimoTerceiro);
+            preparedStatement.setFloat(8, pValorFerias);
+            preparedStatement.setFloat(9, pValorTerco);
+            preparedStatement.setFloat(10, pValorIncidenciaFerias);
+            preparedStatement.setFloat(11, pValorIncidenciaTerco);
+            preparedStatement.setFloat(12, pValorFGTSFerias);
+            preparedStatement.setFloat(13, pValorFGTSTerco);
+            preparedStatement.setFloat(14, pValorFGTSSalario);
             preparedStatement.setString(15,String.valueOf(pAutorizado));
             preparedStatement.setString(16, String.valueOf(pRestituido));
             preparedStatement.setString(17, pObservacao);

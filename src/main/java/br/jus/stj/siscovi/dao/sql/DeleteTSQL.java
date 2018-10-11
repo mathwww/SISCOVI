@@ -238,4 +238,32 @@ public class DeleteTSQL {
 
     }
 
+    /**
+     * Método que exclui um registro da tabela de histórico de restituição de drescisão.
+     *
+     * @param pCodRestituicaoRescisao;
+     */
+
+    public void DeleteHistRestituicaoRescisao (int pCodRestituicaoRescisao) {
+
+        PreparedStatement preparedStatement;
+
+        String query = "DELETE FROM tb_hist_restituicao_rescisao WHERE COD_RESTITUICAO_RESCISAO = ?";
+
+        try {
+
+            preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1, pCodRestituicaoRescisao);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            throw new RuntimeException("Não foi possível deletar o registro solicitado do histórico de restituição de rescisão.");
+
+        }
+
+    }
+
 }

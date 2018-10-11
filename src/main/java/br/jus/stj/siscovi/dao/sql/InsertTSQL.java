@@ -218,6 +218,7 @@ public class InsertTSQL {
                                           int pCodTipoRestituicao,
                                           int pCodTipoRescisao,
                                           Date pDataDesligamento,
+                                          Date pDataInicioFerias,
                                           float pValorDecimoTerceiro,
                                           float pValorIncidenciaDecimoTerceiro,
                                           float pValorFGTSDecimoTerceiro,
@@ -243,6 +244,7 @@ public class InsertTSQL {
                     " COD_TIPO_RESTITUICAO," +
                     " COD_TIPO_RESCISAO," +
                     " DATA_DESLIGAMENTO," +
+                    " DATA_INICIO_FERIAS," +
                     " VALOR_DECIMO_TERCEIRO," +
                     " INCID_SUBMOD_4_1_DEC_TERCEIRO," +
                     " INCID_MULTA_FGTS_DEC_TERCEIRO," +
@@ -256,7 +258,7 @@ public class InsertTSQL {
                     " DATA_REFERENCIA," +
                     " LOGIN_ATUALIZACAO," +
                     " DATA_ATUALIZACAO)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, CURRENT_TIMESTAMP);" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, CURRENT_TIMESTAMP);" +
                     " SET IDENTITY_INSERT tb_restituicao_rescisao OFF;";
 
             preparedStatement = connection.prepareStatement(sql);
@@ -266,17 +268,18 @@ public class InsertTSQL {
             preparedStatement.setInt(3, pCodTipoRestituicao);
             preparedStatement.setInt(4, pCodTipoRescisao);
             preparedStatement.setDate(5, pDataDesligamento);
-            preparedStatement.setFloat(6, pValorDecimoTerceiro);
-            preparedStatement.setFloat(7, pValorIncidenciaDecimoTerceiro);
-            preparedStatement.setFloat(8, pValorFGTSDecimoTerceiro);
-            preparedStatement.setFloat(9, pValorFerias);
-            preparedStatement.setFloat(10, pValorTerco);
-            preparedStatement.setFloat(11, pValorIncidenciaFerias);
-            preparedStatement.setFloat(12, pValorIncidenciaTerco);
-            preparedStatement.setFloat(13, pValorFGTSFerias);
-            preparedStatement.setFloat(14, pValorFGTSTerco);
-            preparedStatement.setFloat(15, pValorFGTSSalario);
-            preparedStatement.setString(16, pLoginAtualizacao);
+            preparedStatement.setDate(6, pDataInicioFerias);
+            preparedStatement.setFloat(7, pValorDecimoTerceiro);
+            preparedStatement.setFloat(8, pValorIncidenciaDecimoTerceiro);
+            preparedStatement.setFloat(9, pValorFGTSDecimoTerceiro);
+            preparedStatement.setFloat(10, pValorFerias);
+            preparedStatement.setFloat(11, pValorTerco);
+            preparedStatement.setFloat(12, pValorIncidenciaFerias);
+            preparedStatement.setFloat(13, pValorIncidenciaTerco);
+            preparedStatement.setFloat(14, pValorFGTSFerias);
+            preparedStatement.setFloat(15, pValorFGTSTerco);
+            preparedStatement.setFloat(16, pValorFGTSSalario);
+            preparedStatement.setString(17, pLoginAtualizacao);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -415,6 +418,99 @@ public class InsertTSQL {
 
     }
 
+    public Integer InsertHistoricoRestituicaoRescisao (int pCodTbRestituicaoRescisao,
+                                                       int pCodTipoRestituicao,
+                                                       int pCodTipoRescisao,
+                                                       Date pDataDesligamento,
+                                                       Date pDataInicioFerias,
+                                                       float pValorDecimoTerceiro,
+                                                       float pIncidSubmod41DecTerceiro,
+                                                       float pIncidMultaFGTSDecTeceriro,
+                                                       float pValorFerias,
+                                                       float pValorTerco,
+                                                       float pIncidSubmod41Ferias,
+                                                       float pIncidSubmod41Terco,
+                                                       float pIncidMultaFGTSFerias,
+                                                       float pIncidMultaFGTSTerco,
+                                                       float pMultaFGTSSalario,
+                                                       Date pDataReferencia,
+                                                       String pAutorizado,
+                                                       String pRestituido,
+                                                       String pObservacao,
+                                                       String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+
+        int vCodTbHistRestituicaoRescisao = consulta.RetornaCodSequenceTbHistRestituicaoRescisao();
+
+        try {
+
+            String sql = "SET IDENTITY_INSERT TB_HIST_RESTITUICAO_RESCISAO ON;" +
+                    " INSERT INTO TB_HIST_RESTITUICAO_RESCISAO (COD," +
+                    " COD_RESTITUICAO_RESCISAO," +
+                    " COD_TIPO_RESTITUICAO," +
+                    " COD_TIPO_RESCISAO," +
+                    " DATA_DESLIGAMENTO," +
+                    " DATA_INICIO_FERIAS," +
+                    " VALOR_DECIMO_TERCEIRO," +
+                    " INCID_SUBMOD_4_1_DEC_TERCEIRO," +
+                    " INCID_MULTA_FGTS_DEC_TERCEIRO," +
+                    " VALOR_FERIAS," +
+                    " VALOR_TERCO," +
+                    " INCID_SUBMOD_4_1_FERIAS," +
+                    " INCID_SUBMOD_4_1_TERCO," +
+                    " INCID_MULTA_FGTS_FERIAS," +
+                    " INCID_MULTA_FGTS_TERCO," +
+                    " MULTA_FGTS_SALARIO," +
+                    " DATA_REFERENCIA," +
+                    " AUTORIZADO," +
+                    " RESTITUIDO," +
+                    " OBSERVACAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);" +
+                    " SET IDENTITY_INSERT TB_HIST_RESTITUICAO_RESCISAO OFF;";
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, vCodTbHistRestituicaoRescisao);
+            preparedStatement.setInt(2, pCodTbRestituicaoRescisao);
+            preparedStatement.setInt(3, pCodTipoRestituicao);
+            preparedStatement.setInt(4, pCodTipoRescisao);
+            preparedStatement.setDate(5, pDataDesligamento);
+            preparedStatement.setDate(6, pDataInicioFerias);
+            preparedStatement.setFloat(7, pValorDecimoTerceiro);
+            preparedStatement.setFloat(8, pIncidSubmod41DecTerceiro);
+            preparedStatement.setFloat(9, pIncidMultaFGTSDecTeceriro);
+            preparedStatement.setFloat(10, pValorFerias);
+            preparedStatement.setFloat(11, pValorTerco);
+            preparedStatement.setFloat(12, pIncidSubmod41Ferias);
+            preparedStatement.setFloat(13, pIncidSubmod41Terco);
+            preparedStatement.setFloat(14, pIncidMultaFGTSFerias);
+            preparedStatement.setFloat(15, pIncidMultaFGTSTerco);
+            preparedStatement.setFloat(16, pMultaFGTSSalario);
+            preparedStatement.setDate(17, pDataReferencia);
+            preparedStatement.setString(18, pAutorizado);
+            preparedStatement.setString(19,pRestituido);
+            preparedStatement.setString(20, pObservacao);
+            preparedStatement.setString(21, pLoginAtualizacao);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível inserir dados na tabela de histórico de restituição de rescisão.");
+
+        }
+
+        return vCodTbHistRestituicaoRescisao;
+
+    }
+
+
     public Integer InsertHistoricoRestituicaoFerias (int pCodTbRestituicaoFerias,
                                                      int pCodTipoRestituicao,
                                                      Date pInicioPeriodoAquisitivo,
@@ -495,5 +591,6 @@ public class InsertTSQL {
         return vCodTbHistRestituicaoFerias;
 
     }
+
 
 }
