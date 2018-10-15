@@ -14,6 +14,12 @@ public class TotalMensalPendenteModel {
     public ListaTotalMensalData getTotaisMensais() {
         return totaisMensais;
     }
+    public String getObservacoes() {
+        return observacoes;
+    }
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
     @Override
     public String toString() {
         return "TotalMensalPendenteModel{" +

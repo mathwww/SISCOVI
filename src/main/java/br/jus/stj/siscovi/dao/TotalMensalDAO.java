@@ -32,7 +32,8 @@ public class TotalMensalDAO {
                     " ROUND(SUM(tmr.decimo_terceiro), 2) AS \"Décimo terceiro retido\"," +
                     " ROUND(SUM(tmr.incidencia_submodulo_4_1), 2) AS \"Incidência retido\"," +
                     " ROUND(SUM(tmr.multa_fgts), 2) AS \"MULTA do FGTS retido\"," +
-                    " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"" +
+                    " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"," +
+                    "COUNT(ft.COD_TERCEIRIZADO_CONTRATO) AS TERCEIRIZADOS" +
                     " FROM tb_funcao_contrato fc" +
                     " JOIN tb_contrato c ON c.cod = fc.cod_contrato" +
                     " JOIN tb_funcao f ON f.cod = fc.cod_funcao" +
@@ -62,7 +63,8 @@ public class TotalMensalDAO {
                 try (ResultSet resultSet = preparedStatement.executeQuery()){
                     while(resultSet.next()){
                         TotalMensal totalMensal = new TotalMensal(resultSet.getFloat(6), resultSet.getFloat(7), resultSet.getFloat(8),
-                                resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"));
+                                resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"),
+                                resultSet.getInt("TERCEIRIZADOS"));
                         totais.add(totalMensal);
                     }
                     if(totais.size() > 0){
@@ -110,7 +112,8 @@ public class TotalMensalDAO {
                 " ROUND(SUM(tmr.decimo_terceiro), 2) AS \"Décimo terceiro retido\"," +
                 " ROUND(SUM(tmr.incidencia_submodulo_4_1), 2) AS \"Incidência retido\"," +
                 " ROUND(SUM(tmr.multa_fgts), 2) AS \"MULTA do FGTS retido\"," +
-                " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"" +
+                " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"," +
+                " COUNT(ft.COD_TERCEIRIZADO_CONTRATO) AS TERCEIRIZADOS" +
                 " FROM tb_funcao_contrato fc" +
                 " JOIN tb_contrato c ON c.cod = fc.cod_contrato" +
                 " JOIN tb_funcao f ON f.cod = fc.cod_funcao" +
@@ -138,7 +141,7 @@ public class TotalMensalDAO {
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 while(resultSet.next()){
                     TotalMensal totalMensal = new TotalMensal(resultSet.getFloat(6), resultSet.getFloat(7), resultSet.getFloat(8), resultSet.getFloat(9),
-                            resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("Função"));
+                            resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("Função"), resultSet.getInt("TERCEIRIZADOS"));
                     lista.add(totalMensal);
                 }
             }
@@ -166,7 +169,8 @@ public class TotalMensalDAO {
                 " ROUND(SUM(tmr.decimo_terceiro), 2) AS \"Décimo terceiro retido\"," +
                 " ROUND(SUM(tmr.incidencia_submodulo_4_1), 2) AS \"Incidência retido\"," +
                 " ROUND(SUM(tmr.multa_fgts), 2) AS \"MULTA do FGTS retido\"," +
-                " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"" +
+                " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"," +
+                " COUNT(ft.COD_TERCEIRIZADO_CONTRATO) AS TERCEIRIZADOS" +
                 " FROM tb_funcao_contrato fc" +
                 " JOIN tb_contrato c ON c.cod = fc.cod_contrato" +
                 " JOIN tb_funcao f ON f.cod = fc.cod_funcao" +
@@ -197,7 +201,8 @@ public class TotalMensalDAO {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while(resultSet.next()){
                         TotalMensal totalMensal = new TotalMensal(resultSet.getFloat(6), resultSet.getFloat(7), resultSet.getFloat(8),
-                                resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"));
+                                resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"),
+                                resultSet.getInt("TERCEIRIZADOS"));
                         totais.add(totalMensal);
                     }
                     if(totais.size() > 0) {
@@ -234,7 +239,9 @@ public class TotalMensalDAO {
                     " ROUND(SUM(tmr.incidencia_submodulo_4_1), 2) AS \"Incidência retido\"," +
                     " ROUND(SUM(tmr.multa_fgts), 2) AS \"MULTA do FGTS retido\"," +
                     " ROUND(SUM(tmr.ferias) + SUM(tmr.terco_constitucional) + SUM(tmr.decimo_terceiro) + SUM(tmr.incidencia_submodulo_4_1) + SUM(tmr.multa_fgts), 2) AS \"Total retido\"," +
-                    " tmr.AUTORIZADO" +
+                    " COUNT(ft.COD_TERCEIRIZADO_CONTRATO) AS TERCEIRIZADOS," +
+                    " tmr.AUTORIZADO," +
+                    " tmr.OBSERVACAO" +
                     " FROM tb_funcao_contrato fc" +
                     " JOIN tb_contrato c ON c.cod = fc.cod_contrato" +
                     " JOIN tb_funcao f ON f.cod = fc.cod_funcao" +
@@ -254,7 +261,8 @@ public class TotalMensalDAO {
                     " c.nome_empresa," +
                     " 'Contrato Nº: ' + c.numero_contrato," +
                     " f.nome," +
-                    " tmr.data_referencia" +
+                    " tmr.data_referencia," +
+                    " tmr.observacao" +
                     " ORDER BY 1,2,3,4";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -264,20 +272,24 @@ public class TotalMensalDAO {
                 preparedStatement.setInt(4, codGestor);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     String status = "";
+                    String observacoes = "";
                     while(resultSet.next()){
                         TotalMensal totalMensal = new TotalMensal(resultSet.getFloat(6), resultSet.getFloat(7), resultSet.getFloat(8),
-                                resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"));
+                                resultSet.getFloat(9), resultSet.getFloat(10), resultSet.getFloat(11), resultSet.getString("FUNÇÃO"),
+                                resultSet.getInt("TERCEIRIZADOS"));
                         totais.add(totalMensal);
                         if(resultSet.getString("AUTORIZADO") == null || resultSet.getString("AUTORIZADO").isEmpty()) {
                             status = "EM ANÁLISE";
                         }else if(resultSet.getString("AUTORIZADO").equals("N") || resultSet.getString("AUTORIZADO").equals("n")) {
                             status = "NEGADO";
                         }
+                        observacoes = resultSet.getString("OBSERVACAO");
                     }
                     if(totais.size() > 0) {
                         Date dataReferencia = Date.valueOf(datasDeCalculo.get(i).getAno() + "-" + datasDeCalculo.get(i).getMes() + "-01");
                         ListaTotalMensalData listaTotalMensalData = new ListaTotalMensalData(dataReferencia, totais);
                         TotalMensalPendenteModel totalMensalPendenteModel = new TotalMensalPendenteModel(listaTotalMensalData, status);
+                        totalMensalPendenteModel.setObservacoes(observacoes);
                         lista.add(totalMensalPendenteModel);
                     }
                 }
@@ -342,7 +354,7 @@ public class TotalMensalDAO {
 
     public boolean salvaAvaliacaoCalculosPendentes(int codigoContrato, List<TotalMensalPendenteModel> totaisPendentes, User user) {
         if(verificaPermissaoParaOperacao(1, user.getPerfil(), codigoContrato)) {
-            String sql = "UPDATE TB_TOTAL_MENSAL_A_RETER SET AUTORIZADO=?, LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=CURRENT_TIMESTAMP WHERE DATA_REFERENCIA=? AND COD_TERCEIRIZADO_CONTRATO=?";
+            String sql = "UPDATE TB_TOTAL_MENSAL_A_RETER SET AUTORIZADO=?, LOGIN_ATUALIZACAO=?, OBSERVACAO=?, DATA_ATUALIZACAO=CURRENT_TIMESTAMP WHERE DATA_REFERENCIA=? AND COD_TERCEIRIZADO_CONTRATO=?";
             List<Integer> listaTerceirizados = retornaCodigoTerceirizados(codigoContrato);
             if(salvaAvaliacaoCalculos(sql, totaisPendentes, listaTerceirizados, user)) {
                 return true;
@@ -353,7 +365,7 @@ public class TotalMensalDAO {
 
     public boolean salvaAvaliacaoCalculosPendentesExecucao(int codigoContrato, List<TotalMensalPendenteModel> totaisPendentes, User user){
         if(verificaPermissaoParaOperacao(1, user.getPerfil(), codigoContrato)) {
-            String sql = "UPDATE TB_TOTAL_MENSAL_A_RETER SET RETIDO=?, LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=CURRENT_TIMESTAMP WHERE DATA_REFERENCIA=? AND COD_TERCEIRIZADO_CONTRATO=?";
+            String sql = "UPDATE TB_TOTAL_MENSAL_A_RETER SET RETIDO=?,LOGIN_ATUALIZACAO=?, OBSERVACAO=?, DATA_ATUALIZACAO=CURRENT_TIMESTAMP WHERE DATA_REFERENCIA=? AND COD_TERCEIRIZADO_CONTRATO=?";
             List<Integer> listaTerceirizados = retornaCodigoTerceirizados(codigoContrato);
             if(salvaAvaliacaoCalculos(sql, totaisPendentes, listaTerceirizados, user)){
                 return true;
@@ -408,8 +420,9 @@ public class TotalMensalDAO {
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.setString(1, totalMensal.getStatus());
                     preparedStatement.setString(2, user.getUsername());
-                    preparedStatement.setDate(3, totalMensal.getTotaisMensais().getDataReferencia());
-                    preparedStatement.setInt(4, codTerceirizadoContrato);
+                    preparedStatement.setString(3, totalMensal.getObservacoes());
+                    preparedStatement.setDate(4, totalMensal.getTotaisMensais().getDataReferencia());
+                    preparedStatement.setInt(5, codTerceirizadoContrato);
                     preparedStatement.executeUpdate();
                 } catch (SQLException slqe) {
                     throw new RuntimeException("Houve um erro ao tentar salvar as alterações de avaliação de Cálculo !");

@@ -87,14 +87,16 @@ public class TotalMensalController {
     @Path("/getValoresPendentes/{codigoContrato}/{codigoUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getValoresPendentes(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
         String json = "";
         try {
             ArrayList<TotalMensalPendenteModel> calculosPendentes  = totalMensalDAO.getTotalMensalPendente(codigoContrato, codigoUsuario);
             if(calculosPendentes == null || calculosPendentes.size() == 0) {
-                json = gson.toJson(null);
+                ErrorMessage em = new ErrorMessage();
+                em.error = "Nenhum cálculo pendente de avaliação encontrado";
+                json = gson.toJson(em);
                 return Response.ok(json, MediaType.APPLICATION_JSON).build();
             }
            json = gson.toJson(calculosPendentes);

@@ -9,8 +9,9 @@ public class TotalMensal {
     private float incidencia;
     private float multaFGTS;
     private float total;
+    private int numeroTerceirizados;
 
-    public TotalMensal (float ferias, float tercoConstitucional, float decimoTerceiro, float incidencia, float multaFGTS, float total, String funcao) {
+    public TotalMensal (float ferias, float tercoConstitucional, float decimoTerceiro, float incidencia, float multaFGTS, float total, String funcao, int numeroTerceirizados) {
         this.ferias = ferias;
         this.tercoConstitucional = tercoConstitucional;
         this.decimoTerceiro = decimoTerceiro;
@@ -18,6 +19,7 @@ public class TotalMensal {
         this.multaFGTS = multaFGTS;
         this.total = total;
         this.funcao = funcao;
+        this.numeroTerceirizados = numeroTerceirizados;
     }
 
     public String getFuncao() {
