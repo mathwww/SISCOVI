@@ -230,7 +230,6 @@ public class UpdateTSQL {
                                            String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
-        ConsultaTSQL consulta = new ConsultaTSQL(connection);
 
         String vSQLQuery = "UPDATE tb_restituicao_rescisao" +
                 " SET COD_TIPO_RESTITUICAO = ?," +
@@ -283,6 +282,42 @@ public class UpdateTSQL {
         } catch (SQLException sqle) {
 
             throw new NullPointerException("Erro na execução da atualização dos dados da restiuição de rescisão.");
+
+        }
+
+    }
+
+    public void UpdateRubrica (int pCodRubrica,
+                               String pNome,
+                               String pSigla,
+                               String pDescricao,
+                               String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+
+        try {
+
+            String sql = "UPDATE TB_RUBRICA" +
+                    " SET NOME = ?," +
+                    " SIGLA = ?," +
+                    " DESCRICAO = ?," +
+                    " LOGIN_ATUALIZACAO = ?" +
+                    " WHERE COD = ?;";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, pNome);
+            preparedStatement.setString(2, pSigla);
+            preparedStatement.setString(3, pDescricao);
+            preparedStatement.setString(4, pLoginAtualizacao);
+            preparedStatement.setInt(5, pCodRubrica);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível atualizar a rubrica.");
 
         }
 

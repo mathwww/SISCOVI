@@ -1,9 +1,6 @@
 package br.jus.stj.siscovi.dao.sql;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class InsertTSQL {
 
@@ -591,6 +588,51 @@ public class InsertTSQL {
         return vCodTbHistRestituicaoFerias;
 
     }
+
+
+    public int InsertRubrica (String pNome,
+                              String pSigla,
+                              String pDescricao,
+                              String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+
+        int vCodRubrica = consulta.RetornaCodSequenceTable("TB_RUBRICA");
+
+        try {
+
+            String sql = "SET IDENTITY_INSERT TB_RUBRICA ON;" +
+                    " INSERT INTO TB_RUBRICA (COD," +
+                    " NOME," +
+                    " SIGLA," +
+                    " DESCRICAO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO)" +
+                    " VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP);" +
+                    " SET IDENTITY_INSERT TB_RUBRICA OFF;";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, vCodRubrica);
+            preparedStatement.setString(2, pNome);
+            preparedStatement.setString(3, pSigla);
+            preparedStatement.setString(4, pDescricao);
+            preparedStatement.setString(5, pLoginAtualizacao);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível inserir a nova rubrica.");
+
+        }
+
+        return vCodRubrica;
+
+    }
+
 
 
 }

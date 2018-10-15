@@ -234,6 +234,8 @@ public class ConsultaTSQL {
 
     }
 
+
+/*
     /**
      *Função que retorna o tipo de restituição correspondente a um código.
      *
@@ -241,7 +243,7 @@ public class ConsultaTSQL {
      *
      * @return O tipo (string) do registro correspondente a um cod de tipo de restituição.
      */
-
+/*
     public String RetornaTipoRestituicao (int pCodTipoRestituicao) {
 
         PreparedStatement preparedStatement;
@@ -249,7 +251,7 @@ public class ConsultaTSQL {
         String vTipoRestituicao = null;
 
         /*Atribuição do tipo de restituição.*/
-
+/*
         try {
 
             preparedStatement = connection.prepareStatement("SELECT NOME" + " FROM TB_TIPO_RESTITUICAO" + " WHERE cod = ?");
@@ -278,7 +280,7 @@ public class ConsultaTSQL {
         return vTipoRestituicao;
 
     }
-
+*/
     /**
      *Função que retorna o código de um tipo de rescisão.
      *
@@ -635,6 +637,48 @@ public class ConsultaTSQL {
         }
 
         return vCodTbHistRestituicaoRescisao;
+
+    }
+
+    /**
+     * Recuparação do próximo valor da sequência da chave primária da tabela requerida.
+     *
+     * @return Próximo valor de sequência da chave primária da tabela.
+     */
+
+    public int RetornaCodSequenceTable(String pNomeTabela) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        int vCodSequence = 0;
+
+        try {
+
+            preparedStatement = connection.prepareStatement("SELECT ident_current ('" + pNomeTabela + "')");
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                vCodSequence = resultSet.getInt(1);
+                vCodSequence = vCodSequence + 1;
+
+            }
+
+        } catch (SQLException sqle) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela " + pNomeTabela +".");
+
+        }
+
+        if (vCodSequence == 0) {
+
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela " + pNomeTabela +".");
+
+        }
+
+        return vCodSequence;
 
     }
 
@@ -1171,6 +1215,59 @@ public class ConsultaTSQL {
             sqle.printStackTrace();
 
             throw new NullPointerException("Não foi possível recuperar o registro de restituição de rescisão.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_rubrica.
+     *
+     * @param pCodRubrica;
+     *
+     * @return Um registro de rubrica no model.
+     */
+
+    public RegistroRubricaModel RetornaRegistroRubrica (int pCodRubrica) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroRubricaModel registro = null;
+
+        try {
+
+            String sql = "SELECT nome, " +
+                    "sigla, " +
+                    "descricao, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_rubrica " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRubrica);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroRubricaModel(pCodRubrica,
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getTimestamp(5));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro da rubrica requisitada.");
 
         }
 

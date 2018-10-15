@@ -239,7 +239,7 @@ public class DeleteTSQL {
     }
 
     /**
-     * Método que exclui um registro da tabela de histórico de restituição de drescisão.
+     * Método que exclui um registro da tabela de histórico de restituição de rescisão.
      *
      * @param pCodRestituicaoRescisao;
      */
@@ -261,6 +261,35 @@ public class DeleteTSQL {
         } catch (SQLException sqle) {
 
             throw new RuntimeException("Não foi possível deletar o registro solicitado do histórico de restituição de rescisão.");
+
+        }
+
+    }
+
+    /**
+     * Método que exclui um registro de uma tabela.
+     *
+     * @param pCod;
+     * @param pTabela;
+     */
+
+    public void DeleteRegistro (int pCod, String pTabela) {
+
+        PreparedStatement preparedStatement;
+
+        String query = "DELETE FROM " + pTabela + " WHERE COD = ?";
+
+        try {
+
+            preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1, pCod);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            throw new RuntimeException("Não foi possível deletar o registro da tabela " + pTabela + ".");
 
         }
 
