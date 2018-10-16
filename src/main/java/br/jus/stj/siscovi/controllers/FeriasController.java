@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -151,5 +152,14 @@ public class FeriasController {
             sqle.printStackTrace();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/salvarFeriasAvaliadas")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response salvarFeriasAvaliadas(String oject) {
+        
+        return Response.ok().build();
     }
 }

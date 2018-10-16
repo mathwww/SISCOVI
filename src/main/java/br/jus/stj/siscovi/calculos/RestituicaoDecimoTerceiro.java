@@ -1,11 +1,11 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
+import br.jus.stj.siscovi.model.RegistroDeDecimoTerceiroModel;
 import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
 import br.jus.stj.siscovi.dao.sql.*;
 
 import java.sql.*;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +35,6 @@ public class RestituicaoDecimoTerceiro {
                                                                                  Date pInicioContagem,
                                                                                  Date pFimContagem) {
 
-        PreparedStatement preparedStatement;
-        ResultSet resultSet;
         Retencao retencao = new Retencao(connection);
         Percentual percentual = new Percentual(connection);
         Periodos periodo = new Periodos(connection);
@@ -74,10 +72,6 @@ public class RestituicaoDecimoTerceiro {
         int vAno;
         int vMes;
 
-        /*Variável para a checagem de existência do terceirizado.*/
-
-        int vCheck = 0;
-
         /*Variáveis de controle.*/
 
         int vDiasSubperiodo;
@@ -87,33 +81,6 @@ public class RestituicaoDecimoTerceiro {
         if (pInicioContagem == null || pFimContagem == null) {
 
             throw new NullPointerException("Erro na checagem dos parâmetros.");
-
-        }
-
-        /*Checagem da existência do terceirizado no contrato.*/
-
-        try {
-
-            preparedStatement = connection.prepareStatement("SELECT COUNT(COD) FROM TB_TERCEIRIZADO_CONTRATO WHERE COD=?");
-
-            preparedStatement.setInt(1, pCodTerceirizadoContrato);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                vCheck = resultSet.getInt(1);
-
-            }
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
-
-        if (vCheck == 0) {
-
-            throw new NullPointerException("Terceirizado não encontrado no contrato.");
 
         }
 
@@ -200,48 +167,14 @@ public class RestituicaoDecimoTerceiro {
 
                     vDataInicio = vDataReferencia;
 
-                    /*Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
-
-                    List<Date> datas = new ArrayList<>();
-
                     /*Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.*/
 
-                    try {
+                    List<Date> datas = consulta.RetornaSubperiodosMesPercentual(vCodContrato,
+                            vMes,
+                            vAno,
+                            vDataReferencia);
 
-                        preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_INICIO) = ?" + " AND \n" + " YEAR(DATA_INICIO) = ?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM) = ?)" + " UNION" + " SELECT data_inicio AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_INICIO)=?" + " AND " + " YEAR(DATA_INICIO)=?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM)=?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY data ASC");
-
-                        preparedStatement.setInt(1, vCodContrato);
-                        preparedStatement.setInt(2, vMes);
-                        preparedStatement.setInt(3, vAno);
-                        preparedStatement.setInt(4, vCodContrato);
-                        preparedStatement.setInt(5, vMes);
-                        preparedStatement.setInt(6, vAno);
-                        preparedStatement.setInt(7, vMes);
-                        preparedStatement.setInt(8, vAno);
-                        preparedStatement.setInt(9, vMes);
-                        preparedStatement.setInt(10, vAno);
-                        preparedStatement.setInt(11, vMes);
-                        preparedStatement.setInt(12, vMes);
-                        preparedStatement.setInt(13, vAno);
-                        preparedStatement.setInt(14, vMes);
-                        preparedStatement.setInt(15, vAno);
-                        preparedStatement.setInt(16, vMes);
-                        preparedStatement.setInt(17, vAno);
-                        preparedStatement.setInt(18, vMes);
-                        preparedStatement.setInt(19, vAno);
-                        resultSet = preparedStatement.executeQuery();
-
-                        while (resultSet.next()) {
-
-                            datas.add(resultSet.getDate("data"));
-
-                        }
-
-                    } catch (SQLException e) {
-
-                        throw new NullPointerException("Erro ao tentar carregar as datas referentes ao percentuais. " + " Contrato: " + vCodContrato + ". No perídodo: " + vDataReferencia.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-
-                    }
+                    /*Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
 
                     for (Date data : datas) {
 
@@ -255,19 +188,7 @@ public class RestituicaoDecimoTerceiro {
 
                         if (vMes == 2) {
 
-                            if (vDataFim.toLocalDate().getDayOfMonth() == Date.valueOf(vDataReferencia.toLocalDate().withDayOfMonth(vDataReferencia.toLocalDate().lengthOfMonth())).toLocalDate().getDayOfMonth()) {
-
-                                if (vDataFim.toLocalDate().getDayOfMonth() == 28) {
-
-                                    vDiasSubperiodo = vDiasSubperiodo + 2;
-
-                                } else {
-
-                                    vDiasSubperiodo = vDiasSubperiodo + 1;
-
-                                }
-
-                            }
+                            vDiasSubperiodo = periodo.AjusteDiasSubperiodoFevereiro(vDataReferencia, vDataFim, vDiasSubperiodo);
 
                         }
 
@@ -315,46 +236,15 @@ public class RestituicaoDecimoTerceiro {
 
                     vDataInicio = vDataReferencia;
 
-                    /*Loop contendo das datas das alterações de percentuais que comporão os subperíodos.*/
+                    /*Seleciona as datas que compõem os subperíodos gerados pelas alterações de remuneração no mês.*/
 
-                    /*Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual no mês.*/
+                    List<Date> datas = consulta.RetornaSubperiodosMesRemuneracao(vCodContrato,
+                            vMes,
+                            vAno,
+                            tupla.getCodFuncaoContrato(),
+                            vDataReferencia);
 
-                    List<Date> datas = new ArrayList<>();
-
-                    try {
-
-                        preparedStatement = connection.prepareStatement("SELECT rfc.data_inicio AS data" + " FROM tb_remuneracao_fun_con rfc\n" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_inicio) = ?" + " AND" + " YEAR(rfc.data_inicio) = ?)" + " UNION" + " SELECT rfc.data_fim AS data " + " FROM tb_remuneracao_fun_con rfc" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_fim) = ?" + " AND " + " YEAR(rfc.data_fim) = ?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY DATA ASC");
-
-                        preparedStatement.setInt(1, vCodContrato);
-                        preparedStatement.setInt(2, tupla.getCodFuncaoContrato());
-                        preparedStatement.setInt(3, vMes);
-                        preparedStatement.setInt(4, vAno);
-                        preparedStatement.setInt(5, vCodContrato);
-                        preparedStatement.setInt(6, tupla.getCodFuncaoContrato());
-                        preparedStatement.setInt(7, vMes);
-                        preparedStatement.setInt(8, vAno);
-                        preparedStatement.setInt(9, vMes);
-                        preparedStatement.setInt(10, vMes);
-                        preparedStatement.setInt(11, vAno);
-                        preparedStatement.setInt(12, vMes);
-                        preparedStatement.setInt(13, vAno);
-                        preparedStatement.setInt(14, vMes);
-                        preparedStatement.setInt(15, vAno);
-                        preparedStatement.setInt(16, vMes);
-                        preparedStatement.setInt(17, vAno);
-                        resultSet = preparedStatement.executeQuery();
-
-                        while (resultSet.next()) {
-
-                            datas.add(resultSet.getDate("data"));
-
-                        }
-
-                    } catch (SQLException e) {
-
-                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de remuneração da função: " + tupla.getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
-
-                    }
+                    /*Loop contendo das datas das alterações de remuneração que comporão os subperíodos.*/
 
                     for (Date data : datas) {
 
@@ -368,19 +258,7 @@ public class RestituicaoDecimoTerceiro {
 
                         if (vMes == 2) {
 
-                            if (vDataFim.toLocalDate().getDayOfMonth() == Date.valueOf(vDataReferencia.toLocalDate().withDayOfMonth(vDataReferencia.toLocalDate().lengthOfMonth())).toLocalDate().getDayOfMonth()) {
-
-                                if (vDataFim.toLocalDate().getDayOfMonth() == 28) {
-
-                                    vDiasSubperiodo = vDiasSubperiodo + 2;
-
-                                } else {
-
-                                    vDiasSubperiodo = vDiasSubperiodo + 1;
-
-                                }
-
-                            }
+                            vDiasSubperiodo = periodo.AjusteDiasSubperiodoFevereiro(vDataReferencia, vDataFim, vDiasSubperiodo);
 
                         }
 
@@ -428,52 +306,15 @@ public class RestituicaoDecimoTerceiro {
 
                     vDataInicio = vDataReferencia;
 
-                    List<Date> datas = new ArrayList<>();
+                    /*Seleciona as datas que compõem os subperíodos gerados pelas alterações de percentual e remuneração no mês.*/
 
-                    try {
+                    List<Date> datas = consulta.RetornaSubperiodosMesPercentualRemuneracao(vCodContrato,
+                            vMes,
+                            vAno,
+                            tupla.getCodFuncaoContrato(),
+                            vDataReferencia);
 
-                        preparedStatement = connection.prepareStatement("SELECT data_inicio AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_INICIO) = ?" + " AND \n" + " YEAR(DATA_INICIO) = ?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_contrato" + " WHERE cod_contrato = ?" + " AND (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM) = ?)" + " UNION" + " SELECT data_inicio AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_INICIO)=?" + " AND " + " YEAR(DATA_INICIO)=?)" + " UNION" + " SELECT data_fim AS data" + " FROM tb_percentual_estatico" + " WHERE (MONTH(DATA_FIM)=?" + " AND" + " YEAR(DATA_FIM)=?)" + " UNION" + " SELECT rfc.data_inicio AS data" + " FROM tb_remuneracao_fun_con rfc\n" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_inicio) = ?" + " AND" + " YEAR(rfc.data_inicio) = ?)" + " UNION" + " SELECT rfc.data_fim AS data " + " FROM tb_remuneracao_fun_con rfc" + " JOIN tb_funcao_contrato fc ON fc.cod = rfc.cod_funcao_contrato" + " WHERE fc.cod_contrato = ?" + " AND fc.cod = ?" + " AND (MONTH(rfc.data_fim) = ?" + " AND " + " YEAR(rfc.data_fim) = ?)" + " UNION" + " SELECT CASE WHEN ? = 2 THEN" + " EOMONTH(CONVERT(DATE, CONCAT('28/' , ? , '/' ,?), 103))" + " ELSE" + " CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103) END AS data" + " EXCEPT" + " SELECT CASE WHEN DAY(EOMONTH(CONVERT(DATE, CONCAT('30/' , ? , '/' ,?), 103))) = 31 THEN" + " CONVERT(DATE, CONCAT('31/' , ? , '/' ,?), 103)" + " ELSE" + " NULL END AS data" + " ORDER BY DATA ASC");
-
-                        preparedStatement.setInt(1, vCodContrato);
-                        preparedStatement.setInt(2, vMes);
-                        preparedStatement.setInt(3, vAno);
-                        preparedStatement.setInt(4, vCodContrato);
-                        preparedStatement.setInt(5, vMes);
-                        preparedStatement.setInt(6, vAno);
-                        preparedStatement.setInt(7, vMes);
-                        preparedStatement.setInt(8, vAno);
-                        preparedStatement.setInt(9, vMes);
-                        preparedStatement.setInt(10, vAno);
-                        preparedStatement.setInt(11, vCodContrato);
-                        preparedStatement.setInt(12, tupla.getCodFuncaoContrato());
-                        preparedStatement.setInt(13, vMes);
-                        preparedStatement.setInt(14, vAno);
-                        preparedStatement.setInt(15, vCodContrato);
-                        preparedStatement.setInt(16, tupla.getCodFuncaoContrato());
-                        preparedStatement.setInt(17, vMes);
-                        preparedStatement.setInt(18, vAno);
-                        preparedStatement.setInt(19, vMes);
-                        preparedStatement.setInt(20, vMes);
-                        preparedStatement.setInt(21, vAno);
-                        preparedStatement.setInt(22, vMes);
-                        preparedStatement.setInt(23, vAno);
-                        preparedStatement.setInt(24, vMes);
-                        preparedStatement.setInt(25, vAno);
-                        preparedStatement.setInt(26, vMes);
-                        preparedStatement.setInt(27, vAno);
-                        resultSet = preparedStatement.executeQuery();
-
-                        while (resultSet.next()) {
-
-                            datas.add(resultSet.getDate("data"));
-
-                        }
-
-                    } catch (SQLException e) {
-
-                        throw new NullPointerException("Não foi possível determinar os subperíodos do mês provenientes da alteração de percentuais e da remuneração da função: " + tupla.getCodFuncaoContrato() + " na data referência: " + vDataReferencia);
-
-                    }
+                    /*Loop contendo das datas das alterações de percentual e remuneração que comporão os subperíodos.*/
 
                     for (Date data : datas) {
 
@@ -487,19 +328,7 @@ public class RestituicaoDecimoTerceiro {
 
                         if (vMes == 2) {
 
-                            if (vDataFim.toLocalDate().getDayOfMonth() == Date.valueOf(vDataReferencia.toLocalDate().withDayOfMonth(vDataReferencia.toLocalDate().lengthOfMonth())).toLocalDate().getDayOfMonth()) {
-
-                                if (vDataFim.toLocalDate().getDayOfMonth() == 28) {
-
-                                    vDiasSubperiodo = vDiasSubperiodo + 2;
-
-                                } else {
-
-                                    vDiasSubperiodo = vDiasSubperiodo + 1;
-
-                                }
-
-                            }
+                            vDiasSubperiodo = periodo.AjusteDiasSubperiodoFevereiro(vDataReferencia, vDataFim, vDiasSubperiodo);
 
                         }
 
@@ -602,14 +431,12 @@ public class RestituicaoDecimoTerceiro {
                                                       float pValorMovimentado,
                                                       String pLoginAtualizacao) {
 
-        PreparedStatement preparedStatement;
-        ResultSet resultSet;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);
         InsertTSQL insert = new InsertTSQL(connection);
 
         /*Chaves primárias.*/
 
-        int vCodTbRestituicao13 = 0;
+        int vCodTbRestituicao13;
         int vCodTipoRestituicao;
 
         /*Variáveis auxiliares.*/
@@ -628,8 +455,6 @@ public class RestituicaoDecimoTerceiro {
         }
 
         /*Recuparação do próximo valor da sequência da chave primária da tabela tb_restituicao_decimo_terceiro.*/
-
-
 
         /*No caso de segunda parcela a movimentação gera resíduos referentes ao
          valor do décimo terceiro que é afetado pelos descontos (IRPF, INSS e etc.)*/
@@ -672,6 +497,95 @@ public class RestituicaoDecimoTerceiro {
         }
 
         return vCodTbRestituicao13;
+
+    }
+
+    public Integer RecalculoRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro,
+                                                       String pTipoRestituicao,
+                                                       int pNumeroParcela,
+                                                       Date pInicioContagem,
+                                                       float pValorDecimoTerceiro,
+                                                       float pValorIncidencia,
+                                                       float pValorMovimentado,
+                                                       String pLoginAtualizacao) {
+
+        int vRetornoChavePrimaria;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+        InsertTSQL insert = new InsertTSQL(connection);
+        UpdateTSQL update = new UpdateTSQL(connection);
+        DeleteTSQL delete = new DeleteTSQL(connection);
+
+        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
+
+        RegistroDeDecimoTerceiroModel registro = consulta.RetornaRegistroRestituicaoDecimoTerceiro(pCodRestituicaoDecimoTerceiro);
+
+        if (registro == null) {
+
+            throw new NullPointerException("Registro anterior não encontrado.");
+
+        }
+
+        vRetornoChavePrimaria = insert.InsertHistoricoRestituicaoDecimoTerceiro(registro.getpCod(),
+                registro.getpCodTipoRestituicao(),
+                registro.getpParcela(),
+                registro.getpDataInicioContagem(),
+                registro.getpValor(),
+                registro.getpIncidenciaSubmod41(),
+                registro.getpDataReferencia(),
+                registro.getpAutorizado(),
+                registro.getpRestituido(),
+                registro.getpObservacao(),
+                registro.getpLoginAtualizacao());
+
+        delete.DeleteSaldoResidualRescisao(pCodRestituicaoDecimoTerceiro);
+
+        /*Variáveis auxiliares.*/
+
+        float vValor = 0;
+        float vIncidencia = 0;
+
+        /*No caso de segunda parcela a movimentação gera resíduos referentes ao
+         valor do décimo terceiro que é afetado pelos descontos (IRPF, INSS e etc.)*/
+
+        if ((pNumeroParcela == 2 || pNumeroParcela == 0) && (pTipoRestituicao.equals("MOVIMENTAÇÃO"))) {
+
+            vValor = pValorDecimoTerceiro - pValorMovimentado;
+
+            pValorDecimoTerceiro = pValorMovimentado;
+
+        }
+
+        /*Provisionamento da incidência para o saldo residual no caso de movimentação.*/
+
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
+
+            vIncidencia = pValorIncidencia;
+
+            pValorIncidencia = 0;
+
+        }
+
+        update.UpdateRestituicaoDecimoTerceiro(pCodRestituicaoDecimoTerceiro,
+                vCodTipoRestituicao,
+                pNumeroParcela,
+                pInicioContagem,
+                pValorDecimoTerceiro,
+                pValorIncidencia,
+                "",
+                "",
+                "",
+                pLoginAtualizacao);
+
+        if (pTipoRestituicao.equals("MOVIMENTAÇÃO")) {
+
+            insert.InsertSaldoResidualDecimoTerceiro(pCodRestituicaoDecimoTerceiro,
+                    vValor,
+                    vIncidencia,
+                    pLoginAtualizacao);
+
+        }
+
+        return vRetornoChavePrimaria;
 
     }
 

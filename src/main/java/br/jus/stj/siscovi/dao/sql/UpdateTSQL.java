@@ -54,7 +54,6 @@ public class UpdateTSQL {
                                          String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
-        ConsultaTSQL consulta = new ConsultaTSQL(connection);
 
         if (pRestituido.length() > 1 || pAutorizado.length() > 1) {
 
@@ -123,7 +122,6 @@ public class UpdateTSQL {
      * @param pInicioContagem;
      * @param pValorDecimoTerceiro;
      * @param pValorIncidencia;
-     * @param pDataReferencia;
      * @param pAutorizado;
      * @param pRestituido;
      * @param pObservacao;
@@ -131,20 +129,17 @@ public class UpdateTSQL {
      */
 
     public void UpdateRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro,
-                                                 String pTipoRestituicao,
+                                                 int pTipoRestituicao,
                                                  int pParcela,
                                                  Date pInicioContagem,
                                                  float pValorDecimoTerceiro,
                                                  float pValorIncidencia,
-                                                 Date pDataReferencia,
                                                  String pAutorizado,
                                                  String pRestituido,
                                                  String pObservacao,
                                                  String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
-        ConsultaTSQL consulta = new ConsultaTSQL(connection);
-        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
 
         if (pRestituido.length() > 1 || pAutorizado.length() > 1) {
 
@@ -158,7 +153,7 @@ public class UpdateTSQL {
                 " DATA_INICIO_CONTAGEM = ?," +
                 " VALOR = ?," +
                 " INCIDENCIA_SUBMODULO_4_1 = ?," +
-                " DATA_REFERENCIA = ?," +
+                " DATA_REFERENCIA = GETDATE()," +
                 " AUTORIZADO = ?," +
                 " RESTITUIDO = ?," +
                 " OBSERVACAO = ?," +
@@ -169,17 +164,16 @@ public class UpdateTSQL {
         try {
 
             preparedStatement = connection.prepareStatement(vSQLQuerry);
-            preparedStatement.setInt(1, vCodTipoRestituicao);
+            preparedStatement.setInt(1, pTipoRestituicao);
             preparedStatement.setInt(2, pParcela);
             preparedStatement.setDate(3, pInicioContagem);
             preparedStatement.setFloat(4, pValorDecimoTerceiro);
             preparedStatement.setFloat(5, pValorIncidencia);
-            preparedStatement.setDate(6, pDataReferencia);
-            preparedStatement.setString(7, pAutorizado);
-            preparedStatement.setString(8, pRestituido);
-            preparedStatement.setString(9, pObservacao);
-            preparedStatement.setString(10, pLoginAtualizacao);
-            preparedStatement.setInt(11, pCodRestituicaoDecimoTerceiro);
+            preparedStatement.setString(6, pAutorizado);
+            preparedStatement.setString(7, pRestituido);
+            preparedStatement.setString(8, pObservacao);
+            preparedStatement.setString(9, pLoginAtualizacao);
+            preparedStatement.setInt(10, pCodRestituicaoDecimoTerceiro);
 
             preparedStatement.executeUpdate();
 
@@ -195,9 +189,10 @@ public class UpdateTSQL {
      * Método que atualiza um registro da tabela de restituição de férias.
      *
      * @param pCodRestituicaoRescisao;
-     * @param pTipoRestituicao;
-     * @param pTipoRescisao;
+     * @param pCodTipoRestituicao;
+     * @param pCodTipoRescisao;
      * @param pDataDesligamento;
+     * @param pDataInicioFerias;
      * @param pValorDecimoTerceiro;
      * @param pValorIncidenciaDecimoTerceiro;
      * @param pValorFGTSDecimoTerceiro;
@@ -208,7 +203,6 @@ public class UpdateTSQL {
      * @param pValorFGTSFerias;
      * @param pValorFGTSTerco;
      * @param pValorFGTSSalario;
-     * @param pDataReferencia;
      * @param pAutorizado;
      * @param pRestituido;
      * @param pObservacao;
@@ -216,9 +210,10 @@ public class UpdateTSQL {
      */
 
     public void UpdateRestituicaoRescisao (int pCodRestituicaoRescisao,
-                                           String pTipoRestituicao,
-                                           String pTipoRescisao,
+                                           int pCodTipoRestituicao,
+                                           int pCodTipoRescisao,
                                            Date pDataDesligamento,
+                                           Date pDataInicioFerias,
                                            float pValorDecimoTerceiro,
                                            float pValorIncidenciaDecimoTerceiro,
                                            float pValorFGTSDecimoTerceiro,
@@ -229,21 +224,18 @@ public class UpdateTSQL {
                                            float pValorFGTSFerias,
                                            float pValorFGTSTerco,
                                            float pValorFGTSSalario,
-                                           Date pDataReferencia,
-                                           char pAutorizado,
-                                           char pRestituido,
+                                           String pAutorizado,
+                                           String pRestituido,
                                            String pObservacao,
                                            String pLoginAtualizacao) {
 
         PreparedStatement preparedStatement;
-        ConsultaTSQL consulta = new ConsultaTSQL(connection);
-        int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
-        int vCodTipoRescisao = consulta.RetornaCodTipoRescisao(pTipoRescisao);
 
         String vSQLQuery = "UPDATE tb_restituicao_rescisao" +
                 " SET COD_TIPO_RESTITUICAO = ?," +
                 " COD_TIPO_RESCISAO = ?," +
                 " DATA_DESLIGAMENTO = ?," +
+                " DATA_INICIO_FERIAS = ?," +
                 " VALOR_DECIMO_TERCEIRO = ?," +
                 " INCID_SUBMOD_4_1_DEC_TERCEIRO = ?," +
                 " INCID_MULTA_FGTS_DEC_TERCEIRO = ?," +
@@ -254,7 +246,7 @@ public class UpdateTSQL {
                 " INCID_MULTA_FGTS_FERIAS = ?," +
                 " INCID_MULTA_FGTS_TERCO = ?," +
                 " MULTA_FGTS_SALARIO = ?," +
-                " DATA_REFERENCIA = ?," +
+                " DATA_REFERENCIA = GETDATE()," +
                 " AUTORIZADO = ?," +
                 " RESTITUIDO = ?," +
                 " OBSERVACAO = ?," +
@@ -265,20 +257,20 @@ public class UpdateTSQL {
         try {
 
             preparedStatement = connection.prepareStatement(vSQLQuery);
-            preparedStatement.setInt(1, vCodTipoRestituicao);
-            preparedStatement.setInt(2, vCodTipoRescisao);
+            preparedStatement.setInt(1, pCodTipoRestituicao);
+            preparedStatement.setInt(2, pCodTipoRescisao);
             preparedStatement.setDate(3, pDataDesligamento);
-            preparedStatement.setFloat(4, pValorDecimoTerceiro);
-            preparedStatement.setFloat(5, pValorIncidenciaDecimoTerceiro);
-            preparedStatement.setFloat(6, pValorFGTSDecimoTerceiro);
-            preparedStatement.setFloat(7, pValorFerias);
-            preparedStatement.setFloat(8, pValorTerco);
-            preparedStatement.setFloat(9, pValorIncidenciaFerias);
-            preparedStatement.setFloat(10, pValorIncidenciaTerco);
-            preparedStatement.setFloat(11, pValorFGTSFerias);
-            preparedStatement.setFloat(12, pValorFGTSTerco);
-            preparedStatement.setFloat(13, pValorFGTSSalario);
-            preparedStatement.setDate(14, pDataReferencia);
+            preparedStatement.setDate(4, pDataInicioFerias);
+            preparedStatement.setFloat(5, pValorDecimoTerceiro);
+            preparedStatement.setFloat(6, pValorIncidenciaDecimoTerceiro);
+            preparedStatement.setFloat(7, pValorFGTSDecimoTerceiro);
+            preparedStatement.setFloat(8, pValorFerias);
+            preparedStatement.setFloat(9, pValorTerco);
+            preparedStatement.setFloat(10, pValorIncidenciaFerias);
+            preparedStatement.setFloat(11, pValorIncidenciaTerco);
+            preparedStatement.setFloat(12, pValorFGTSFerias);
+            preparedStatement.setFloat(13, pValorFGTSTerco);
+            preparedStatement.setFloat(14, pValorFGTSSalario);
             preparedStatement.setString(15,String.valueOf(pAutorizado));
             preparedStatement.setString(16, String.valueOf(pRestituido));
             preparedStatement.setString(17, pObservacao);
@@ -290,6 +282,42 @@ public class UpdateTSQL {
         } catch (SQLException sqle) {
 
             throw new NullPointerException("Erro na execução da atualização dos dados da restiuição de rescisão.");
+
+        }
+
+    }
+
+    public void UpdateRubrica (int pCodRubrica,
+                               String pNome,
+                               String pSigla,
+                               String pDescricao,
+                               String pLoginAtualizacao) {
+
+        PreparedStatement preparedStatement;
+
+        try {
+
+            String sql = "UPDATE TB_RUBRICA" +
+                    " SET NOME = ?," +
+                    " SIGLA = ?," +
+                    " DESCRICAO = ?," +
+                    " LOGIN_ATUALIZACAO = ?" +
+                    " WHERE COD = ?;";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, pNome);
+            preparedStatement.setString(2, pSigla);
+            preparedStatement.setString(3, pDescricao);
+            preparedStatement.setString(4, pLoginAtualizacao);
+            preparedStatement.setInt(5, pCodRubrica);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível atualizar a rubrica.");
 
         }
 
