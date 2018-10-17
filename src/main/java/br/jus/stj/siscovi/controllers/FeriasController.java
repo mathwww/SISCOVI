@@ -5,6 +5,7 @@ import br.jus.stj.siscovi.calculos.RestituicaoFerias;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.FeriasDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
+import br.jus.stj.siscovi.model.AvaliacaoFerias;
 import br.jus.stj.siscovi.model.CalcularFeriasModel;
 import br.jus.stj.siscovi.model.ValorRestituicaoFeriasModel;
 import com.google.gson.Gson;
@@ -154,12 +155,27 @@ public class FeriasController {
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
-    @POST
+    @PUT
     @Path("/salvarFeriasAvaliadas")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response salvarFeriasAvaliadas(String oject) {
-        
-        return Response.ok().build();
+    public Response salvarFeriasAvaliadas(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        AvaliacaoFerias avaliacaoFerias = gson.fromJson(object, AvaliacaoFerias.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
+        if(feriasDAO.salvaAvaliacaoCalculosFerias(avaliacaoFerias)) {
+            try {
+               connectSQLServer.dbConnect().close();
+            }catch (SQLException sqle) {
+                String json = gson.toJson(new ErrorMessage().handleError(sqle));
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success", true);
+            String json = gson.toJson(jsonObject);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }else {
+            return Response.status(409).build();
+        }
     }
 }

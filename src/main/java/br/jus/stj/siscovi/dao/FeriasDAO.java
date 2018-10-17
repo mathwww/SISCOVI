@@ -1,6 +1,7 @@
 package br.jus.stj.siscovi.dao;
 
 import br.jus.stj.siscovi.calculos.Ferias;
+import br.jus.stj.siscovi.model.AvaliacaoFerias;
 import br.jus.stj.siscovi.model.CalcularFeriasModel;
 import br.jus.stj.siscovi.model.CalculoPendenteModel;
 import br.jus.stj.siscovi.model.TerceirizadoFerias;
@@ -56,7 +57,7 @@ public class FeriasDAO {
     }
 
     /**
-     *  Return a list of previous vacation calculus for all the employees that had It's vacation rights calculated and has not been apreciated by the responsible party
+     *  Returns a list of previous vacation calculus for all the employees that had It's vacation rights calculated and has not been apreciated by the responsible party
      * @param codigoContrato - Id of the contract user wants to get pending vacation calculus
      * @return
      */
@@ -92,7 +93,7 @@ public class FeriasDAO {
                 " JOIN tb_usuario u ON u.cod = hgc.cod_usuario" +
                 " JOIN tb_funcao_contrato fc ON fc.cod = ft.cod_funcao_contrato" +
                 " JOIN tb_funcao f ON f.cod = fc.cod_funcao" +
-                " WHERE tc.COD_CONTRATO = ?";
+                " WHERE tc.COD_CONTRATO = ? AND AUTORIZADO IS NULL OR AUTORIZADO='N' OR AUTORIZADO='N'";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, codigoContrato);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -131,5 +132,51 @@ public class FeriasDAO {
             sqle.printStackTrace();
         }
         return lista;
+    }
+
+    public boolean salvaAvaliacaoCalculosFerias(AvaliacaoFerias avaliacaoFerias) {
+        String sql = "UPDATE tb_restituicao_ferias" +
+                " SET " +
+                " DATA_INICIO_PERIODO_AQUISITIVO = ?," +
+                " DATA_FIM_PERIODO_AQUISITIVO = ?," +
+                " DATA_INICIO_USUFRUTO = ?," +
+                " DATA_FIM_USUFRUTO = ?," +
+                " DIAS_VENDIDOS = ?," +
+                " VALOR_FERIAS = ?," +
+                " VALOR_TERCO_CONSTITUCIONAL = ?," +
+                " INCID_SUBMOD_4_1_FERIAS = ?," +
+                " INCID_SUBMOD_4_1_TERCO = ?," +
+                " PARCELA = ?," +
+                " DATA_REFERENCIA = GETDATE()," +
+                " AUTORIZADO = ?," +
+                " OBSERVACAO = ?," +
+                " LOGIN_ATUALIZACAO = ?," +
+                " DATA_ATUALIZACAO = CURRENT_TIMESTAMP" +
+                " WHERE COD_TERCEIRIZADO_CONTRATO = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (CalculoPendenteModel calculoPendenteModel : avaliacaoFerias.getCalculosAvaliados()) {
+                System.out.println(calculoPendenteModel);
+                int i = 1;
+                //preparedStatement.setString(1, calculoPendenteModel.getCalcularFeriasModel().getTipoRestituicao());
+                preparedStatement.setDate(i++, calculoPendenteModel.getCalcularFeriasModel().getInicioPeriodoAquisitivo());
+                preparedStatement.setDate(i++, calculoPendenteModel.getCalcularFeriasModel().getFimPeriodoAquisitivo());
+                preparedStatement.setDate(i++, calculoPendenteModel.getCalcularFeriasModel().getInicioFerias());
+                preparedStatement.setDate(i++, calculoPendenteModel.getCalcularFeriasModel().getFimFerias());
+                preparedStatement.setInt(i++, calculoPendenteModel.getCalcularFeriasModel().getDiasVendidos());
+                preparedStatement.setFloat(i++, calculoPendenteModel.getCalcularFeriasModel().getpTotalFerias());
+                preparedStatement.setFloat(i++, calculoPendenteModel.getCalcularFeriasModel().getpTotalTercoConstitucional());
+                preparedStatement.setFloat(i++, calculoPendenteModel.getCalcularFeriasModel().getpTotalIncidenciaFerias());
+                preparedStatement.setFloat(i++, calculoPendenteModel.getCalcularFeriasModel().getpTotalIncidenciaTerco());
+                preparedStatement.setInt(i++, calculoPendenteModel.getCalcularFeriasModel().getParcelas());
+                preparedStatement.setString(i++,calculoPendenteModel.getStatus());
+                preparedStatement.setString(i++, calculoPendenteModel.getObservacoes());
+                preparedStatement.setString(i++, avaliacaoFerias.getUser().getUsername().toUpperCase());
+                preparedStatement.setInt(i++, calculoPendenteModel.getCalcularFeriasModel().getCodTerceirizadoContrato());
+                preparedStatement.executeUpdate();
+            }
+        }catch (SQLException sqle) {
+
+        }
+        return true;
     }
 }
