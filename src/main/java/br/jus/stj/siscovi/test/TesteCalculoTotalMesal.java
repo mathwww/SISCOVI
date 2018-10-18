@@ -48,7 +48,6 @@ public class TesteCalculoTotalMesal {
 
         System.out.println(vCodTipoRestituicao);
 
-
     }
 
 }

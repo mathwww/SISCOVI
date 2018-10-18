@@ -36,7 +36,7 @@ public class TesteRestituicaoDecimoTerceiro {
         System.out.print("Dados do teste\nCOD_CONTRATO: " + vCodContrato + " COD_TERCEIRIZADO_CONTRATO: " +
                 vCodTerceirizadoContrato + "\n");
         System.out.print("Tipo de restituição: " + vTipoRestituicao + "\n" + "Data de início da contagem: " + vDataInicioContagem
-                + "\n" + "Data fim da contagem: " + vDataFimContagem + "\n");
+        + "\n" + "Data fim da contagem: " + vDataFimContagem + "\n");
 
         ValorRestituicaoDecimoTerceiroModel restituicao = restituicaoDecimoTerceiro.CalculaRestituicaoDecimoTerceiro(
                 vCodTerceirizadoContrato, vNumeroParcela, vDataInicioContagem, vDataFimContagem);

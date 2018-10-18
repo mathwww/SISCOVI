@@ -19,7 +19,6 @@ public class TestDecimoTerceiro {
         int vCodContrato = 0;
         Date vDataInicioContagem = null;
 
-
         //Carregamento do código do contrato.
 
         try {

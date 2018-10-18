@@ -38,7 +38,7 @@ public class TesteRestituicaoRescisao {
                 + "\n" + "Data do desligamento: " + vDataDesligamento + "\n" + "Login usuário: " + vLoginAtualizacao + "\n");
 
         ValorRestituicaoRescisaoModel restituicao = restituicaoRescisao.CalculaRestituicaoRescisao(vCodTerceirizadoContrato,
-                vDataDesligamento);
+                                                                                                    vDataDesligamento);
 
         System.out.println(restituicao.getValorDecimoTerceiro());
         System.out.println(restituicao.getValorIncidenciaDecimoTerceiro());
@@ -52,21 +52,21 @@ public class TesteRestituicaoRescisao {
         System.out.println(restituicao.getValorFGTSSalario());
 
         vRetorno = restituicaoRescisao.RegistrarRestituicaoRescisao(vCodTerceirizadoContrato,
-                vTipoRestituicao,
-                vTipoRescisao,
-                vDataDesligamento,
-                vDataInicioFerias,
-                restituicao.getValorDecimoTerceiro(),
-                restituicao.getValorIncidenciaDecimoTerceiro(),
-                restituicao.getValorFGTSDecimoTerceiro(),
-                restituicao.getValorFerias(),
-                restituicao.getValorTerco(),
-                restituicao.getValorIncidenciaFerias(),
-                restituicao.getValorIncidenciaTerco(),
-                restituicao.getValorFGTSFerias(),
-                restituicao.getValorFGTSTerco(),
-                restituicao.getValorFGTSSalario(),
-                vLoginAtualizacao);
+                                                                    vTipoRestituicao,
+                                                                    vTipoRescisao,
+                                                                    vDataDesligamento,
+                                                                    vDataInicioFerias,
+                                                                    restituicao.getValorDecimoTerceiro(),
+                                                                    restituicao.getValorIncidenciaDecimoTerceiro(),
+                                                                    restituicao.getValorFGTSDecimoTerceiro(),
+                                                                    restituicao.getValorFerias(),
+                                                                    restituicao.getValorTerco(),
+                                                                    restituicao.getValorIncidenciaFerias(),
+                                                                    restituicao.getValorIncidenciaTerco(),
+                                                                    restituicao.getValorFGTSFerias(),
+                                                                    restituicao.getValorFGTSTerco(),
+                                                                    restituicao.getValorFGTSSalario(),
+                                                                    vLoginAtualizacao);
 
         restituicaoRescisao.RecalculoRestituicaoRescisao(vRetorno, "RESGATE", vTipoRescisao, vDataDesligamento, vDataInicioFerias, 0, 0, 0, 0, 0,0 ,0,0,0, 0, "SYSTEM");
 

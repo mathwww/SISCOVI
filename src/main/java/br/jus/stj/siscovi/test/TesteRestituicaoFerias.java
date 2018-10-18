@@ -39,7 +39,7 @@ public class TesteRestituicaoFerias {
         Date vFimPeriodoAquisitivo = ferias.DataPeriodoAquisitivo(vCodTerceirizadoContrato, 2);
 
         ValorRestituicaoFeriasModel restituicao  = restituicaoFerias.CalculaRestituicaoFerias(vCodTerceirizadoContrato,
-                vDiasVendidos, vInicioFerias, vFimFerias, vInicioPeriodoAquisitivo, vFimPeriodoAquisitivo);
+                             vDiasVendidos, vInicioFerias, vFimFerias, vInicioPeriodoAquisitivo, vFimPeriodoAquisitivo);
 
         System.out.println(restituicao.getValorFerias());
         System.out.println(restituicao.getValorTercoConstitucional());
@@ -54,8 +54,8 @@ public class TesteRestituicaoFerias {
         //restituicaoFerias.RecalculoRestituicaoFerias(retorno, "MOVIMENTAÇÃO", vDiasVendidos, vInicioFerias, vFimFerias, vInicioPeriodoAquisitivo, vFimPeriodoAquisitivo, vParcela, 0,0,0,0,0, "Teste");
 
         restituicaoFerias.RecalculoRestituicaoFerias(retorno, vTipoRestituicao, vDiasVendidos, vInicioFerias, vFimFerias, vInicioPeriodoAquisitivo, vFimPeriodoAquisitivo,
-                0, 0, 0,
-                0, 0, 0, "SYSTEM");
+                 0, 0, 0,
+               0, 0, 0, "SYSTEM");
 
 
 

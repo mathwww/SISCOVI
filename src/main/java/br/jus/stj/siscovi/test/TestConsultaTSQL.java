@@ -1,7 +1,7 @@
 package br.jus.stj.siscovi.test;
 
-import br.jus.stj.siscovi.dao.ConnectSQLServer;
-import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
+        import br.jus.stj.siscovi.dao.ConnectSQLServer;
+        import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 
 
 public class TestConsultaTSQL {
