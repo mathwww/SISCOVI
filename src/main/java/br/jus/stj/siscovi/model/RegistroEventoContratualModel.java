@@ -3,7 +3,7 @@ package br.jus.stj.siscovi.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-public class RegistroEventoContratual {
+public class RegistroEventoContratualModel {
 
     private int pCod;
     private int pCodContrato;
@@ -16,16 +16,16 @@ public class RegistroEventoContratual {
     private String pLoginAtualizacao;
     private Timestamp pDataAtualizacao;
 
-    public RegistroEventoContratual(int pCod,
-                                    int pCodContrato,
-                                    int pCodTipoEvento,
-                                    String pProrrogacao,
-                                    String pAssunto,
-                                    Date pDataInicioVigencia,
-                                    Date pDataFimVigencia,
-                                    Date pDataAssinatura,
-                                    String pLoginAtualizacao,
-                                    Timestamp pDataAtualizacao) {
+    public RegistroEventoContratualModel(int pCod,
+                                         int pCodContrato,
+                                         int pCodTipoEvento,
+                                         String pProrrogacao,
+                                         String pAssunto,
+                                         Date pDataInicioVigencia,
+                                         Date pDataFimVigencia,
+                                         Date pDataAssinatura,
+                                         String pLoginAtualizacao,
+                                         Timestamp pDataAtualizacao) {
 
         this.pCod = pCod;
         this.pCodContrato = pCodContrato;
