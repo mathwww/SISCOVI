@@ -133,19 +133,85 @@ public class FeriasController {
         String json = gson.toJson(jsonObject);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
     @GET
-    @Path("/getCalculosPendentes={codigoContrato}")
+    @Path("/getCalculosPendentes={codigoContrato}/{codigoUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCalculosPendentes(@PathParam("codigoContrato") int codigoContrato) {
+    public Response getCalculosPendentes(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         String json = "";
         try {
-            json = gson.toJson(feriasDAO.getCalculosPendentes(codigoContrato));
+            json = gson.toJson(feriasDAO.getCalculosPendentes(codigoContrato, codigoUsuario));
             connectSQLServer.dbConnect().close();
         }catch(NullPointerException npe) {
             System.err.println(npe.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.error = npe.getMessage();
+            json = gson.toJson(error);
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getCalculosPendentesNegados={codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosPendentesNegados(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        String json = "";
+        try {
+            json = gson.toJson(feriasDAO.getCalculosNegados(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch(NullPointerException erro) {
+            System.err.println(erro.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.error = erro.getMessage();
+            json = gson.toJson(error);
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getCalculosPendentesExecucao={codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosPendentesExecucao(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        String json = "";
+        try {
+            json = gson.toJson(feriasDAO.getCalculosPendentesExecucao(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch(NullPointerException npe) {
+            npe.printStackTrace();
+            ErrorMessage error = new ErrorMessage();
+            error.error = npe.getMessage();
+            json = gson.toJson(error);
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+    @GET
+    @Path("/getCalculosNaoPendentesNegados={codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosNaoPendentesNegados(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        String json = "";
+        try {
+            json = gson.toJson(feriasDAO.getCalculosNaoPendentesNegados(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch(NullPointerException npe) {
+            npe.printStackTrace();
             ErrorMessage error = new ErrorMessage();
             error.error = npe.getMessage();
             json = gson.toJson(error);
@@ -168,6 +234,52 @@ public class FeriasController {
                connectSQLServer.dbConnect().close();
             }catch (SQLException sqle) {
                 String json = gson.toJson(new ErrorMessage().handleError(sqle));
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success", true);
+            String json = gson.toJson(jsonObject);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }else {
+            return Response.status(409).build();
+        }
+    }
+
+    @GET
+    @Path("/getRetencoesFerias/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosRestituidos(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            json = gson.toJson(feriasDAO.getRestituicoesFerias(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch(NullPointerException exception) {
+            exception.printStackTrace();
+            ErrorMessage error = new ErrorMessage();
+            error.error = exception.getMessage();
+            json = gson.toJson(error);
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+    @PUT
+    @Path("/salvarExecucaoFerias")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response salvarExecucaoFerias(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        AvaliacaoFerias avaliacaoFerias = gson.fromJson(object, AvaliacaoFerias.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FeriasDAO feriasDAO = new FeriasDAO(connectSQLServer.dbConnect());
+        if(feriasDAO.salvarExecucaoFerias(avaliacaoFerias)) {
+            try {
+                connectSQLServer.dbConnect().close();
+            }catch (SQLException sqle) {
+                System.err.println(sqle.getStackTrace());
+                String json = gson.toJson(sqle);
                 return Response.ok(json, MediaType.APPLICATION_JSON).build();
             }
             JsonObject jsonObject = new JsonObject();

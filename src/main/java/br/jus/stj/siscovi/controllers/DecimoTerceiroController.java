@@ -72,6 +72,7 @@ public class DecimoTerceiroController {
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -130,4 +131,12 @@ public class DecimoTerceiroController {
         json = gson.toJson(jsonObject);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
+    @GET
+    @Path("/getCalculosPendentes/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosPendentesDecTer(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        return Response.ok().build();
+    }
+
 }
