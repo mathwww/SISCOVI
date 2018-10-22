@@ -1,7 +1,7 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
-import br.jus.stj.siscovi.model.RegistroDeDecimoTerceiroModel;
+import br.jus.stj.siscovi.model.RegistroRestituicaoDecimoTerceiro;
 import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
 import br.jus.stj.siscovi.dao.sql.*;
 
@@ -517,7 +517,7 @@ public class RestituicaoDecimoTerceiro {
 
         int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
 
-        RegistroDeDecimoTerceiroModel registro = consulta.RetornaRegistroRestituicaoDecimoTerceiro(pCodRestituicaoDecimoTerceiro);
+        RegistroRestituicaoDecimoTerceiro registro = consulta.RetornaRegistroRestituicaoDecimoTerceiro(pCodRestituicaoDecimoTerceiro);
 
         if (registro == null) {
 
@@ -530,7 +530,7 @@ public class RestituicaoDecimoTerceiro {
                 registro.getpParcela(),
                 registro.getpDataInicioContagem(),
                 registro.getpValor(),
-                registro.getpIncidenciaSubmod41(),
+                registro.getpIncidenciaSubmodulo41(),
                 registro.getpDataReferencia(),
                 registro.getpAutorizado(),
                 registro.getpRestituido(),

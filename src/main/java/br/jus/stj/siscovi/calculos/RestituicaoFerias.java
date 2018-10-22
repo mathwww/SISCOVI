@@ -1,11 +1,10 @@
 package br.jus.stj.siscovi.calculos;
 
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
-import br.jus.stj.siscovi.model.RegistroDeFeriasModel;
+import br.jus.stj.siscovi.model.RegistroRestituicaoFerias;
 import br.jus.stj.siscovi.model.ValorRestituicaoFeriasModel;
 import br.jus.stj.siscovi.dao.sql.*;
 
-import javax.ws.rs.DELETE;
 import java.sql.*;
 //import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -648,7 +647,7 @@ public class RestituicaoFerias {
 
         int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
 
-        RegistroDeFeriasModel registro = consulta.RetornaRegistroRestituicaoFerias(pCodRestituicaoFerias);
+        RegistroRestituicaoFerias registro = consulta.RetornaRegistroRestituicaoFerias(pCodRestituicaoFerias);
 
         if (registro == null) {
 

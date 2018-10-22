@@ -3,7 +3,7 @@ package br.jus.stj.siscovi.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-public class RegistroDeDecimoTerceiroModel {
+public class RegistroRestituicaoDecimoTerceiro {
 
     private int pCod;
     private int pCodTerceirizadoContrato;
@@ -11,7 +11,7 @@ public class RegistroDeDecimoTerceiroModel {
     private int pParcela;
     private Date pDataInicioContagem;
     private float pValor;;
-    private float pIncidenciaSubmod41;
+    private float pIncidenciaSubmodulo41;
     private Date pDataReferencia;
     private String pAutorizado;
     private String pRestituido;
@@ -19,19 +19,19 @@ public class RegistroDeDecimoTerceiroModel {
     private String pLoginAtualizacao;
     private Timestamp pDataAtualizcao;
 
-    public RegistroDeDecimoTerceiroModel (int pCod,
-                                          int pCodTerceirizadoContrato,
-                                          int pCodTipoRestituicao,
-                                          int pParcela,
-                                          Date pDataInicioContagem,
-                                          float pValor,
-                                          float pIncidenciaSubmod41,
-                                          Date pDataReferencia,
-                                          String pAutorizado,
-                                          String pRestituido,
-                                          String pObservacao,
-                                          String pLoginAtualizacao,
-                                          Timestamp pDataAtualizcao) {
+    public RegistroRestituicaoDecimoTerceiro(int pCod,
+                                             int pCodTerceirizadoContrato,
+                                             int pCodTipoRestituicao,
+                                             int pParcela,
+                                             Date pDataInicioContagem,
+                                             float pValor,
+                                             float pIncidenciaSubmodulo41,
+                                             Date pDataReferencia,
+                                             String pAutorizado,
+                                             String pRestituido,
+                                             String pObservacao,
+                                             String pLoginAtualizacao,
+                                             Timestamp pDataAtualizacao) {
 
         this.pCod = pCod;
         this.pCodTerceirizadoContrato = pCodTerceirizadoContrato;
@@ -39,13 +39,13 @@ public class RegistroDeDecimoTerceiroModel {
         this.pParcela = pParcela;
         this.pDataInicioContagem = pDataInicioContagem;
         this.pValor = pValor;
-        this.pIncidenciaSubmod41 = pIncidenciaSubmod41;
+        this.pIncidenciaSubmodulo41 = pIncidenciaSubmodulo41;
         this.pDataReferencia = pDataReferencia;
         this.pAutorizado = pAutorizado;
         this.pRestituido = pRestituido;
         this.pObservacao = pObservacao;
         this.pLoginAtualizacao = pLoginAtualizacao;
-        this.pDataAtualizcao = pDataAtualizcao;
+        this.pDataAtualizcao = pDataAtualizacao;
 
     }
 
@@ -61,7 +61,7 @@ public class RegistroDeDecimoTerceiroModel {
 
     public float getpValor() { return pValor; }
 
-    public float getpIncidenciaSubmod41() { return pIncidenciaSubmod41; }
+    public float getpIncidenciaSubmodulo41() { return pIncidenciaSubmodulo41; }
 
     public Date getpDataReferencia () { return pDataReferencia; }
 
@@ -73,7 +73,7 @@ public class RegistroDeDecimoTerceiroModel {
 
     public String getpLoginAtualizacao () { return pLoginAtualizacao; }
 
-    public Timestamp getpDataAtualizcao () { return pDataAtualizcao; }
+    public Timestamp getpDataAtualizacao () { return pDataAtualizcao; }
 
 
 }

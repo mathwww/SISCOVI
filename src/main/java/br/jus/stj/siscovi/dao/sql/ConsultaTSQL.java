@@ -996,12 +996,12 @@ public class ConsultaTSQL {
      * @return Um registro de restituição de férias no model.
      */
 
-    public RegistroDeFeriasModel RetornaRegistroRestituicaoFerias (int pCodRestituicaoFerias) {
+    public RegistroRestituicaoFerias RetornaRegistroRestituicaoFerias (int pCodRestituicaoFerias) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroDeFeriasModel registro = null;
+        RegistroRestituicaoFerias registro = null;
 
         try {
 
@@ -1034,7 +1034,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroDeFeriasModel(resultSet.getInt(1),
+                registro = new RegistroRestituicaoFerias(resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getInt(3),
                         resultSet.getDate(4),
@@ -1076,12 +1076,12 @@ public class ConsultaTSQL {
      * @return Um registro de restituição de décimo terceiro no model.
      */
 
-    public RegistroDeDecimoTerceiroModel RetornaRegistroRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro) {
+    public RegistroRestituicaoDecimoTerceiro RetornaRegistroRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroDeDecimoTerceiroModel registro = null;
+        RegistroRestituicaoDecimoTerceiro registro = null;
 
         try {
 
@@ -1108,7 +1108,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroDeDecimoTerceiroModel(resultSet.getInt(1),
+                registro = new RegistroRestituicaoDecimoTerceiro(resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getInt(3),
                         resultSet.getInt(4),
@@ -1144,12 +1144,12 @@ public class ConsultaTSQL {
      * @return Um registro de restituição de rescisão no model.
      */
 
-    public RegistroDeRescisaoModel RetornaRegistroRestituicaoRescisao (int pCodRestituicaoRescisao) {
+    public RegistroRestituicaoRescisao RetornaRegistroRestituicaoRescisao (int pCodRestituicaoRescisao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroDeRescisaoModel registro = null;
+        RegistroRestituicaoRescisao registro = null;
 
         try {
 
@@ -1185,7 +1185,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroDeRescisaoModel(resultSet.getInt(1),
+                registro = new RegistroRestituicaoRescisao(resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getInt(3),
                         resultSet.getInt(4),
@@ -1283,12 +1283,12 @@ public class ConsultaTSQL {
      * @return Um registro de contrato no model.
      */
 
-    public RegistroContratoModel RetornaRegistroContrato (int pCodContrato) {
+    public RegistroContrato RetornaRegistroContrato (int pCodContrato) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroContratoModel registro = null;
+        RegistroContrato registro = null;
 
         try {
 
@@ -1310,7 +1310,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroContratoModel(pCodContrato,
+                registro = new RegistroContrato(pCodContrato,
                         resultSet.getString(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
@@ -1342,12 +1342,12 @@ public class ConsultaTSQL {
      * @return Um registro de convenção no model.
      */
 
-    public RegistroConvencaoColetivaModel RetornaRegistroConvencaoColetiva (int pCodConvencao) {
+    public RegistroConvencaoColetiva RetornaRegistroConvencaoColetiva (int pCodConvencao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroConvencaoColetivaModel registro = null;
+        RegistroConvencaoColetiva registro = null;
 
         try {
 
@@ -1367,7 +1367,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroConvencaoColetivaModel(pCodConvencao,
+                registro = new RegistroConvencaoColetiva(pCodConvencao,
                         resultSet.getString(1),
                         resultSet.getString(2),
                         resultSet.getString(4),
@@ -1397,12 +1397,12 @@ public class ConsultaTSQL {
      * @return Um registro de evento contratual no model.
      */
 
-    public RegistroEventoContratualModel RetornaRegistroEventoContratual (int pCodEventoContratual) {
+    public RegistroEventoContratual RetornaRegistroEventoContratual (int pCodEventoContratual) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroEventoContratualModel registro = null;
+        RegistroEventoContratual registro = null;
 
         try {
 
@@ -1425,7 +1425,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroEventoContratualModel(pCodEventoContratual,
+                registro = new RegistroEventoContratual(pCodEventoContratual,
                         resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getString(3),
@@ -1458,12 +1458,12 @@ public class ConsultaTSQL {
      * @return Um registro de função no model.
      */
 
-    public RegistroFuncaoModel RetornaRegistroFuncao (int pCodFuncao) {
+    public RegistroFuncao RetornaRegistroFuncao (int pCodFuncao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroFuncaoModel registro = null;
+        RegistroFuncao registro = null;
 
         try {
 
@@ -1481,7 +1481,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroFuncaoModel(pCodFuncao,
+                registro = new RegistroFuncao(pCodFuncao,
                         resultSet.getString(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
@@ -1509,12 +1509,12 @@ public class ConsultaTSQL {
      * @return Um registro de funcao do contrato no model.
      */
 
-    public RegistroFuncaoContratoModel RetornaRegistroFuncaoContrato (int pCodFuncaoContrato) {
+    public RegistroFuncaoContrato RetornaRegistroFuncaoContrato (int pCodFuncaoContrato) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroFuncaoContratoModel registro = null;
+        RegistroFuncaoContrato registro = null;
 
         try {
 
@@ -1533,7 +1533,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroFuncaoContratoModel(pCodFuncaoContrato,
+                registro = new RegistroFuncaoContrato(pCodFuncaoContrato,
                         resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getString(3),
@@ -1619,12 +1619,12 @@ public class ConsultaTSQL {
      * @return Um registro de função do terceirizado no model.
      */
 
-    public RegistroFuncaoTerceirizadoModel RetornaRegistroFuncaoTerceirizado (int pCodFuncaoTerceirizado) {
+    public RegistroFuncaoTerceirizado RetornaRegistroFuncaoTerceirizado (int pCodFuncaoTerceirizado) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroFuncaoTerceirizadoModel registro = null;
+        RegistroFuncaoTerceirizado registro = null;
 
         try {
 
@@ -1644,7 +1644,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroFuncaoTerceirizadoModel(pCodFuncaoTerceirizado,
+                registro = new RegistroFuncaoTerceirizado(pCodFuncaoTerceirizado,
                         resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getDate(3),
@@ -2467,6 +2467,575 @@ public class ConsultaTSQL {
 
     }
 
+    /**
+     * Retorna um registro da tabela tb_saldo_residual_ferias.
+     *
+     * @param pCodRestituicaoFerias;
+     *
+     * @return Um registro de saldo residual de férias no model.
+     */
+
+    public RegistroSaldoResidualFerias RetornaRegistroSaldoResidualFerias  (int pCodRestituicaoFerias) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroSaldoResidualFerias registro = null;
+
+        try {
+
+            String sql = "SELECT cod, " +
+                    "valor_ferias, " +
+                    "valor_ferias, " +
+                    "INCID_SUBMOD_4_1_FERIAS, " +
+                    "INCID_SUBMOD_4_1_TERCO, " +
+                    "AUTORIZADO, " +
+                    "RESTITUIDO, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_saldo_residual_ferias " +
+                    "WHERE COD_RESTITUICAO_FERIAS = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRestituicaoFerias);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroSaldoResidualFerias(resultSet.getInt(1),
+                        pCodRestituicaoFerias,
+                        resultSet.getFloat(2),
+                        resultSet.getFloat(3),
+                        resultSet.getFloat(4),
+                        resultSet.getFloat(5),
+                        resultSet.getString(6),
+                        resultSet.getString(7),
+                        resultSet.getString(8),
+                        resultSet.getTimestamp(9));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de saldo residual de férias solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_saldo_residual_rescisao.
+     *
+     * @param pCodRestituicaoRescisao;
+     *
+     * @return Um registro de saldo residual de rescisão no model.
+     */
+
+    public RegistroSaldoResidualRescisao RetornaRegistroSaldoResidualRescisao  (int pCodRestituicaoRescisao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroSaldoResidualRescisao registro = null;
+
+        try {
+
+            String sql = "SELECT cod, " +
+                    "VALOR_DECIMO_TERCEIRO, " +
+                    "INCID_SUBMOD_4_1_DEC_TERCEIRO, " +
+                    "INCID_MULTA_FGTS_DEC_TERCEIRO, " +
+                    "valor_ferias, " +
+                    "valor_ferias, " +
+                    "INCID_SUBMOD_4_1_FERIAS, " +
+                    "INCID_SUBMOD_4_1_TERCO, " +
+                    "INCID_MULTA_FGTS_FERIAS, " +
+                    "INCID_MULTA_FGTS_TERCO, " +
+                    "MULTA_FGTS_SALARIO, " +
+                    "AUTORIZADO, " +
+                    "RESTITUIDO, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_saldo_residual_rescisao " +
+                    "WHERE COD_RESTITUICAO_RESCISAO = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRestituicaoRescisao);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroSaldoResidualRescisao(resultSet.getInt(1),
+                        pCodRestituicaoRescisao,
+                        resultSet.getFloat(2),
+                        resultSet.getFloat(3),
+                        resultSet.getFloat(4),
+                        resultSet.getFloat(5),
+                        resultSet.getFloat(6),
+                        resultSet.getFloat(7),
+                        resultSet.getFloat(8),
+                        resultSet.getFloat(9),
+                        resultSet.getFloat(10),
+                        resultSet.getFloat(11),
+                        resultSet.getString(12),
+                        resultSet.getString(13),
+                        resultSet.getString(14),
+                        resultSet.getTimestamp(15));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de saldo residual de férias solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_terceirizado.
+     *
+     * @param pCodTerceirizado;
+     *
+     * @return Um registro de terceirizado no model.
+     */
+
+    public RegistroTerceirizado RetornaRegistroTerceirizado  (int pCodTerceirizado) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTerceirizado registro = null;
+
+        try {
+
+            String sql = "SELECT nome, " +
+                    "cpf, " +
+                    "ativo, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_terceirizado " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTerceirizado);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTerceirizado(pCodTerceirizado,
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getTimestamp(5));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro do terceirizado solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_terceirizado_contrato.
+     *
+     * @param pCodTerceirizadoContrato;
+     *
+     * @return Um registro de terceirizado no contrato no model.
+     */
+
+    public RegistroTerceirizadoContrato RetornaRegistroTerceirizadoContrato  (int pCodTerceirizadoContrato) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTerceirizadoContrato registro = null;
+
+        try {
+
+            String sql = "SELECT cod_contrato, " +
+                    "cod_terceirizado, " +
+                    "data_disponibilizacao, " +
+                    "data_desligamento, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_terceirizado_contrato " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTerceirizadoContrato);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTerceirizadoContrato(pCodTerceirizadoContrato,
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getDate(3),
+                        resultSet.getDate(4),
+                        resultSet.getString(5),
+                        resultSet.getTimestamp(6));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro do terceirizado no contrato solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_tipo_evento_contratual.
+     *
+     * @param pCodTipoEventoContratual;
+     *
+     * @return Um registro de tipo de evento contratual no model.
+     */
+
+    public RegistroTipoEventoContratual RetornaRegistroTipoEventoContratual (int pCodTipoEventoContratual) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTipoEventoContratual registro = null;
+
+        try {
+
+            String sql = "SELECT tipo, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_tipo_evento_contratual " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTipoEventoContratual);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTipoEventoContratual(pCodTipoEventoContratual,
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getTimestamp(3));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o tipo de evento contratual.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_tipo_rescisao.
+     *
+     * @param pCodTipoRescisao;
+     *
+     * @return Um registro de tipo de rescisão no model.
+     */
+
+    public RegistroTipoRescisao RetornaRegistroTipoRescisao (int pCodTipoRescisao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTipoRescisao registro = null;
+
+        try {
+
+            String sql = "SELECT tipo_rescisao, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_tipo_rescisao " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTipoRescisao);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTipoRescisao(pCodTipoRescisao,
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getTimestamp(3));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o tipo de rescisão.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_tipo_restituicao.
+     *
+     * @param pCodTipoRestituicao;
+     *
+     * @return Um registro de tipo de restituição no model.
+     */
+
+    public RegistroTipoRestituicao RetornaRegistroTipoRestituicao (int pCodTipoRestituicao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTipoRestituicao registro = null;
+
+        try {
+
+            String sql = "SELECT nome, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_tipo_restituicao " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTipoRestituicao);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTipoRestituicao(pCodTipoRestituicao,
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getTimestamp(3));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o tipo de restituição.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_total_mensal_a_reter.
+     *
+     * @param pCodTotalMensalAReter;
+     *
+     * @return Um registro de retroatividade de total mensal a reter no model.
+     */
+
+    public RegistroTotalMensalAReter RetornaRegistroTotalMensalAReter  (int pCodTotalMensalAReter) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTotalMensalAReter registro = null;
+
+        try {
+
+            String sql = "SELECT COD_TERCEIRIZADO_CONTRATO, " +
+                    "COD_FUNCAO_TERCEIRIZADO, " +
+                    "ferias, " +
+                    "TERCO_CONSTITUCIONAL, " +
+                    "DECIMO_TERCEIRO, " +
+                    "INCIDENCIA_SUBMODULO_4_1, " +
+                    "MULTA_FGTS, " +
+                    "total, " +
+                    "DATA_REFERENCIA, " +
+                    "AUTORIZADO, " +
+                    "RETIDO, " +
+                    "OBSERVACAO, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_total_mensal_a_reter " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTotalMensalAReter);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTotalMensalAReter(pCodTotalMensalAReter,
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getFloat(3),
+                        resultSet.getFloat(4),
+                        resultSet.getFloat(5),
+                        resultSet.getFloat(6),
+                        resultSet.getFloat(7),
+                        resultSet.getFloat(8),
+                        resultSet.getDate(9),
+                        resultSet.getString(10),
+                        resultSet.getString(11),
+                        resultSet.getString(12),
+                        resultSet.getString(13),
+                        resultSet.getTimestamp(14));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de total mensal retido solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_trienio_terc_contrato.
+     *
+     * @param pCodTrienioTercContrato;
+     *
+     * @return Um registro de triênio do terceirizado no model.
+     */
+
+    public RegistroTrienioTercContrato RetornaRegistroTrienioTercContrato (int pCodTrienioTercContrato) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroTrienioTercContrato registro = null;
+
+        try {
+
+            String sql = "SELECT COD_TERCEIRIZADO_CONTRATO, " +
+                    "NUMERO_DE_TRIENIOS, " +
+                    "data_inicio, " +
+                    "data_fim, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_trienio_terc_contrato " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodTrienioTercContrato);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroTrienioTercContrato(pCodTrienioTercContrato,
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getDate(3),
+                        resultSet.getDate(4),
+                        resultSet.getString(5),
+                        resultSet.getTimestamp(6));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de triênio do terceirizado solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_usuario.
+     *
+     * @param pCodUsuario;
+     *
+     * @return Um registro de usuário no model.
+     */
+
+    public RegistroUsuario RetornaRegistroUsuario (int pCodUsuario) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroUsuario registro = null;
+
+        try {
+
+            String sql = "SELECT COD_PERFIL, " +
+                    "NOME, " +
+                    "LOGIN, " +
+                    "PASSWORD, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_usuario " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodUsuario);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroUsuario(pCodUsuario,
+                        resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getString(5),
+                        resultSet.getTimestamp(6));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de usuário solicitado.");
+
+        }
+
+        return registro;
+
+    }
 
 
 }

@@ -2,7 +2,7 @@ package br.jus.stj.siscovi.model;
 
 import java.sql.Timestamp;
 
-public class RegistroContratoModel {
+public class RegistroContrato {
 
     private int pCod;
     private String pNomeEmpresa;
@@ -14,15 +14,15 @@ public class RegistroContratoModel {
     private String pLoginAtualizacao;
     private Timestamp pDataAtualizacao;
 
-    public RegistroContratoModel(int pCod,
-                                 String pNomeEmpresa,
-                                 String pCnpj,
-                                 String pNumeroContrato,
-                                 String pNumeroProcessoStj,
-                                 String pSeAtivo,
-                                 String pObjeto,
-                                 String pLoginAtualizacao,
-                                 Timestamp pDataAtualizacao) {
+    public RegistroContrato(int pCod,
+                            String pNomeEmpresa,
+                            String pCnpj,
+                            String pNumeroContrato,
+                            String pNumeroProcessoStj,
+                            String pSeAtivo,
+                            String pObjeto,
+                            String pLoginAtualizacao,
+                            Timestamp pDataAtualizacao) {
 
         this.pCod = pCod;
         this.pNomeEmpresa = pNomeEmpresa;

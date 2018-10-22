@@ -3,7 +3,7 @@ package br.jus.stj.siscovi.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-public class RegistroDeFeriasModel {
+public class RegistroRestituicaoFerias {
 
     private int pCod;
     private int pCodTerceirizadoContrato;
@@ -25,25 +25,25 @@ public class RegistroDeFeriasModel {
     private String pLoginAtualizacao;
     private Timestamp pDataAtualizcao;
 
-    public RegistroDeFeriasModel (int pCod,
-                                  int pCodTerceirizadoContrato,
-                                  int pCodTipoRestituicao,
-                                  Date pDataInicioPeriodoAquisitivo,
-                                  Date pDataFimPeriodoAquisitivo,
-                                  Date pDataInicioUsufruto,
-                                  Date pDataFimUsufruto,
-                                  int pDiasVendidos,
-                                  float pValorFerias,
-                                  float pValorTercoConstitucional,
-                                  float pIncidenciaSubmod41Ferias,
-                                  float pIncidenciaSubmod41Terco,
-                                  int pParcela,
-                                  Date pDataReferencia,
-                                  String pAutorizado,
-                                  String pRestituido,
-                                  String pObservacao,
-                                  String pLoginAtualizacao,
-                                  Timestamp pDataAtualizcao) {
+    public RegistroRestituicaoFerias(int pCod,
+                                     int pCodTerceirizadoContrato,
+                                     int pCodTipoRestituicao,
+                                     Date pDataInicioPeriodoAquisitivo,
+                                     Date pDataFimPeriodoAquisitivo,
+                                     Date pDataInicioUsufruto,
+                                     Date pDataFimUsufruto,
+                                     int pDiasVendidos,
+                                     float pValorFerias,
+                                     float pValorTercoConstitucional,
+                                     float pIncidenciaSubmod41Ferias,
+                                     float pIncidenciaSubmod41Terco,
+                                     int pParcela,
+                                     Date pDataReferencia,
+                                     String pAutorizado,
+                                     String pRestituido,
+                                     String pObservacao,
+                                     String pLoginAtualizacao,
+                                     Timestamp pDataAtualizacao) {
 
         this.pCod = pCod;
         this.pCodTerceirizadoContrato = pCodTerceirizadoContrato;
@@ -63,7 +63,7 @@ public class RegistroDeFeriasModel {
         this.pRestituido = pRestituido;
         this.pObservacao = pObservacao;
         this.pLoginAtualizacao = pLoginAtualizacao;
-        this.pDataAtualizcao = pDataAtualizcao;
+        this.pDataAtualizcao = pDataAtualizacao;
 
     }
 
@@ -103,7 +103,7 @@ public class RegistroDeFeriasModel {
 
     public String getpLoginAtualizacao () { return pLoginAtualizacao; }
 
-    public Timestamp getpDataAtualizcao () { return pDataAtualizcao; }
+    public Timestamp getpDataAtualizacao () { return pDataAtualizcao; }
 
 
 }

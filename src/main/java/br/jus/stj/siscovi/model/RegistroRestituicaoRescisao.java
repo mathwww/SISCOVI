@@ -3,7 +3,7 @@ package br.jus.stj.siscovi.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-public class RegistroDeRescisaoModel {
+public class RegistroRestituicaoRescisao {
 
     private int pCod;
     private int pCodTerceirizadoContrato;
@@ -28,28 +28,28 @@ public class RegistroDeRescisaoModel {
     private String pLoginAtualizacao;
     private Timestamp pDataAtualizacao;
 
-    public RegistroDeRescisaoModel (int pCod,
-                                    int pCodTerceirizadoContrato,
-                                    int pCodTipoRestituicao,
-                                    int pCodTipoRescisao,
-                                    Date pDataDesligamento,
-                                    Date pDataInicioFerias,
-                                    float pValorDecimoTerceiro,
-                                    float pIncidSubmod41DecTerceiro,
-                                    float pIncidMultaFGTSDecTeceriro,
-                                    float pValorFerias,
-                                    float pValorTerco,
-                                    float pIncidSubmod41Ferias,
-                                    float pIncidSubmod41Terco,
-                                    float pIncidMultaFGTSFerias,
-                                    float pIncidMultaFGTSTerco,
-                                    float pMultaFGTSSalario,
-                                    Date pDataReferencia,
-                                    String pAutorizado,
-                                    String pRestituido,
-                                    String pObservacao,
-                                    String pLoginAtualizacao,
-                                    Timestamp pDataAtualizacao) {
+    public RegistroRestituicaoRescisao(int pCod,
+                                       int pCodTerceirizadoContrato,
+                                       int pCodTipoRestituicao,
+                                       int pCodTipoRescisao,
+                                       Date pDataDesligamento,
+                                       Date pDataInicioFerias,
+                                       float pValorDecimoTerceiro,
+                                       float pIncidSubmod41DecTerceiro,
+                                       float pIncidMultaFGTSDecTeceriro,
+                                       float pValorFerias,
+                                       float pValorTerco,
+                                       float pIncidSubmod41Ferias,
+                                       float pIncidSubmod41Terco,
+                                       float pIncidMultaFGTSFerias,
+                                       float pIncidMultaFGTSTerco,
+                                       float pMultaFGTSSalario,
+                                       Date pDataReferencia,
+                                       String pAutorizado,
+                                       String pRestituido,
+                                       String pObservacao,
+                                       String pLoginAtualizacao,
+                                       Timestamp pDataAtualizacao) {
 
         this.pCod = pCod;
         this.pCodTerceirizadoContrato = pCodTerceirizadoContrato;

@@ -3,7 +3,7 @@ package br.jus.stj.siscovi.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-public class RegistroFuncaoTerceirizadoModel {
+public class RegistroFuncaoTerceirizado {
 
     private int pCod;
     private int pCodTerceirizadoContrato;
@@ -13,13 +13,13 @@ public class RegistroFuncaoTerceirizadoModel {
     private String pLoginAtualizacao;
     private Timestamp pDataAtualizacao;
 
-    public RegistroFuncaoTerceirizadoModel(int pCod,
-                                           int pCodTerceirizadoContrato,
-                                           int pCodFuncaoContrato,
-                                           Date pDataInicio,
-                                           Date pDataFim,
-                                           String pLoginAtualizacao,
-                                           Timestamp pDataAtualizacao) {
+    public RegistroFuncaoTerceirizado(int pCod,
+                                      int pCodTerceirizadoContrato,
+                                      int pCodFuncaoContrato,
+                                      Date pDataInicio,
+                                      Date pDataFim,
+                                      String pLoginAtualizacao,
+                                      Timestamp pDataAtualizacao) {
 
         this.pCod = pCod;
         this.pCodTerceirizadoContrato = pCodTerceirizadoContrato;

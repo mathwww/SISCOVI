@@ -5,8 +5,7 @@ import br.jus.stj.siscovi.dao.sql.DeleteTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
 import br.jus.stj.siscovi.dao.sql.UpdateTSQL;
 import br.jus.stj.siscovi.model.CodFuncaoContratoECodFuncaoTerceirizadoModel;
-import br.jus.stj.siscovi.model.RegistroDeFeriasModel;
-import br.jus.stj.siscovi.model.RegistroDeRescisaoModel;
+import br.jus.stj.siscovi.model.RegistroRestituicaoRescisao;
 import br.jus.stj.siscovi.model.ValorRestituicaoRescisaoModel;
 
 import java.sql.*;
@@ -714,7 +713,7 @@ public class RestituicaoRescisao {
         int vCodTipoRestituicao = consulta.RetornaCodTipoRestituicao(pTipoRestituicao);
         int vCodTipoRescisao = consulta.RetornaCodTipoRescisao(pTipoRescisao);
 
-        RegistroDeRescisaoModel registro = consulta.RetornaRegistroRestituicaoRescisao(pCodRestituicaoRescisao);
+        RegistroRestituicaoRescisao registro = consulta.RetornaRegistroRestituicaoRescisao(pCodRestituicaoRescisao);
 
         if (registro == null) {
 
