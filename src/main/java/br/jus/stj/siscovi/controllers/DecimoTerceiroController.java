@@ -1,9 +1,12 @@
 package br.jus.stj.siscovi.controllers;
 
+import br.jus.stj.siscovi.calculos.DecimoTerceiro;
 import br.jus.stj.siscovi.calculos.RestituicaoDecimoTerceiro;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.DecimoTerceiroDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
+import br.jus.stj.siscovi.model.AvaliacaoDecimoTerceiro;
+import br.jus.stj.siscovi.model.AvaliacaoFerias;
 import br.jus.stj.siscovi.model.TerceirizadoDecimoTerceiro;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -136,7 +139,35 @@ public class DecimoTerceiroController {
     @Path("/getCalculosPendentes/{codigoContrato}/{codigoUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCalculosPendentesDecTer(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
-        return Response.ok().build();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            json = gson.toJson(decimoTerceiroDAO.getCalculosPendentes(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException slqe) {
+            ErrorMessage errorMessage = ErrorMessage.handleError(slqe);
+            return Response.ok(gson.toJson(errorMessage), MediaType.APPLICATION_JSON).build();
+        }catch (RuntimeException rte) {
+            ErrorMessage errorMessage = ErrorMessage.handleError(rte);
+            return Response.ok(gson.toJson(errorMessage), MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
+    @PUT
+    @Path("/avaliarCalculosPendentes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response avaliarCalculosPendentes(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        AvaliacaoDecimoTerceiro avaliacaoDecimoTerceiro = gson.fromJson(object, AvaliacaoDecimoTerceiro.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        if(decimoTerceiroDAO.salvarAlteracoesCalculo(avaliacaoDecimoTerceiro)){
+
+        }
+        return Response.ok().build();
+    }
 }

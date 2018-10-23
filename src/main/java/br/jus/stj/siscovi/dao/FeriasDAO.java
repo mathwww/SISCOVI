@@ -227,6 +227,7 @@ public class FeriasDAO {
         }
         return true;
     }
+    
     public List<CalculoPendenteModel> getCalculosNegados(int codigoContrato, int codigoUsuario) {
         int codigoGestor = new UsuarioDAO(this.connection).verifyPermission(codigoUsuario, codigoContrato);
         int codGestor = new ContratoDAO(this.connection).codigoGestorContrato(codigoUsuario, codigoContrato);
