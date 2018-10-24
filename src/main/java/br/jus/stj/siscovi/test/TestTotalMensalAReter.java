@@ -25,12 +25,12 @@ public class TestTotalMensalAReter {
 
         for (int i = 0; i < vNumeroMeses; i++) {
 
-            totalMensalAReter.CalculaTotalMensal(vCodContrato, vDataInicioCotrato.toLocalDate().getMonthValue(), vDataInicioCotrato.toLocalDate().getYear());
+            totalMensalAReter.CalculaTotalMensal(vCodContrato, vDataInicioCotrato.toLocalDate().getMonthValue(), vDataInicioCotrato.toLocalDate().getYear(), "SYSTEM");
 
             vDataInicioCotrato = Date.valueOf(vDataInicioCotrato.toLocalDate().plusMonths(1));
 
         }
 
-     }
+    }
 
 }

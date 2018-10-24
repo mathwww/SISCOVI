@@ -4,7 +4,9 @@ import br.jus.stj.siscovi.calculos.TotalMensalAReter;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.TotalMensalDAO;
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.model.ListaTotalMensalData;
+import br.jus.stj.siscovi.model.RegistroUsuario;
 import br.jus.stj.siscovi.model.TotalMensal;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,7 +37,7 @@ public class TotalMensalController {
         String json;
         ArrayList<ListaTotalMensalData> lista = totalMensalDAO.getValoresCalculadosAnteriormente(codigoContrato, contratoDAO.codigoGestorContrato(codigoUsuario, codigoContrato));
         if(lista.size() > 0) {
-           json = gson.toJson(lista);
+            json = gson.toJson(lista);
         }else {
             json = gson.toJson(null);
         }
@@ -52,7 +54,11 @@ public class TotalMensalController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response calcularTotalMensal(@PathParam("codigoUsuario") int codigoUsuario, @PathParam("codigoContrato") int codigoContrato, @PathParam("mes") int mes, @PathParam("ano") int ano){
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        new TotalMensalAReter(connectSQLServer.dbConnect()).CalculaTotalMensal(codigoContrato, mes, ano);
+        ConsultaTSQL consulta = new ConsultaTSQL(connectSQLServer.dbConnect());
+        RegistroUsuario registro = consulta.RetornaRegistroUsuario(codigoUsuario);
+        String vLoginUsuario = registro.getpLogin();
+
+        new TotalMensalAReter(connectSQLServer.dbConnect()).CalculaTotalMensal(codigoContrato, mes, ano, vLoginUsuario);
         TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
 
         Gson gson = new Gson();
