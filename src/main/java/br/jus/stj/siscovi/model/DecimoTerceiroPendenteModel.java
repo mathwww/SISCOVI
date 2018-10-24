@@ -3,11 +3,13 @@ package br.jus.stj.siscovi.model;
 import br.jus.stj.siscovi.calculos.RestituicaoDecimoTerceiro;
 
 public class DecimoTerceiroPendenteModel {
+    private final int cod;
     private final TerceirizadoDecimoTerceiro terceirizadoDecTer;
     private final String status;
     private final String observacoes;
 
-    public DecimoTerceiroPendenteModel(TerceirizadoDecimoTerceiro terceirizadoDecTer, String status, String observacoes) {
+    public DecimoTerceiroPendenteModel(int cod, TerceirizadoDecimoTerceiro terceirizadoDecTer, String status, String observacoes) {
+        this.cod = cod;
         this.terceirizadoDecTer = terceirizadoDecTer;
         this.status = status;
         this.observacoes = observacoes;
@@ -23,6 +25,10 @@ public class DecimoTerceiroPendenteModel {
 
     public String getObservacoes() {
         return observacoes;
+    }
+
+    public int getCod() {
+        return cod;
     }
 
     @Override

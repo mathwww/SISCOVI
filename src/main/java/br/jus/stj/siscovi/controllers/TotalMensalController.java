@@ -4,6 +4,7 @@ import br.jus.stj.siscovi.calculos.TotalMensalAReter;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.TotalMensalDAO;
+import br.jus.stj.siscovi.dao.UsuarioDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.AvaliacaoTotalMensal;
 import br.jus.stj.siscovi.model.ListaTotalMensalData;

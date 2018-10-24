@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 
 import javax.validation.constraints.Null;
 import javax.ws.rs.*;
@@ -142,7 +143,7 @@ public class DecimoTerceiroController {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
-        String json = "";
+        String json;
         try {
             json = gson.toJson(decimoTerceiroDAO.getCalculosPendentes(codigoContrato, codigoUsuario));
             connectSQLServer.dbConnect().close();
@@ -150,6 +151,7 @@ public class DecimoTerceiroController {
             ErrorMessage errorMessage = ErrorMessage.handleError(slqe);
             return Response.ok(gson.toJson(errorMessage), MediaType.APPLICATION_JSON).build();
         }catch (RuntimeException rte) {
+            System.err.println(rte.getStackTrace());
             ErrorMessage errorMessage = ErrorMessage.handleError(rte);
             return Response.ok(gson.toJson(errorMessage), MediaType.APPLICATION_JSON).build();
         }
@@ -165,9 +167,159 @@ public class DecimoTerceiroController {
         AvaliacaoDecimoTerceiro avaliacaoDecimoTerceiro = gson.fromJson(object, AvaliacaoDecimoTerceiro.class);
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
-        if(decimoTerceiroDAO.salvarAlteracoesCalculo(avaliacaoDecimoTerceiro)){
-
+        String json = "";
+        try {
+            if (decimoTerceiroDAO.salvarAlteracoesCalculo(avaliacaoDecimoTerceiro)) {
+                connectSQLServer.dbConnect().close();
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
+                json = gson.toJson(jsonObject);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+        }catch (SQLException sqle) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        } catch (RuntimeException rte) {
+            rte.printStackTrace();
+            System.err.println(rte.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = rte.getMessage();
+            json = gson.toJson(errorMessage);
         }
-        return Response.ok().build();
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getCalculosPendentesNegados/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosPendentesNegados(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        String json;
+        try {
+            json = gson.toJson(decimoTerceiroDAO.getCalculosPendentesNegados(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        } catch (SQLException slqe) {
+            slqe.printStackTrace();
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+        }catch (RuntimeException re) {
+            System.err.println(re.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = re.getMessage();
+            json = gson.toJson(errorMessage);
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getCalculosPendentesExecucao/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosPendentesExecucao(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        String json;
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        try {
+            json = gson.toJson(decimoTerceiroDAO.getCalculosPendentesExecucao(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+        }catch(RuntimeException rte) {
+            System.err.println(rte.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = rte.getMessage();
+            json = gson.toJson(errorMessage);
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getCalculosNaoPendentesNegados/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCalculosNaoPendentesNegados(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        String json;
+        try {
+            json = gson.toJson(decimoTerceiroDAO.getCalculosNaoPendentesNegados(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        } catch (SQLException slqe) {
+            slqe.printStackTrace();
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+        }catch (RuntimeException re) {
+            System.err.println(re.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = re.getMessage();
+            json = gson.toJson(errorMessage);
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @PUT
+    @Path("/executarCalculos")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response executarCalculos(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        AvaliacaoDecimoTerceiro avaliacaoDecimoTerceiro = gson.fromJson(object, AvaliacaoDecimoTerceiro.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            if (decimoTerceiroDAO.executarCalculos(avaliacaoDecimoTerceiro)) {
+                connectSQLServer.dbConnect().close();
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("success", "As alterações foram salvas com sucesso");
+                json = gson.toJson(jsonObject);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+        }catch (SQLException sqle) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        } catch (RuntimeException rte) {
+            System.err.println(rte.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = rte.getMessage();
+            json = gson.toJson(errorMessage);
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getRestituicoes/{codigoContrato}/{codigoUsuario}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRestituicoes(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario) {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
+        String json;
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        try{
+            json = gson.toJson(decimoTerceiroDAO.getRestituicoes(codigoContrato, codigoUsuario));
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException slqe) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = "Houve um erro ao tentar salvar as execuções de cálculos !";
+            json = gson.toJson(errorMessage);
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }catch (RuntimeException rte) {
+            System.err.println(rte.toString());
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.error = rte.getMessage();
+            json = gson.toJson(errorMessage);
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

@@ -83,4 +83,22 @@ public class TerceirizadoDecimoTerceiro {
     public int getCod() {
         return cod;
     }
+
+    @Override
+    public String toString() {
+        return "TerceirizadoDecimoTerceiro{" +
+                "cod=" + cod +
+                ", codigoTerceirizadoContrato=" + codigoTerceirizadoContrato +
+                ", nomeTerceirizado='" + nomeTerceirizado + '\'' +
+                ", inicioContagem=" + inicioContagem +
+                ", valorDisponivel=" + valorDisponivel +
+                ", tipoRestituicao='" + tipoRestituicao + '\'' +
+                ", valorMovimentado=" + valorMovimentado +
+                ", parcelas=" + parcelas +
+                ", fimContagem=" + fimContagem +
+                ", valoresDecimoTerceiro=" + valoresDecimoTerceiro +
+                ", id='" + id + '\'' +
+                ", nomeCargo='" + nomeCargo + '\'' +
+                '}';
+    }
 }

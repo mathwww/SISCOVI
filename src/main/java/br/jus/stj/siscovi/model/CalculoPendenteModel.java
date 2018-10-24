@@ -1,6 +1,7 @@
 package br.jus.stj.siscovi.model;
 
 public class CalculoPendenteModel {
+    private final int cod;
     private final CalcularFeriasModel calcularFeriasModel;
     private final String nomeTerceirizado;
     private final String nomeCargo;
@@ -9,7 +10,8 @@ public class CalculoPendenteModel {
     private String observacoes;
     private TipoRestituicao tipoRestituicao;
 
-    public CalculoPendenteModel(CalcularFeriasModel calcularFeriasModel, String nomeTerceirizado, String nomeCargo, String status, float total) {
+    public CalculoPendenteModel(int cod, CalcularFeriasModel calcularFeriasModel, String nomeTerceirizado, String nomeCargo, String status, float total) {
+        this.cod = cod;
         this.calcularFeriasModel = calcularFeriasModel;
         this.nomeTerceirizado = nomeTerceirizado;
         this.nomeCargo = nomeCargo;
@@ -36,8 +38,13 @@ public class CalculoPendenteModel {
     public float getTotal() {
         return total;
     }
+
     public String getObservacoes() {
         return observacoes;
+    }
+
+    public int getCod() {
+        return cod;
     }
 
     @Override

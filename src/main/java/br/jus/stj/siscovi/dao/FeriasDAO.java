@@ -86,7 +86,8 @@ public class FeriasDAO {
                     " rt.incid_submod_4_1_ferias AS \"Incidência sobre férias\"," +
                     " rt.incid_submod_4_1_terco AS \"Incidência sobre 1/3\"," +
                     " rt.valor_ferias + rt.valor_terco_constitucional + rt.incid_submod_4_1_ferias + rt.incid_submod_4_1_terco AS \"Total\"," +
-                    " rt.AUTORIZADO" +
+                    " rt.AUTORIZADO," +
+                    " rt.cod AS CODIGO" +
                     " FROM tb_restituicao_ferias rt" +
                     " JOIN tb_terceirizado_contrato tc ON tc.cod = rt.cod_terceirizado_contrato" +
                     " JOIN tb_funcao_terceirizado ft ON ft.cod_terceirizado_contrato = tc.cod" +
@@ -120,7 +121,7 @@ public class FeriasDAO {
                                 resultSet.getFloat("Valor de 1/3"),
                                 resultSet.getFloat("Incidência sobre férias"),
                                 resultSet.getFloat("Incidência sobre 1/3"));
-                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(calcularFeriasModel,
+                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(resultSet.getInt("CODIGO"), calcularFeriasModel,
                                 resultSet.getString("Terceirizado"),
                                 resultSet.getString("Cargo"),
                                 status,
@@ -155,7 +156,7 @@ public class FeriasDAO {
                 " OBSERVACAO = ?," +
                 " LOGIN_ATUALIZACAO = ?," +
                 " DATA_ATUALIZACAO = CURRENT_TIMESTAMP" +
-                " WHERE COD_TERCEIRIZADO_CONTRATO = ?";
+                " WHERE COD_TERCEIRIZADO_CONTRATO = ? AND COD = ?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (CalculoPendenteModel calculoPendenteModel : avaliacaoFerias.getCalculosAvaliados()) {
                 System.out.println(calculoPendenteModel);
@@ -175,6 +176,7 @@ public class FeriasDAO {
                 preparedStatement.setString(i++, calculoPendenteModel.getObservacoes());
                 preparedStatement.setString(i++, avaliacaoFerias.getUser().getUsername().toUpperCase());
                 preparedStatement.setInt(i++, calculoPendenteModel.getCalcularFeriasModel().getCodTerceirizadoContrato());
+                preparedStatement.setInt(i++, calculoPendenteModel.getCod());
                 preparedStatement.executeUpdate();
             }
         }catch (SQLException sqle) {
@@ -227,7 +229,7 @@ public class FeriasDAO {
         }
         return true;
     }
-    
+
     public List<CalculoPendenteModel> getCalculosNegados(int codigoContrato, int codigoUsuario) {
         int codigoGestor = new UsuarioDAO(this.connection).verifyPermission(codigoUsuario, codigoContrato);
         int codGestor = new ContratoDAO(this.connection).codigoGestorContrato(codigoUsuario, codigoContrato);
@@ -251,7 +253,8 @@ public class FeriasDAO {
                     " rt.incid_submod_4_1_ferias AS \"Incidência sobre férias\"," +
                     " rt.incid_submod_4_1_terco AS \"Incidência sobre 1/3\"," +
                     " rt.valor_ferias + rt.valor_terco_constitucional + rt.incid_submod_4_1_ferias + rt.incid_submod_4_1_terco AS \"Total\"," +
-                    " rt.AUTORIZADO" +
+                    " rt.AUTORIZADO," +
+                    " rt.COD AS CODIGO" +
                     " FROM tb_restituicao_ferias rt" +
                     " JOIN tb_terceirizado_contrato tc ON tc.cod = rt.cod_terceirizado_contrato" +
                     " JOIN tb_funcao_terceirizado ft ON ft.cod_terceirizado_contrato = tc.cod" +
@@ -288,7 +291,7 @@ public class FeriasDAO {
                                 resultSet.getFloat("Valor de 1/3"),
                                 resultSet.getFloat("Incidência sobre férias"),
                                 resultSet.getFloat("Incidência sobre 1/3"));
-                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(calcularFeriasModel,
+                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(resultSet.getInt("CODIGO"), calcularFeriasModel,
                                 resultSet.getString("Terceirizado"),
                                 resultSet.getString("Cargo"),
                                 status,
@@ -344,7 +347,8 @@ public class FeriasDAO {
                     " rt.incid_submod_4_1_terco AS \"Incidência sobre 1/3\"," +
                     " rt.valor_ferias + rt.valor_terco_constitucional + rt.incid_submod_4_1_ferias + rt.incid_submod_4_1_terco AS \"Total\"," +
                     " rt.AUTORIZADO," +
-                    " rt.RESTITUIDO" +
+                    " rt.RESTITUIDO," +
+                    " rt.COD AS CODIGO" +
                     " FROM tb_restituicao_ferias rt" +
                     " JOIN tb_terceirizado_contrato tc ON tc.cod = rt.cod_terceirizado_contrato" +
                     " JOIN tb_funcao_terceirizado ft ON ft.cod_terceirizado_contrato = tc.cod" +
@@ -390,7 +394,7 @@ public class FeriasDAO {
                                 resultSet.getFloat("Valor de 1/3"),
                                 resultSet.getFloat("Incidência sobre férias"),
                                 resultSet.getFloat("Incidência sobre 1/3"));
-                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(calcularFeriasModel,
+                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(resultSet.getInt("CODIGO"), calcularFeriasModel,
                                 resultSet.getString("Terceirizado"),
                                 resultSet.getString("Cargo"),
                                 status,
@@ -431,7 +435,8 @@ public class FeriasDAO {
                     " rt.incid_submod_4_1_terco AS \"Incidência sobre 1/3\"," +
                     " rt.valor_ferias + rt.valor_terco_constitucional + rt.incid_submod_4_1_ferias + rt.incid_submod_4_1_terco AS \"Total\"," +
                     " rt.AUTORIZADO," +
-                    " rt.RESTITUIDO" +
+                    " rt.RESTITUIDO," +
+                    " rt.COD AS CODIGO" +
                     " FROM tb_restituicao_ferias rt" +
                     " JOIN tb_terceirizado_contrato tc ON tc.cod = rt.cod_terceirizado_contrato" +
                     " JOIN tb_funcao_terceirizado ft ON ft.cod_terceirizado_contrato = tc.cod" +
@@ -479,7 +484,7 @@ public class FeriasDAO {
                                 resultSet.getFloat("Valor de 1/3"),
                                 resultSet.getFloat("Incidência sobre férias"),
                                 resultSet.getFloat("Incidência sobre 1/3"));
-                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(calcularFeriasModel,
+                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(resultSet.getInt("CODIGO"), calcularFeriasModel,
                                 resultSet.getString("Terceirizado"),
                                 resultSet.getString("Cargo"),
                                 status,
@@ -520,7 +525,8 @@ public class FeriasDAO {
                     " rt.incid_submod_4_1_terco AS \"Incidência sobre 1/3\"," +
                     " rt.valor_ferias + rt.valor_terco_constitucional + rt.incid_submod_4_1_ferias + rt.incid_submod_4_1_terco AS \"Total\"," +
                     " rt.AUTORIZADO," +
-                    " rt.RESTITUIDO" +
+                    " rt.RESTITUIDO," +
+                    " rt.COD AS CODIGO"+
                     " FROM tb_restituicao_ferias rt" +
                     " JOIN tb_terceirizado_contrato tc ON tc.cod = rt.cod_terceirizado_contrato" +
                     " JOIN tb_funcao_terceirizado ft ON ft.cod_terceirizado_contrato = tc.cod" +
@@ -550,7 +556,7 @@ public class FeriasDAO {
                                 resultSet.getFloat("Valor de 1/3"),
                                 resultSet.getFloat("Incidência sobre férias"),
                                 resultSet.getFloat("Incidência sobre 1/3"));
-                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(calcularFeriasModel,
+                        CalculoPendenteModel calculoPendenteModel = new CalculoPendenteModel(resultSet.getInt("CODIGO"), calcularFeriasModel,
                                 resultSet.getString("Terceirizado"),
                                 resultSet.getString("Cargo"),
                                 null,
