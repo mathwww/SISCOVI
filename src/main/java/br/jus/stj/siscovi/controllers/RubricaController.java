@@ -79,7 +79,7 @@ public class RubricaController {
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
     @DELETE
-    @Path("deleteRubrica/{codigo}")
+    @Path("/deleteRubrica/{codigo}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response apagarRubrica(@PathParam("codigo") int codigo) {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();

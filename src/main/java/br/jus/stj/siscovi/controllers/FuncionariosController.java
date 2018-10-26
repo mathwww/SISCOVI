@@ -68,4 +68,15 @@ public class FuncionariosController {
         connectSQLServer.dbConnect().close();
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
+    @POST
+    @Path("/cadastrarTerceirizado")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response cadastraTerceirizado(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        Terceirizado
+        return Response.ok().build();
+    }
+
  }
