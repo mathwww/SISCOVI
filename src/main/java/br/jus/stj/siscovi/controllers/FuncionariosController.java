@@ -3,10 +3,13 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.FuncionariosDAO;
 import br.jus.stj.siscovi.dao.UsuarioDAO;
+import br.jus.stj.siscovi.dao.sql.InsertTSQL;
+import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
 import br.jus.stj.siscovi.model.FuncionarioModel;
 import br.jus.stj.siscovi.model.FuncionariosResponseModel;
 import com.google.gson.*;
+import com.sun.glass.ui.delegate.MenuItemDelegate;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -75,8 +78,24 @@ public class FuncionariosController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response cadastraTerceirizado(String object) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-        Terceirizado
-        return Response.ok().build();
+        FuncionarioModel funcionario = gson.fromJson(object, FuncionarioModel.class);
+        String json = "";
+        try{
+            ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+            FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+            funcionariosDAO.InsertTerceirizado(funcionario);
+            connectSQLServer.dbConnect().close();
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
+            json = gson.toJson(jsonObject);
+        }catch (SQLException slqe){
+            json = gson.toJson(ErrorMessage.handleError(slqe));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }catch(NullPointerException npe) {
+            json = gson.toJson(ErrorMessage.handleError(npe));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
  }

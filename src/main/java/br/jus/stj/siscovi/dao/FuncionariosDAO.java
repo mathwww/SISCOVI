@@ -1,5 +1,6 @@
 package br.jus.stj.siscovi.dao;
 
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.model.CargoFuncionariosResponseModel;
 import br.jus.stj.siscovi.model.CargosFuncionariosModel;
 import br.jus.stj.siscovi.model.FuncionarioModel;
@@ -95,5 +96,43 @@ public class FuncionariosDAO {
         return null;
     }
 
+    public int InsertTerceirizado (FuncionarioModel funcionario) {
 
+        PreparedStatement preparedStatement;
+        ConsultaTSQL consulta = new ConsultaTSQL(connection);
+
+        int vCod = consulta.RetornaCodSequenceTable("TB_TERCEIRIZADO");
+
+        try {
+
+            String sql = "SET IDENTITY_INSERT TB_TERCEIRIZADO ON;" +
+                    " INSERT INTO TB_TERCEIRIZADO (COD," +
+                    " NOME," +
+                    " CPF," +
+                    " ATIVO," +
+                    " LOGIN_ATUALIZACAO," +
+                    " DATA_ATUALIZACAO)" +
+                    " VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP);" +
+                    " SET IDENTITY_INSERT TB_TERCEIRIZADO OFF;";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, vCod);
+            preparedStatement.setString(2, funcionario.getNome());
+            preparedStatement.setString(3, funcionario.getCpf());
+            preparedStatement.setString(4, "" + funcionario.getAtivo());
+            preparedStatement.setString(5, funcionario.getLoginAtualizacao());
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível inserir o novo terceirizado.");
+
+        }
+
+        return vCod;
+
+    }
 }
