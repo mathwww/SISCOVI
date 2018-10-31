@@ -7,6 +7,7 @@ import br.jus.stj.siscovi.model.FuncionarioModel;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class FuncionariosDAO {
@@ -134,5 +135,24 @@ public class FuncionariosDAO {
 
         return vCod;
 
+    }
+
+    public List<FuncionarioModel> getAllTerceirizados() {
+        List<FuncionarioModel> allTerceirizados = new ArrayList<>();
+        String sql = "SELECT * FROM TB_TERCEIRIZADO";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                while(resultSet.next()) {
+                    FuncionarioModel funcionarioModel = new FuncionarioModel(resultSet.getInt("COD"), resultSet.getString("NOME"), resultSet.getString("CPF"),
+                            resultSet.getString("ATIVO").charAt(0));
+                    funcionarioModel.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
+                    funcionarioModel.setLoginAtualizacao("LOGIN_ATUALIZACAO");
+                    allTerceirizados.add(funcionarioModel);
+                }
+            }
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return allTerceirizados;
     }
 }

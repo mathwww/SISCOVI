@@ -129,4 +129,23 @@ public class FuncionariosController {
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
+    @GET
+    @Path("/getAllTerceirizados")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllTerceirizados() {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json = "";
+        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+        try {
+           List<FuncionarioModel> terceirirzados = funcionariosDAO.getAllTerceirizados();
+           json = gson.toJson(terceirirzados);
+           connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            json = gson.toJson(ErrorMessage.handleError(sqle));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
  }
