@@ -8,7 +8,9 @@ import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
 import br.jus.stj.siscovi.model.FuncionarioModel;
 import br.jus.stj.siscovi.model.FuncionariosResponseModel;
+import br.jus.stj.siscovi.model.TerceirizadoDecimoTerceiro;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import com.sun.glass.ui.delegate.MenuItemDelegate;
 
 import javax.ws.rs.*;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Path("/funcionarios")
 public class FuncionariosController {
@@ -86,7 +89,35 @@ public class FuncionariosController {
             funcionariosDAO.InsertTerceirizado(funcionario);
             connectSQLServer.dbConnect().close();
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
+            jsonObject.addProperty("success", "O terceirizado foi cadastrado com sucesso !");
+            json = gson.toJson(jsonObject);
+        }catch (SQLException slqe){
+            json = gson.toJson(ErrorMessage.handleError(slqe));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }catch(NullPointerException npe) {
+            json = gson.toJson(ErrorMessage.handleError(npe));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/cadastrarTerceirizados")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response cadastraTerceirizados(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        List<FuncionarioModel> terceirizados = gson.fromJson(object, new TypeToken<List<FuncionarioModel>>(){}.getType());
+        String json = "";
+        try{
+            ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+            FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+            for(FuncionarioModel terceirizado : terceirizados) {
+                funcionariosDAO.InsertTerceirizado(terceirizado);
+            }
+            connectSQLServer.dbConnect().close();
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("success", "Os terceirizados foram cadastrados com sucesso");
             json = gson.toJson(jsonObject);
         }catch (SQLException slqe){
             json = gson.toJson(ErrorMessage.handleError(slqe));
