@@ -155,4 +155,41 @@ public class FuncionariosDAO {
         }
         return allTerceirizados;
     }
+
+    public FuncionarioModel getTerceirizado(int codigo) {
+        FuncionarioModel funcionarioModel = null;
+        String sql = "SELECT * FROM TB_TERCEIRIZADO WHERE COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, codigo);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    FuncionarioModel funcionario = new FuncionarioModel(codigo, resultSet.getString("NOME"),
+                            resultSet.getString("CPF"),
+                            resultSet.getString("ATIVO").charAt(0));
+                    funcionario.setLoginAtualizacao(resultSet.getString("LOGIN_ATUALIZACAO"));
+                    funcionario.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
+                    funcionarioModel = funcionario;
+                }
+            }
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+        }
+        return funcionarioModel;
+    }
+
+    public boolean atualizarTerceirizado(FuncionarioModel terceirizado) {
+        String sql = "UPDATE TB_TERCEIRIZADO SET NOME=?, CPF=?, ATIVO=?, LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=GETDATE() WHERE COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1, terceirizado.getNome());
+            preparedStatement.setString(2, terceirizado.getCpf());
+            preparedStatement.setString(3, "" + terceirizado.getAtivo());
+            preparedStatement.setString(4, terceirizado.getLoginAtualizacao());
+            preparedStatement.setInt(5, terceirizado.getCodigo());
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -4,6 +4,7 @@ import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.FuncionariosDAO;
 import br.jus.stj.siscovi.dao.UsuarioDAO;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
+import br.jus.stj.siscovi.dao.sql.UpdateTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
 import br.jus.stj.siscovi.model.FuncionarioModel;
@@ -148,4 +149,46 @@ public class FuncionariosController {
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
+    @GET
+    @Path("/getTerceirizado/{codigo}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTerceirizado(@PathParam("codigo") int codigo){
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json;
+        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+        try {
+            FuncionarioModel funcionarioModel = funcionariosDAO.getTerceirizado(codigo);
+            json = gson.toJson(funcionarioModel);
+            connectSQLServer.dbConnect().close();
+        }catch(SQLException sqle) {
+            json = gson.toJson(ErrorMessage.handleError(sqle));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @PUT
+    @Path("/updateTerceirizado")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response atualizaTerceirizado(String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+        FuncionarioModel terceirizado = gson.fromJson(object, FuncionarioModel.class);
+        String json = "";
+        try {
+            if (funcionariosDAO.atualizarTerceirizado(terceirizado)) {
+                connectSQLServer.dbConnect().close();
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("success", "As alterações foram salvas com sucesso");
+                json = gson.toJson(jsonObject);
+            }
+        }catch (SQLException sqle) {
+            json = gson.toJson(ErrorMessage.handleError(sqle));
+            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
  }
