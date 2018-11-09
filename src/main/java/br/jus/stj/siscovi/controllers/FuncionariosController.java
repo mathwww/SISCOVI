@@ -3,6 +3,7 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.FuncionariosDAO;
 import br.jus.stj.siscovi.dao.UsuarioDAO;
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
 import br.jus.stj.siscovi.dao.sql.UpdateTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
@@ -188,6 +189,24 @@ public class FuncionariosController {
         }catch (SQLException sqle) {
             json = gson.toJson(ErrorMessage.handleError(sqle));
             return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getTerceirizadosNaoAlocados")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTerceirizadosNaoAlocados() {
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        String json = "";
+        try {
+            List<FuncionarioModel> funcinoariosNaoAlocados = funcionariosDAO.getTerceirizadosNaoAlocados();
+            json = gson.toJson(funcinoariosNaoAlocados);
+            connectSQLServer.dbConnect().close();
+        }catch (SQLException sqle) {
+            return Response.ok(gson.toJson(ErrorMessage.handleError(sqle))).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }

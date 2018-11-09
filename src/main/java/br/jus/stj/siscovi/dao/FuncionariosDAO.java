@@ -192,4 +192,24 @@ public class FuncionariosDAO {
         }
         return false;
     }
+
+    public List<FuncionarioModel> getTerceirizadosNaoAlocados() throws RuntimeException {
+        List<FuncionarioModel> terceirizadosNaoAlocados = new ArrayList<>();
+        String sql = "SELECT T.COD, T.NOME, T.ATIVO, T.CPF, T.DATA_ATUALIZACAO, T.LOGIN_ATUALIZACAO FROM TB_TERCEIRIZADO T " +
+                " LEFT JOIN TB_TERCEIRIZADO_CONTRATO TC ON TC.COD_TERCEIRIZADO=T.COD" +
+                " WHERE TC.COD IS NULL";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    FuncionarioModel funcionarioModel = new FuncionarioModel(resultSet.getInt("COD"),
+                            resultSet.getString("NOME"), resultSet.getString("CPF"), resultSet.getString("ATIVO").charAt(0));
+                    terceirizadosNaoAlocados.add(funcionarioModel);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return terceirizadosNaoAlocados;
+    }
+
 }

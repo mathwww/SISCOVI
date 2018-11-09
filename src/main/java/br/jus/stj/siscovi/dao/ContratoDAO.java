@@ -32,8 +32,12 @@ public class ContratoDAO {
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
             if(resultSet.getString("SIGLA").equals("ADMINISTRADOR")) {
-                preparedStatement = connection.prepareStatement("SELECT DISTINCT C.COD, NOME_EMPRESA, CNPJ, NUMERO_CONTRATO, SE_ATIVO, DATA_INICIO, DATA_FIM, OBJETO " +
-                        "FROM TB_CONTRATO C JOIN tb_historico_gestao_contrato HGC ON HGC.COD_CONTRATO=C.COD");
+                preparedStatement = connection.prepareStatement("SELECT DISTINCT C.COD, NOME_EMPRESA, CNPJ, NUMERO_CONTRATO, SE_ATIVO, " +
+                        " EC.DATA_INICIO_VIGENCIA as DATA_INICIO, EC.DATA_FIM_VIGENCIA AS DATA_FIM, OBJETO" +
+                        " FROM TB_CONTRATO C" +
+                        " JOIN tb_evento_contratual EC ON EC.COD_CONTRATO=C.COD\n" +
+                        " JOIN TB_TIPO_EVENTO_CONTRATUAL TEC ON TEC.COD=EC.COD_TIPO_EVENTO\n" +
+                        " WHERE TEC.TIPO='CONTRATO';");
                 resultSet = preparedStatement.executeQuery();
                 while(resultSet.next()){
                     ContratoModel contrato = new ContratoModel(resultSet.getInt("COD"), resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
