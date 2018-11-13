@@ -3,6 +3,7 @@ package br.jus.stj.siscovi.model;
 import java.sql.Date;
 
 public class CargosFuncionariosModel {
+    private CargoModel funcao;
     private FuncionarioModel funcionario;
     private Date dataDisponibilizacao;
     private Date dataDesligamento;
@@ -21,5 +22,13 @@ public class CargosFuncionariosModel {
 
     public FuncionarioModel getFuncionario() {
         return funcionario;
+    }
+
+    public CargoModel getFuncao() {
+        return funcao;
+    }
+
+    public void setFuncao(CargoModel funcao) {
+        this.funcao = funcao;
     }
 }
