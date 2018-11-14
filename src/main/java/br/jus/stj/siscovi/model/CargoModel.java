@@ -22,13 +22,20 @@ public class CargoModel {
     public String getNome () {
         return  nome;
     }
+
     public String getDescricao() {
         return descricao;
     }
+
     public String getLoginAtualizacao() {
         return loginAtualizacao;
     }
+
     public Date getDataAtualizacao () {
         return dataAtualizacao;
+    }
+
+    public int getCodigo() {
+        return codigo;
     }
 }

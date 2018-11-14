@@ -154,4 +154,19 @@ public class CargoDAO {
         }
         return lista;
     }
+    public int recuperaCodigoFuncaoContrato(int codigoContrato, int codFuncao) {
+        String sql = "SELECT COD FROM tb_funcao_contrato WHERE COD_FUNCAO=? AND COD_CONTRATO=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codFuncao);
+            preparedStatement.setInt(2, codigoContrato);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    return resultSet.getInt("COD");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return 0;
+    }
 }

@@ -3,10 +3,14 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.CargoDAO;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
+import br.jus.stj.siscovi.dao.sql.InsertTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.sun.org.apache.regexp.internal.RE;
 
 import javax.ws.rs.*;
@@ -120,5 +124,31 @@ public class CargoController {
             return Response.ok(gson.toJson(ErrorMessage.handleError(rte))).build();
         }
         return Response.ok(gson.toJson(lista)).build();
+    }
+
+    @POST
+    @Path("/alocarTerceirizadosContrato/{codigo}/{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response alocarTerceirizados(String object, @PathParam("codigo") int codigoContrato, @PathParam("username") String username) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        List<CargosFuncionariosModel> lista = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>(){}.getType());
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        try {
+            InsertTSQL insertTSQL = new InsertTSQL(connectSQLServer.dbConnect());
+            CargoDAO cargoDAO= new CargoDAO(connectSQLServer.dbConnect());
+            for(CargosFuncionariosModel cfm : lista) {
+                int a = insertTSQL.InsertTerceirizadoContrato(codigoContrato, cfm.getFuncionario().getCodigo(), cfm.getDataDisponibilizacao(), cfm.getDataDesligamento(), username);
+                int codFuncaoContrato = cargoDAO.recuperaCodigoFuncaoContrato(codigoContrato, cfm.getFuncao().getCodigo());
+                insertTSQL.InsertFuncaoTerceirizado(a, codFuncaoContrato, cfm.getDataDisponibilizacao(), null, username);
+            }
+            connectSQLServer.dbConnect().close();
+        } catch (SQLException e) {
+            return Response.ok(gson.toJson(ErrorMessage.handleError(e))).build();
+        }
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("success", "O terceirizado foi inserido no contrato com sucesso !");
+        String json = gson.toJson(jsonObject);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

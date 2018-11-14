@@ -49,7 +49,7 @@ public class FuncionariosDAO {
         try {
             preparedStatement = connection.prepareStatement("SELECT T.cod, T.NOME, T.CPF ,T.ATIVO, F.NOME AS CARGO, TC.DATA_DISPONIBILIZACAO, TC.DATA_DESLIGAMENTO, T.LOGIN_ATUALIZACAO, T.DATA_ATUALIZACAO " +
                     " FROM TB_TERCEIRIZADO_CONTRATO TC JOIN TB_TERCEIRIZADO T ON T.COD=TC.COD_TERCEIRIZADO JOIN TB_FUNCAO_TERCEIRIZADO FT ON FT.COD_TERCEIRIZADO_CONTRATO=TC.COD " +
-                    "JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=?");
+                    "JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=? ORDER BY CARGO ASC");
             preparedStatement.setInt(1, codigoContrato);
             resultSet = preparedStatement.executeQuery();
             String cargoTemp = null;

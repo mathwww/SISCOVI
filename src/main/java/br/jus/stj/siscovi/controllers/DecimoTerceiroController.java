@@ -35,7 +35,12 @@ public class DecimoTerceiroController {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
         String json = "";
-        json = gson.toJson(decimoTerceiroDAO.getListaTerceirizadoParaCalculoDeDecimoTerceiro(codigoContrato));
+        if(tipoRestituicao.equals("MOVIMENTACAO")) {
+            json = gson.toJson(decimoTerceiroDAO.getListaTerceirizadoParaCalculoDeDecimoTerceiro(codigoContrato));
+        }
+        if(tipoRestituicao.equals("RESGATE")) {
+
+        }
         try {
             connectSQLServer.dbConnect().close();
         } catch (SQLException e) {
