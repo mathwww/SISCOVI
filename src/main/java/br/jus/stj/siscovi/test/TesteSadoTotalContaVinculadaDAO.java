@@ -1,8 +1,8 @@
 package br.jus.stj.siscovi.test;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
-import br.jus.stj.siscovi.dao.SaldoTotalContaVincualadaDAO;
-import br.jus.stj.siscovi.model.SaldoTotalContaVinculada;
+import br.jus.stj.siscovi.dao.SaldoTotalContaVinculadaDAO;
+import br.jus.stj.siscovi.model.SaldoTotalContaVinculadaModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,8 +16,8 @@ public class TesteSadoTotalContaVinculadaDAO {
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        SaldoTotalContaVincualadaDAO saldoTotalContaVincualadaDAO = new SaldoTotalContaVincualadaDAO(connectSQLServer.dbConnect());
-        ArrayList<SaldoTotalContaVinculada> saldoLista = saldoTotalContaVincualadaDAO.getSaldoContaVinculadaContrato(41, 142);
+        SaldoTotalContaVinculadaDAO saldoTotalContaVincualadaDAO = new SaldoTotalContaVinculadaDAO(connectSQLServer.dbConnect());
+        ArrayList<SaldoTotalContaVinculadaModel> saldoLista = saldoTotalContaVincualadaDAO.getSaldoContaVinculadaContrato(41, 142);
 
         for (int i = 0; i < saldoLista.size(); i++) {
 

@@ -519,12 +519,12 @@ public class RestituicaoRescisao {
 
             if (vMes == 12 || (vMes == pDataDesligamento.toLocalDate().getMonthValue()) && vAno == pDataDesligamento.toLocalDate().getYear()) {
 
-                vTotalFerias = (vTotalFerias - saldo.SaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 1));
-                vTotalTercoConstitucional = (vTotalTercoConstitucional - saldo.SaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 2));
-                vTotalDecimoTerceiro = vTotalDecimoTerceiro - saldo.SaldoContaVinculada(pCodTerceirizadoContrato, vAno, 3, 3);
-                vTotalIncidenciaDecimoTerceiro = vTotalIncidenciaDecimoTerceiro - saldo.SaldoContaVinculada(pCodTerceirizadoContrato, vAno, 3, 103);
-                vTotalIncidenciaFerias = (vTotalIncidenciaFerias - saldo.SaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 101));
-                vTotalIncidenciaTerco = (vTotalIncidenciaTerco - saldo.SaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 102));
+                vTotalFerias = (vTotalFerias - saldo.getSaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 1));
+                vTotalTercoConstitucional = (vTotalTercoConstitucional - saldo.getSaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 2));
+                vTotalDecimoTerceiro = vTotalDecimoTerceiro - saldo.getSaldoContaVinculada(pCodTerceirizadoContrato, vAno, 3, 3);
+                vTotalIncidenciaDecimoTerceiro = vTotalIncidenciaDecimoTerceiro - saldo.getSaldoContaVinculada(pCodTerceirizadoContrato, vAno, 3, 103);
+                vTotalIncidenciaFerias = (vTotalIncidenciaFerias - saldo.getSaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 101));
+                vTotalIncidenciaTerco = (vTotalIncidenciaTerco - saldo.getSaldoContaVinculada(pCodTerceirizadoContrato, vAno, 2, 102));
 
             }
 
