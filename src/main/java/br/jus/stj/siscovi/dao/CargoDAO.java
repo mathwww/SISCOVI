@@ -2,11 +2,10 @@ package br.jus.stj.siscovi.dao;
 
 import br.jus.stj.siscovi.model.*;
 import com.sun.org.apache.regexp.internal.RE;
+import com.sun.scenario.effect.impl.prism.ps.PPSBlend_REDPeer;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.xml.ws.Response;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,5 +167,71 @@ public class CargoDAO {
             throw new RuntimeException(e.getMessage());
         }
         return 0;
+    }
+
+    public boolean alterarFuncaoTerceirizado(int codContrato, int codTerceirizado, int codFuncao, Date dataInicio, String username) {
+        String sql = "SELECT F.cod FROM TB_TERCEIRIZADO_CONTRATO TC JOIN TB_TERCEIRIZADO T ON T.COD=TC.COD_TERCEIRIZADO JOIN TB_FUNCAO_TERCEIRIZADO FT ON FT.COD_TERCEIRIZADO_CONTRATO=TC.COD" +
+        " JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=? AND T.COD=?";
+        int codTerceirizaContrato = 0;
+        int codFuncaoContrato = 0;
+        int codFuncaoAnterior = 0;
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codContrato);
+            preparedStatement.setInt(2, codTerceirizado);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    codFuncaoAnterior = resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException error) {
+            throw new RuntimeException(error.getMessage());
+        }
+        if(codFuncaoAnterior != 0) {
+            sql = "SELECT COD_TERCEIRIZADO_CONTRATO FROM TB_TERCEIRIZADO_CONTRATO WHERE COD_CONTRATO=? AND COD_TERCEIRIZADO=?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, codContrato);
+                preparedStatement.setInt(2, codTerceirizado);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        codTerceirizaContrato = resultSet.getInt(1);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (codTerceirizaContrato != 0) {
+                codFuncaoContrato = recuperaCodigoFuncaoContrato(codContrato, codFuncaoAnterior);
+                if (codFuncaoContrato != 0) {
+                    Date dataFim = Date.valueOf(dataInicio.toLocalDate().minusDays(1));
+                    sql = "UPDATE tb_funcao_terceirizado SET LOGIN_ATUALIZACAO=?, DATA_FIM=? WHERE COD_FUNCAO_CONTRATO=?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                        preparedStatement.setString(1, username);
+                        preparedStatement.setDate(2, dataFim);
+                        preparedStatement.setInt(3, codFuncaoContrato);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    codFuncaoContrato = recuperaCodigoFuncaoContrato(codContrato, codFuncao);
+                    if(codFuncaoContrato != 0) {
+                        sql = "INSERT INTO tb_funcao_terceirizado (COD_TERCEIRIZADO_CONTRATO, COD_FUNCAO_CONTRATO, DATA_INICIO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES" +
+                                " (?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                            preparedStatement.setInt(1, codTerceirizaContrato);
+                            preparedStatement.setInt(2, codFuncaoContrato);
+                            preparedStatement.setDate(3, dataInicio);
+                            preparedStatement.setString(4, username);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                }
+            }
+
+        }else {
+            throw new RuntimeException("Ocorreu um erro ao tentar recuperar o código da função atual do terceirizado. Tente novamente mais tarde");
+        }
+        return false;
     }
 }

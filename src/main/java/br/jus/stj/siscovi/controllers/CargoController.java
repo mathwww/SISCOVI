@@ -5,6 +5,7 @@ import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
+import br.jus.stj.siscovi.dao.sql.UpdateTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.*;
 import com.google.gson.Gson;
@@ -150,5 +151,18 @@ public class CargoController {
         jsonObject.addProperty("success", "O terceirizado foi inserido no contrato com sucesso !");
         String json = gson.toJson(jsonObject);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/alterarFuncaoTerceirizado/{codigoContrato}/{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response alterarFuncaoTerceirizado(String object, @PathParam("codigoContrato") int codigoContrato, @PathParam("username") String username) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        List<CargosFuncionariosModel> cargosFuncionariosModels = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>(){}.getType());
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
+
+        return Response.ok().build();
     }
 }
