@@ -159,10 +159,26 @@ public class CargoController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response alterarFuncaoTerceirizado(String object, @PathParam("codigoContrato") int codigoContrato, @PathParam("username") String username) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-        List<CargosFuncionariosModel> cargosFuncionariosModels = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>(){}.getType());
+        List<CargosFuncionariosModel> listaFuncionariosAlteracao = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>(){}.getType());
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
-
-        return Response.ok().build();
+        try {
+            for(CargosFuncionariosModel cfm : listaFuncionariosAlteracao) {
+                if(!cargoDAO.alterarFuncaoTerceirizado(codigoContrato, cfm.getFuncionario().getCodigo(), cfm.getFuncao().getCodigo(), cfm.getDataDisponibilizacao(), username)) {
+                    ErrorMessage errorMessage = new ErrorMessage();
+                    errorMessage.error = "Erro ao tentar alterar a função de um terceirizado. Entre em contato com o administrador do sistema";
+                    return Response.ok(gson.toJson(errorMessage)).build();
+                }
+            }
+            connectSQLServer.dbConnect().close();
+        } catch (SQLException e) {
+            return Response.ok(gson.toJson(ErrorMessage.handleError(e))).build();
+        }catch(RuntimeException rte) {
+            return Response.ok(gson.toJson(ErrorMessage.handleError(rte))).build();
+        }
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
+        String json = gson.toJson(jsonObject);
+        return Response.ok(json).build();
     }
 }

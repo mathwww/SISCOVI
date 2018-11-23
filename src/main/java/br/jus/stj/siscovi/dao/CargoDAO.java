@@ -130,7 +130,7 @@ public class CargoDAO {
             String sql = "SELECT T.cod, T.NOME, T.CPF ,T.ATIVO, F.COD as CODIGO,F.NOME AS CARGO, TC.DATA_DISPONIBILIZACAO, TC.DATA_DESLIGAMENTO, T.LOGIN_ATUALIZACAO, T.DATA_ATUALIZACAO," +
                     " F.DATA_ATUALIZACAO AS DATAATUALIZACAO, F.LOGIN_ATUALIZACAO AS LOGINATUALIZACAO" +
                     " FROM TB_TERCEIRIZADO_CONTRATO TC JOIN TB_TERCEIRIZADO T ON T.COD=TC.COD_TERCEIRIZADO JOIN TB_FUNCAO_TERCEIRIZADO FT ON FT.COD_TERCEIRIZADO_CONTRATO=TC.COD" +
-                    " JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=? ORDER BY T.NOME ASC";
+                    " JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=? AND FT.DATA_FIM IS NULL ORDER BY T.NOME ASC";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setInt(1, codigo);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -170,67 +170,79 @@ public class CargoDAO {
     }
 
     public boolean alterarFuncaoTerceirizado(int codContrato, int codTerceirizado, int codFuncao, Date dataInicio, String username) {
-        String sql = "SELECT F.cod FROM TB_TERCEIRIZADO_CONTRATO TC JOIN TB_TERCEIRIZADO T ON T.COD=TC.COD_TERCEIRIZADO JOIN TB_FUNCAO_TERCEIRIZADO FT ON FT.COD_TERCEIRIZADO_CONTRATO=TC.COD" +
-        " JOIN TB_FUNCAO_CONTRATO FC ON FC.COD=FT.COD_FUNCAO_CONTRATO JOIN TB_FUNCAO F ON F.COD=FC.COD_FUNCAO WHERE TC.COD_CONTRATO=? AND T.COD=?";
+        String sql = "";
         int codTerceirizaContrato = 0;
-        int codFuncaoContrato = 0;
+        int codFuncaoTerceirizadoAnterior = 0;
         int codFuncaoAnterior = 0;
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        sql = "SELECT COD FROM TB_TERCEIRIZADO_CONTRATO WHERE COD_CONTRATO=? AND COD_TERCEIRIZADO=?"; // Busca o código do terceirizado em um contrato
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, codContrato);
             preparedStatement.setInt(2, codTerceirizado);
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                if(resultSet.next()) {
-                    codFuncaoAnterior = resultSet.getInt(1);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    codTerceirizaContrato = resultSet.getInt(1);
                 }
             }
-        } catch (SQLException error) {
-            throw new RuntimeException(error.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        if(codFuncaoAnterior != 0) {
-            sql = "SELECT COD_TERCEIRIZADO_CONTRATO FROM TB_TERCEIRIZADO_CONTRATO WHERE COD_CONTRATO=? AND COD_TERCEIRIZADO=?";
+        if (codTerceirizaContrato != 0) {
+            // codFuncaoContrato = recuperaCodigoFuncaoContrato(codContrato, codFuncaoAnterior);
+            sql = "SELECT COD FROM TB_FUNCAO_TERCEIRIZADO WHERE cod_terceirizado_contrato = ?" +
+                    " AND data_fim IS NULL";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setInt(1, codContrato);
-                preparedStatement.setInt(2, codTerceirizado);
+                preparedStatement.setInt(1, codTerceirizaContrato);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        codTerceirizaContrato = resultSet.getInt(1);
+                        codFuncaoTerceirizadoAnterior = resultSet.getInt(1);
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.out.println(e.getStackTrace());
             }
-            if (codTerceirizaContrato != 0) {
-                codFuncaoContrato = recuperaCodigoFuncaoContrato(codContrato, codFuncaoAnterior);
+            if (codFuncaoTerceirizadoAnterior != 0) {
+
+                Date dataFim = Date.valueOf(dataInicio.toLocalDate().minusDays(1));
+
+                // Atualiza a função atual do terceirizado no contrato alterando a data fim para um dia antes da data de início na nova função
+                sql = "UPDATE tb_funcao_terceirizado SET LOGIN_ATUALIZACAO=?, DATA_FIM=? WHERE COD=?";
+
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setDate(2, dataFim);
+                    preparedStatement.setInt(3, codFuncaoTerceirizadoAnterior);
+                    preparedStatement.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    try {
+                        connection.rollback();
+                    } catch (SQLException e1) {
+
+                        throw new RuntimeException("Falha ao tentar se recuperar de um erro");
+                    }
+                    throw new RuntimeException("Erro ao tentar alterar a função de um terceirizado.");
+                }
+                int codFuncaoContrato = recuperaCodigoFuncaoContrato(codContrato, codFuncao);
                 if (codFuncaoContrato != 0) {
-                    Date dataFim = Date.valueOf(dataInicio.toLocalDate().minusDays(1));
-                    sql = "UPDATE tb_funcao_terceirizado SET LOGIN_ATUALIZACAO=?, DATA_FIM=? WHERE COD_FUNCAO_CONTRATO=?";
+                    sql = "INSERT INTO tb_funcao_terceirizado (COD_TERCEIRIZADO_CONTRATO, COD_FUNCAO_CONTRATO, DATA_INICIO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES" +
+                            " (?, ?, ?, ?, CURRENT_TIMESTAMP)"; // insere novo registro de função na tabela "função_terceirizado"
                     try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                        preparedStatement.setString(1, username);
-                        preparedStatement.setDate(2, dataFim);
-                        preparedStatement.setInt(3, codFuncaoContrato);
+                        preparedStatement.setInt(1, codTerceirizaContrato);
+                        preparedStatement.setInt(2, codFuncaoContrato);
+                        preparedStatement.setDate(3, dataInicio);
+                        preparedStatement.setString(4, username);
                         preparedStatement.executeUpdate();
                     } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                    codFuncaoContrato = recuperaCodigoFuncaoContrato(codContrato, codFuncao);
-                    if(codFuncaoContrato != 0) {
-                        sql = "INSERT INTO tb_funcao_terceirizado (COD_TERCEIRIZADO_CONTRATO, COD_FUNCAO_CONTRATO, DATA_INICIO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES" +
-                                " (?, ?, ?, ?, CURRENT_TIMESTAMP)";
-                        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                            preparedStatement.setInt(1, codTerceirizaContrato);
-                            preparedStatement.setInt(2, codFuncaoContrato);
-                            preparedStatement.setDate(3, dataInicio);
-                            preparedStatement.setString(4, username);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                        try {
+                            connection.rollback();
+                        } catch (SQLException e1) {
+                            throw new RuntimeException("Falha ao tentar se recuperar de um erro");
                         }
-                        return true;
+                        throw new RuntimeException("Erro ao tentar inserir nova função para um terceirizado !");
                     }
+                    return true;
                 }
             }
-
-        }else {
-            throw new RuntimeException("Ocorreu um erro ao tentar recuperar o código da função atual do terceirizado. Tente novamente mais tarde");
         }
         return false;
     }
