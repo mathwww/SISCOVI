@@ -5,6 +5,8 @@ import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
@@ -16,6 +18,8 @@ public class TestAuxiliateCalc {
 
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         AuxiliateCalcDAO calcDAO = new AuxiliateCalcDAO(connectSQLServer.dbConnect());
+        String username;
+
         try {
             // System.out.println(calcDAO.TipoDeRestituicao(1));
             // calcDAO.ExisteRetroatividade(1, 2, 8, 2013, 1);

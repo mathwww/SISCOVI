@@ -18,7 +18,7 @@ public class UsuarioDAO {
         ArrayList<UsuarioModel> usuarios = new ArrayList<UsuarioModel>();
         try {
             preparedStatement = connection.prepareStatement("SELECT U.cod, U.NOME, LOGIN, SIGLA, U.LOGIN_ATUALIZACAO, U.DATA_ATUALIZACAO FROM tb_usuario U" +
-                    " JOIN TB_PERFIL_USUARIO P ON P.cod=u.COD_PERFIL");
+                    " JOIN TB_PERFIL_USUARIO P ON P.cod=u.COD_PERFIL ORDER BY NOME ASC");
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 UsuarioModel usuarioModel = new UsuarioModel(resultSet.getInt("COD"),
@@ -97,8 +97,8 @@ public class UsuarioDAO {
         try {
             preparedStatement = connection.prepareStatement("INSERT INTO TB_USUARIO(COD_PERFIL, NOME, LOGIN, PASSWORD, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP)");
             preparedStatement.setInt(1, codigo);
-            preparedStatement.setString(2, usuario.getNome());
-            preparedStatement.setString(3, usuario.getLogin());
+            preparedStatement.setString(2, usuario.getNome().toUpperCase());
+            preparedStatement.setString(3, usuario.getLogin().toUpperCase());
             preparedStatement.setString(4, password);
             preparedStatement.setString(5, currentUser.toUpperCase());
             preparedStatement.executeUpdate();

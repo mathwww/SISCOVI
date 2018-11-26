@@ -1,6 +1,7 @@
 package br.jus.stj.siscovi.model;
 
 import java.sql.Date;
+import java.util.List;
 
 public class ContratoModel {
     private String nomeDaEmpresa;
@@ -12,6 +13,8 @@ public class ContratoModel {
     private Date dataFim;
     private String objeto;
     private String seAtivo;
+    private List<HistoricoGestorModel> historicoGestao;
+    private List<CargoModel> funcoes;
 
     public ContratoModel(int codigo ,String nomeDaEmpresa, String cnpj){
         this.codigo = codigo;
