@@ -39,7 +39,7 @@ public class DecimoTerceiroController {
             json = gson.toJson(decimoTerceiroDAO.getListaTerceirizadoParaCalculoDeDecimoTerceiro(codigoContrato));
         }
         if(tipoRestituicao.equals("RESGATE")) {
-
+            json = gson.toJson(decimoTerceiroDAO.getListaTerceirizadoParaCalculoDeDecimoTerceiro(codigoContrato));
         }
         try {
             connectSQLServer.dbConnect().close();
