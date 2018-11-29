@@ -45,7 +45,7 @@ public class FeriasController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/getValorRestituicaoFeriasModel")
+    @Path("/getValorRestituicaoFerias")
     public Response getValoresFeriasTerceirizado(String object) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         CalcularFeriasModel cfm = gson.fromJson(object, CalcularFeriasModel.class);

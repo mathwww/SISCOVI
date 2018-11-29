@@ -227,7 +227,6 @@ public class InsertTSQL {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException("Erro ao tentar inserir dados na tabela de restituição de décimo terceiro!");
 
         }

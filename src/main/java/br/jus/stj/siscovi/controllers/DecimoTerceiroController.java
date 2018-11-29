@@ -35,12 +35,7 @@ public class DecimoTerceiroController {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         DecimoTerceiroDAO decimoTerceiroDAO = new DecimoTerceiroDAO(connectSQLServer.dbConnect());
         String json = "";
-        if(tipoRestituicao.equals("MOVIMENTACAO")) {
             json = gson.toJson(decimoTerceiroDAO.getListaTerceirizadoParaCalculoDeDecimoTerceiro(codigoContrato));
-        }
-        if(tipoRestituicao.equals("RESGATE")) {
-            json = gson.toJson(decimoTerceiroDAO.getListaTerceirizadoParaCalculoDeDecimoTerceiro(codigoContrato));
-        }
         try {
             connectSQLServer.dbConnect().close();
         } catch (SQLException e) {
@@ -62,7 +57,8 @@ public class DecimoTerceiroController {
         for(TerceirizadoDecimoTerceiro calculo : lista) {
             Date ultimoDiaDoAno = Date.valueOf("" + calculo.getInicioContagem().toLocalDate().getYear() + "-12-31");
             try {
-                calculo.setValoresDecimoTerceiro(restituicaoDecimoTerceiro.CalculaRestituicaoDecimoTerceiro(calculo.getCodigoTerceirizadoContrato(), calculo.getParcelas(), calculo.getInicioContagem(), ultimoDiaDoAno));
+                calculo.setValoresDecimoTerceiro(restituicaoDecimoTerceiro.CalculaRestituicaoDecimoTerceiro(calculo.getCodigoTerceirizadoContrato(), calculo.getParcelas(),
+                        calculo.getInicioContagem(), ultimoDiaDoAno));
                 calculo.setFimContagem(ultimoDiaDoAno);
             }catch(NullPointerException npe) {
                 System.err.println(npe.getStackTrace());
@@ -93,6 +89,7 @@ public class DecimoTerceiroController {
         RestituicaoDecimoTerceiro restituicaoDecimoTerceiro = new RestituicaoDecimoTerceiro(connectSQLServer.dbConnect());
         String json = "";
         for(TerceirizadoDecimoTerceiro decimoTerceiro : lista) {
+            Date ultimoDiaDoAno = Date.valueOf("" + decimoTerceiro.getInicioContagem().toLocalDate().getYear() + "-12-31");
             if(decimoTerceiro.getTipoRestituicao().equals("RESGATE")) {
                 try {
                     restituicaoDecimoTerceiro.RegistraRestituicaoDecimoTerceiro(decimoTerceiro.getCodigoTerceirizadoContrato(),
@@ -112,19 +109,25 @@ public class DecimoTerceiroController {
                 }
             }else if(decimoTerceiro.getTipoRestituicao().equals("MOVIMENTAÇÃO")) {
                 try {
+                    decimoTerceiro.setValoresDecimoTerceiro(restituicaoDecimoTerceiro.CalculaRestituicaoDecimoTerceiro(decimoTerceiro.getCodigoTerceirizadoContrato(),
+                            decimoTerceiro.getParcelas(), decimoTerceiro.getInicioContagem(), ultimoDiaDoAno));
+                    decimoTerceiro.setFimContagem(ultimoDiaDoAno);
                     restituicaoDecimoTerceiro.RegistraRestituicaoDecimoTerceiro(decimoTerceiro.getCodigoTerceirizadoContrato(),
                             decimoTerceiro.getTipoRestituicao(),
                             decimoTerceiro.getParcelas(),
                             decimoTerceiro.getInicioContagem(),
-                            0,
-                            0,
+                            decimoTerceiro.getValoresDecimoTerceiro().getValorIncidenciaDecimoTerceiro(),
+                            decimoTerceiro.getValoresDecimoTerceiro().getValorIncidenciaDecimoTerceiro(),
                             decimoTerceiro.getValorMovimentado(),
                             decimoTerceiro.getId());
-                }catch(NullPointerException npe) {
+                } catch(NullPointerException npe) {
                     System.err.println(npe.getStackTrace());
                     ErrorMessage error = new ErrorMessage();
                     error.error = "Houve um erro ao tentar registrar o cálculo !";
                     json = gson.toJson(error);
+                    return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                }catch (RuntimeException rte) {
+                    json = gson.toJson(ErrorMessage.handleError(rte));
                     return Response.ok(json, MediaType.APPLICATION_JSON).build();
                 }
             }
