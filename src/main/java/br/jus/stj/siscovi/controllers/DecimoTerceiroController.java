@@ -61,7 +61,6 @@ public class DecimoTerceiroController {
                         calculo.getInicioContagem(), ultimoDiaDoAno));
                 calculo.setFimContagem(ultimoDiaDoAno);
             }catch(NullPointerException npe) {
-                System.err.println(npe.getStackTrace());
                 ErrorMessage error = new ErrorMessage();
                 error.error = npe.getMessage();
                 json = gson.toJson(error);
@@ -72,7 +71,6 @@ public class DecimoTerceiroController {
         try {
             connectSQLServer.dbConnect().close();
         }catch(SQLException sqle) {
-            System.err.println(sqle.getStackTrace());
             return Response.accepted().status(500).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
@@ -116,12 +114,11 @@ public class DecimoTerceiroController {
                             decimoTerceiro.getTipoRestituicao(),
                             decimoTerceiro.getParcelas(),
                             decimoTerceiro.getInicioContagem(),
-                            decimoTerceiro.getValoresDecimoTerceiro().getValorIncidenciaDecimoTerceiro(),
+                            decimoTerceiro.getValoresDecimoTerceiro().getValorDecimoTerceiro(),
                             decimoTerceiro.getValoresDecimoTerceiro().getValorIncidenciaDecimoTerceiro(),
                             decimoTerceiro.getValorMovimentado(),
                             decimoTerceiro.getId());
                 } catch(NullPointerException npe) {
-                    System.err.println(npe.getStackTrace());
                     ErrorMessage error = new ErrorMessage();
                     error.error = "Houve um erro ao tentar registrar o cálculo !";
                     json = gson.toJson(error);
@@ -135,7 +132,6 @@ public class DecimoTerceiroController {
         try {
             connectSQLServer.dbConnect().close();
         }catch (SQLException sqle) {
-            System.err.println(sqle.getStackTrace());
             return Response.accepted().status(500).build();
         }
         JsonObject jsonObject = new JsonObject();
