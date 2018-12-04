@@ -38,4 +38,15 @@ public class CargoModel {
     public int getCodigo() {
         return codigo;
     }
+
+    @Override
+    public String toString() {
+        return "CargoModel{" +
+                "codigo=" + codigo +
+                ", nome='" + nome + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", loginAtualizacao='" + loginAtualizacao + '\'' +
+                ", dataAtualizacao=" + dataAtualizacao +
+                '}';
+    }
 }

@@ -52,4 +52,18 @@ public class HistoricoGestorModel {
     public int getCodigoPerfilGestao() {
         return codigoPerfilGestao;
     }
+
+    @Override
+    public String toString() {
+        return "HistoricoGestorModel{" +
+                "codigo=" + codigo +
+                ", codigoContrato=" + codigoContrato +
+                ", gestor='" + gestor + '\'' +
+                ", inicio=" + inicio +
+                ", fim=" + fim +
+                ", loginAtualizacao='" + loginAtualizacao + '\'' +
+                ", dataAtualizacao=" + dataAtualizacao +
+                ", codigoPerfilGestao=" + codigoPerfilGestao +
+                '}';
+    }
 }

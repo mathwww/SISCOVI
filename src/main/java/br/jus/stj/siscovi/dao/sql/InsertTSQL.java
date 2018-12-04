@@ -698,7 +698,7 @@ public class InsertTSQL {
                                String pNumeroProcessoSTJ,
                                String pSeAtivo,
                                String pObjeto,
-                               String pLoginAtualizacao) {
+                               String pLoginAtualizacao) throws NullPointerException{
 
         PreparedStatement preparedStatement;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);

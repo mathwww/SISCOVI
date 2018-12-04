@@ -42,4 +42,14 @@ public class RubricaModel {
     public void setSigla(String sigla) {
         this.sigla = sigla;
     }
+
+    @Override
+    public String toString() {
+        return "RubricaModel{" +
+                "nome='" + nome + '\'' +
+                ", sigla='" + sigla + '\'' +
+                ", codigo=" + codigo +
+                ", descricao='" + descricao + '\'' +
+                '}';
+    }
 }

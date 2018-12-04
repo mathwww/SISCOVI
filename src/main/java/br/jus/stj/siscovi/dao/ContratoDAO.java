@@ -1,7 +1,13 @@
 package br.jus.stj.siscovi.dao;
 
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
+import br.jus.stj.siscovi.dao.sql.InsertTSQL;
+import br.jus.stj.siscovi.model.CargoModel;
 import br.jus.stj.siscovi.model.ContratoModel;
+import br.jus.stj.siscovi.model.HistoricoGestorModel;
+import br.jus.stj.siscovi.model.PercentualModel;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -152,5 +158,43 @@ public class ContratoDAO {
             throw new NullPointerException("Erro ao tentar recuperar cálculos anteriores. Erro na função: 'codigoGestorContrato em ContratoDao.class'");
         }
         return codigoGestor;
+    }
+
+    public boolean cadastrarContrato(ContratoModel contrato, String username) {
+        InsertTSQL insertTSQL = new InsertTSQL(connection);
+        int vCodContrato = 0;
+        int vCodUsuarioGestor = 0;
+
+        try {
+            vCodContrato = insertTSQL.InsertContrato(contrato.getNomeDaEmpresa(), contrato.getCnpj(), contrato.getNumeroDoContrato(), contrato.getNumeroProcessoSTJ(), contrato.getSeAtivo(),
+                    contrato.getObjeto(), username);
+            if(vCodContrato != 0) {
+                for(HistoricoGestorModel hgc: contrato.getHistoricoGestao()) {
+                    String sql = "SELECT COD FROM TB_USUARIO WHERE NOME=?";
+                    try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                        String nomeGestor = "";
+                        preparedStatement.setString(1, hgc.getGestor());
+                        try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                            if(resultSet.next()) {
+                                vCodUsuarioGestor = resultSet.getInt("COD");
+                            }
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException("Erro. Usuário indicado para gestor do contrato não existe no sistema !");
+                    }
+                    insertTSQL.InsertHistoricoGestaoContrato(vCodContrato, vCodUsuarioGestor, hgc.getCodigoPerfilGestao(), hgc.getInicio(), hgc.getFim(), username);
+                }
+                for(PercentualModel pm: contrato.getPercentuais()) {
+                    insertTSQL.InsertPercentualContrato(vCodContrato, pm.getRubrica().getCodigo(), pm.getPercentual(), pm.getDataInicio(), pm.getDataFim(), pm.getDataAditamento(), username);
+                }
+                for(CargoModel cm: contrato.getFuncoes()) {
+                    int vCodFuncaoContrato = insertTSQL.InsertFuncaoContrato(vCodContrato, cm.getCodigo(), cm.getDescricao(), username);
+                    // insertTSQL.InsertRemuneracaoFunCon(vCodContrato)
+                }
+            }
+        }catch (NullPointerException npe) {
+            throw new RuntimeException("" + npe.getMessage());
+        }
+        return false;
     }
 }

@@ -3,15 +3,14 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
+import br.jus.stj.siscovi.model.ContratoModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @Path("/contrato")
@@ -48,5 +47,26 @@ public class ContratoController {
          json = gson.toJson(errorMessage.error = "Este contrato não existe !");
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/cadastrarContrato/{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cadastrarContrato(@PathParam("username") String username, String object){
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ContratoModel contrato = gson.fromJson(object, ContratoModel.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        Connection connection = connectSQLServer.dbConnect();
+        ContratoDAO contratoDAO = new ContratoDAO(connection);
+        try {
+            if(contratoDAO.cadastrarContrato(contrato, username)) {
+                return Response.ok().build();
+            }
+            connection.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return Response.ok().build();
     }
 }
