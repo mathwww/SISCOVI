@@ -8,10 +8,8 @@ import br.jus.stj.siscovi.model.HistoricoGestorModel;
 import br.jus.stj.siscovi.model.PercentualModel;
 
 import javax.xml.transform.Result;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.xml.ws.Response;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class ContratoDAO {
@@ -160,8 +158,11 @@ public class ContratoDAO {
         return codigoGestor;
     }
 
-    public boolean cadastrarContrato(ContratoModel contrato, String username) {
+    public boolean cadastrarContrato(ContratoModel contrato, String username) throws RuntimeException, SQLException {
+        this.connection.setAutoCommit(false);
+        Savepoint savepoint = this.connection.setSavepoint("Savepoint1");
         InsertTSQL insertTSQL = new InsertTSQL(connection);
+        ConsultaTSQL consultaTSQL = new ConsultaTSQL(connection);
         int vCodContrato = 0;
         int vCodUsuarioGestor = 0;
 
@@ -189,12 +190,49 @@ public class ContratoDAO {
                 }
                 for(CargoModel cm: contrato.getFuncoes()) {
                     int vCodFuncaoContrato = insertTSQL.InsertFuncaoContrato(vCodContrato, cm.getCodigo(), cm.getDescricao(), username);
-                    // insertTSQL.InsertRemuneracaoFunCon(vCodContrato)
+                    insertTSQL.InsertRemuneracaoFunCon(vCodFuncaoContrato,
+                            cm.getConvencao().getCodigo(),
+                            contrato.getDataInicio(),
+                            null,
+                            contrato.getDataInicio(),
+                            cm.getRemuneracao(),
+                            cm.getAdicionais(),
+                            cm.getTrienios(),
+                            username);
+                }
+                if(vCodContrato != 0) {
+                    insertTSQL.InsertEventoContratual(vCodContrato,
+                            retornaCodEventoContratual("CONTRATO"),
+                            "N",
+                            null ,
+                            contrato.getDataInicio(),
+                            contrato.getDataFim(),
+                            contrato.getDataAssinatura(),
+                            username);
                 }
             }
+            connection.commit();
+            connection.setAutoCommit(true);
+            return true;
         }catch (NullPointerException npe) {
+            npe.printStackTrace();
+            connection.rollback(savepoint);
             throw new RuntimeException("" + npe.getMessage());
         }
-        return false;
+    }
+
+    public int retornaCodEventoContratual(String tipoEventoContratual) {
+        String sql = "SELECT COD FROM TB_TIPO_EVENTO_CONTRATUAL WHERE TIPO = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, tipoEventoContratual);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    return  resultSet.getInt("COD");
+                }
+            }
+        }catch (SQLException  sqle) {
+            throw new RuntimeException("Tipo de evento contratual não encontrado. " + sqle.getMessage());
+        }
+        return 0;
     }
 }

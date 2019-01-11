@@ -68,12 +68,19 @@ public class FuncionariosController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/getFuncioECargos={codigoContrato}")
-    public Response getFuncionariosECargos(@PathParam("codigoContrato") int codigoContrato) throws SQLException {
+    public Response getFuncionariosECargos(@PathParam("codigoContrato") int codigoContrato) {
         Gson gson = new GsonBuilder().serializeNulls().setDateFormat("dd/MM/yyyy").create();
-        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
-        String json = gson.toJson(funcionariosDAO.retornaCargosFuncionarios(codigoContrato));
-        connectSQLServer.dbConnect().close();
+        String json = "";
+        try {
+            ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+            FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+            json = gson.toJson(funcionariosDAO.retornaCargosFuncionarios(codigoContrato));
+            connectSQLServer.dbConnect().close();
+        }catch(Exception ex) {
+            ex.printStackTrace();
+            json = gson.toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.NOT_FOUND).entity(json).build();
+        }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 

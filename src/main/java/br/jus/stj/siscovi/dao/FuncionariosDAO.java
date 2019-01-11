@@ -43,7 +43,7 @@ public class FuncionariosDAO {
         return null;
     }
 
-    public ArrayList<CargoFuncionariosResponseModel> retornaCargosFuncionarios(int codigoContrato) {
+    public ArrayList<CargoFuncionariosResponseModel> retornaCargosFuncionarios(int codigoContrato) throws RuntimeException{
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
@@ -93,8 +93,8 @@ public class FuncionariosDAO {
             return listacfrm;
         }catch (SQLException sqle) {
             sqle.printStackTrace();
+            throw new RuntimeException("Nenhum funcionário cadastrado para as funções do contrato ainda ");
         }
-        return null;
     }
 
     public int InsertTerceirizado (FuncionarioModel funcionario) {

@@ -7,7 +7,20 @@ public class CargoModel {
     private String descricao;
     private String loginAtualizacao;
     private Date dataAtualizacao;
+    private float remuneracao;
+    private float adicionais;
+    private float trienios;
+    private ConvencaoColetivaModel convencao;
 
+    public CargoModel(String nome, String descricao, String loginAtualizacao, Date dataAtualizacao, float remuneracao, float adicionais, float trienios) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.loginAtualizacao = loginAtualizacao;
+        this.dataAtualizacao = dataAtualizacao;
+        this.remuneracao = remuneracao;
+        this.adicionais = adicionais;
+        this.trienios = trienios;
+    }
     public CargoModel(int codigo, String nome,String loginAtualizacao, Date dataAtualizacao) {
         this.codigo = codigo;
         this.nome = nome;
@@ -37,6 +50,22 @@ public class CargoModel {
 
     public int getCodigo() {
         return codigo;
+    }
+
+    public float getRemuneracao() {
+        return remuneracao;
+    }
+
+    public float getAdicionais() {
+        return adicionais;
+    }
+
+    public float getTrienios() {
+        return trienios;
+    }
+
+    public ConvencaoColetivaModel getConvencao() {
+        return convencao;
     }
 
     @Override
