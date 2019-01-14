@@ -2,15 +2,13 @@ package br.jus.stj.siscovi.dao;
 
 import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
-import br.jus.stj.siscovi.model.CargoModel;
-import br.jus.stj.siscovi.model.ContratoModel;
-import br.jus.stj.siscovi.model.HistoricoGestorModel;
-import br.jus.stj.siscovi.model.PercentualModel;
+import br.jus.stj.siscovi.model.*;
+import com.sun.scenario.effect.impl.prism.ps.PPSBlend_REDPeer;
+import javafx.scene.control.TableView;
 
-import javax.xml.transform.Result;
-import javax.xml.ws.Response;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ContratoDAO {
     private Connection connection;
@@ -234,5 +232,50 @@ public class ContratoDAO {
             throw new RuntimeException("Tipo de evento contratual não encontrado. " + sqle.getMessage());
         }
         return 0;
+    }
+
+    public List<EventoContratualModel> retornaEventosContratuais(String username, int codigoContrato) throws RuntimeException {
+        int vCodUsuario = 0;
+        List<EventoContratualModel> lista = new ArrayList<>();
+        String sql = "SELECT COD FROM TB_USUARIO WHERE LOGIN=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    vCodUsuario = resultSet.getInt("COD");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Usuário não encontrado.");
+        }
+        int codigo = new UsuarioDAO(connection).verifyPermission(vCodUsuario, codigoContrato);
+        int codGestor = new ContratoDAO(connection).codigoGestorContrato(vCodUsuario, codigoContrato);
+        if(codigo == codGestor) {
+             sql = "SELECT EC.COD, TEC.TIPO, EC.PRORROGACAO, EC.ASSUNTO, EC.DATA_INICIO_VIGENCIA, EC.DATA_FIM_VIGENCIA, EC.DATA_ASSINATURA, EC.LOGIN_ATUALIZACAO, EC.DATA_ATUALIZACAO" +
+                     " FROM TB_EVENTO_CONTRATUAL EC" +
+                     " JOIN TB_TIPO_EVENTO_CONTRATUAL TEC ON EC.COD_TIPO_EVENTO=TEC.COD WHERE TEC.TIPO != 'CONTRATO' AND COD_CONTRATO = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, codigoContrato);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()) {
+                        EventoContratualModel eventoContratualModel = new EventoContratualModel(resultSet.getInt("COD"),
+                                resultSet.getString("TIPO"),
+                                resultSet.getString("PRORROGACAO").charAt(0),
+                                resultSet.getString("ASSUNTO"),
+                                resultSet.getDate("DATA_INICIO_VIGENCIA"),
+                                resultSet.getDate("DATA_FIM_VIGENCIA"),
+                                resultSet.getDate("DATA_ASSINATURA"),
+                                resultSet.getString("LOGIN_ATUALIZACAO"),
+                                resultSet.getDate("DATA_ATUALIZACAO"));
+                        lista.add(eventoContratualModel);
+
+                    }
+                }
+                return lista;
+            } catch (SQLException sqle) {
+                throw new RuntimeException("");
+            }
+        }
+        return null;
     }
 }

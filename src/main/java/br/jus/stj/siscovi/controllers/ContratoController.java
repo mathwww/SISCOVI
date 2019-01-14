@@ -4,6 +4,7 @@ import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
+import br.jus.stj.siscovi.model.EventoContratualModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @Path("/contrato")
 public class ContratoController {
@@ -68,5 +70,25 @@ public class ContratoController {
             sqle.printStackTrace();
         }
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/getEventosContratuais/{username}/{codigoContrato}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEventosContratuaisContrato(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato){
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
+        String json = "";
+        try {
+            List<EventoContratualModel> eventos = contratoDAO.retornaEventosContratuais(username, codigoContrato);
+            connectSQLServer.dbConnect().close();
+            json = gson.toJson(eventos);
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            json = gson.toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.NOT_FOUND).entity(json).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

@@ -4,6 +4,7 @@ import java.sql.Date;
 
 public class EventoContratualModel {
     private int codigo;
+    private String tipo;
     private char prorrogacao;
     private String assunto;
     private Date dataInicioVigencia;
@@ -12,8 +13,9 @@ public class EventoContratualModel {
     private String loginAtualizacao;
     private Date dataAtualizacao;
 
-    public EventoContratualModel(int codigo, char prorrogacao, String assunto, Date dataInicioVigencia, Date dataFimVigencia, Date dataAssinatura, String loginAtualizacao, Date dataAtualizacao) {
+    public EventoContratualModel(int codigo, String tipo, char prorrogacao, String assunto, Date dataInicioVigencia, Date dataFimVigencia, Date dataAssinatura, String loginAtualizacao, Date dataAtualizacao) {
         this.codigo = codigo;
+        this.tipo = tipo;
         this.prorrogacao = prorrogacao;
         this.assunto = assunto;
         this.dataInicioVigencia = dataInicioVigencia;
@@ -45,5 +47,9 @@ public class EventoContratualModel {
 
     public Date getDataAssinatura() {
         return dataAssinatura;
+    }
+
+    public String getTipo() {
+        return tipo;
     }
 }

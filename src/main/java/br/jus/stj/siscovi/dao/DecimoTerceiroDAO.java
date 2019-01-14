@@ -2,8 +2,10 @@ package br.jus.stj.siscovi.dao;
 
 import br.jus.stj.siscovi.calculos.DecimoTerceiro;
 import br.jus.stj.siscovi.calculos.Saldo;
-import br.jus.stj.siscovi.model.*;
-import com.sun.istack.internal.Nullable;
+import br.jus.stj.siscovi.model.AvaliacaoDecimoTerceiro;
+import br.jus.stj.siscovi.model.DecimoTerceiroPendenteModel;
+import br.jus.stj.siscovi.model.TerceirizadoDecimoTerceiro;
+import br.jus.stj.siscovi.model.ValorRestituicaoDecimoTerceiroModel;
 
 import java.sql.*;
 import java.util.ArrayList;
