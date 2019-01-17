@@ -2,6 +2,8 @@ package br.jus.stj.siscovi.controllers;
 
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
+import br.jus.stj.siscovi.dao.UsuarioDAO;
+import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
 import br.jus.stj.siscovi.model.EventoContratualModel;
@@ -90,5 +92,16 @@ public class ContratoController {
             return Response.status(Response.Status.NOT_FOUND).entity(json).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getCotnratoCompleto/{username}/{codigoContrato}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getContratoCompletoUsuario(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato){
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        if(new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username)) {
+            List<ContratoModel> contratos = new ContratoDAO(connectSQLServer.dbConnect()).getContratoCompleto(username, codigoContrato);
+        }
+        return Response.ok().build();
     }
 }

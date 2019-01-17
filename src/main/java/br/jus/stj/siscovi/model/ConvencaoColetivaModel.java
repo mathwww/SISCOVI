@@ -82,6 +82,7 @@ public class ConvencaoColetivaModel {
                 ", dataBase=" + dataBase +
                 ", loginAtualizacao='" + loginAtualizacao + '\'' +
                 ", dataAtualizacao=" + dataAtualizacao +
+                ", descricao='" + descricao + '\'' +
                 '}';
     }
 }

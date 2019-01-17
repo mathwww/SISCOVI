@@ -3,8 +3,7 @@ package br.jus.stj.siscovi.dao;
 import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
 import br.jus.stj.siscovi.model.*;
-import com.sun.scenario.effect.impl.prism.ps.PPSBlend_REDPeer;
-import javafx.scene.control.TableView;
+import com.sun.org.apache.regexp.internal.RESyntaxException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -275,6 +274,44 @@ public class ContratoDAO {
             } catch (SQLException sqle) {
                 throw new RuntimeException("");
             }
+        }
+        return null;
+    }
+
+    public List<ContratoModel> getContratoCompleto(String username, int codContrato) throws RuntimeException {
+        String sql = "SELECT COD FROM TB_USUARIO WHERE LOGIN=?";
+        User user = new User();
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    user.setId(resultSet.getInt("COD"));
+                    user.setUsername(username);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("" + e.getMessage());
+        }
+        sql = "SELECT COD, NOME_EMPRESA, CNPJ, NUMERO_CONTRATO, NUMERO_PROCESSO_STJ, SE_ATIVO, OBJETO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO FROM TB_CONTRATO WHERE COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                while(resultSet.next()){
+                    ContratoModel contratoModel = new ContratoModel(codContrato, resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
+                    contratoModel.setNumeroDoContrato(resultSet.getString("NUMERO_CONTRATO"));
+                    contratoModel.setNumeroProcessoSTJ(resultSet.getString("NUMERO_PROCESSO_STJ"));
+                    contratoModel.setSeAtivo(resultSet.getString("SE_ATIVO"));
+                    contratoModel.setObjeto(resultSet.getString("OBJETO"));
+                    contratoModel.setLoginAtualizacao("LOGIN_ATUALIZACAO");
+                    contratoModel.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
+                    contratoModel.setHistoricoGestao(new HistoricoDAO(connection).getHistoricoGestor(codContrato));
+                    contratoModel.setPercentuais(new PercentualDAO(connection).getPercentuaisDoContrato(codContrato));
+                    contratoModel.setFuncoes(new CargoDAO(connection).getFuncoesContrato(codContrato, user));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar recuperar informações do contrato: " + codContrato + ". Para o usuário " + username + ". " + e.getMessage());
         }
         return null;
     }

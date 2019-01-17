@@ -109,27 +109,26 @@ public class UsuarioDAO {
         return false;
     }
 
-    public ArrayList<UsuarioModel> getGestores(){
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+    public ArrayList<UsuarioModel> getGestores() throws  RuntimeException{
+        String sql = "SELECT U.cod, U.NOME, LOGIN, SIGLA, U.LOGIN_ATUALIZACAO, U.DATA_ATUALIZACAO FROM tb_usuario U JOIN TB_PERFIL_USUARIO P ON P.cod=u.COD_PERFIL WHERE P.SIGLA = 'USUÁRIO'";
         ArrayList<UsuarioModel> usuarios = new ArrayList<>();
-        try {
-            preparedStatement = connection.prepareStatement("SELECT U.cod, U.NOME, LOGIN, SIGLA, U.LOGIN_ATUALIZACAO, U.DATA_ATUALIZACAO FROM tb_usuario U JOIN TB_PERFIL_USUARIO P ON P.cod=u.COD_PERFIL WHERE P.COD=4");
-            resultSet = preparedStatement.executeQuery();
-            while(resultSet.next()) {
-                UsuarioModel usuarioModel = new UsuarioModel(resultSet.getInt("COD"),
-                        resultSet.getString("NOME"),
-                        resultSet.getString("LOGIN"),
-                        resultSet.getString("LOGIN_ATUALIZACAO"),
-                        resultSet.getDate("DATA_ATUALIZACAO"));
-                usuarioModel.setPerfil(resultSet.getString("SIGLA"));
-                usuarios.add(usuarioModel);
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    UsuarioModel usuarioModel = new UsuarioModel(resultSet.getInt("COD"),
+                            resultSet.getString("NOME"),
+                            resultSet.getString("LOGIN"),
+                            resultSet.getString("LOGIN_ATUALIZACAO"),
+                            resultSet.getDate("DATA_ATUALIZACAO"));
+                    usuarioModel.setPerfil(resultSet.getString("SIGLA"));
+                    usuarios.add(usuarioModel);
+                }
             }
             return usuarios;
         }catch(SQLException sqle) {
             sqle.printStackTrace();
+            throw new RuntimeException("Usuários não encontrados. " + sqle.getMessage());
         }
-        return null;
     }
 
     public int verifyPermission(int codUsuario, int codContrato) {
@@ -180,5 +179,22 @@ public class UsuarioDAO {
             }
         }
         return codGestor;
+    }
+
+    public boolean isAdmin(String username) throws RuntimeException {
+        String sql = "SELECT PU.SIGLA FROM TB_USUARIO U JOIN TB_PERFIL_USUARIO PU ON U.COD_PERFIL=PU.COD  WHERE LOGIN = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1, username);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()){
+                    if(resultSet.getString("SIGLA").contains("ADMINISTRADOR")) {
+                        return  true;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Usuário não existe !");
+        }
+        return false;
     }
 }

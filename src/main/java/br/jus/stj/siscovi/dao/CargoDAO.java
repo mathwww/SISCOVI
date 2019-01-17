@@ -112,6 +112,10 @@ public class CargoDAO {
                             resultSet.getString("LOGIN_ATUALIZACAO"),
                             resultSet.getDate("DATA_ATUALIZACAO"));
                     cargo.setDescricao(resultSet.getString("DESCRICAO"));
+                    cargo.setRemuneracao(resultSet.getFloat("REMUNERACAO"));
+                    cargo.setTrienios(resultSet.getFloat("TRIENIOS"));
+                    cargo.setAdicionais(resultSet.getFloat("ADICIONAIS"));
+                    cargo.setConvencao(new ConvencoesDAO(connection).getConvencaoColetiva(resultSet.getInt("COD_CONVENCAO_COLETIVA")));
                     cargos.add(cargo);
                 }
             }

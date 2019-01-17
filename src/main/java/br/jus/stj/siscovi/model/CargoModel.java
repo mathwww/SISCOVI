@@ -68,6 +68,22 @@ public class CargoModel {
         return convencao;
     }
 
+    public void setRemuneracao(float remuneracao) {
+        this.remuneracao = remuneracao;
+    }
+
+    public void setAdicionais(float adicionais) {
+        this.adicionais = adicionais;
+    }
+
+    public void setTrienios(float trienios) {
+        this.trienios = trienios;
+    }
+
+    public void setConvencao(ConvencaoColetivaModel convencao) {
+        this.convencao = convencao;
+    }
+
     @Override
     public String toString() {
         return "CargoModel{" +
@@ -76,6 +92,10 @@ public class CargoModel {
                 ", descricao='" + descricao + '\'' +
                 ", loginAtualizacao='" + loginAtualizacao + '\'' +
                 ", dataAtualizacao=" + dataAtualizacao +
+                ", remuneracao=" + remuneracao +
+                ", adicionais=" + adicionais +
+                ", trienios=" + trienios +
+                ", convencao=" + convencao +
                 '}';
     }
 }

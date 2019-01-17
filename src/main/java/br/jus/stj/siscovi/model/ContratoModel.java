@@ -18,6 +18,8 @@ public class ContratoModel {
     private Date dataAssinatura;
     private List<PercentualModel> percentuais;
     private String numeroProcessoSTJ;
+    private String loginAtualizacao;
+    private Date dataAtualizacao;
 
     public String getNumeroProcessoSTJ() {
         return numeroProcessoSTJ;
@@ -128,6 +130,14 @@ public class ContratoModel {
     public void setObjeto (String objeto) {this.objeto = objeto;}
 
     public void setSeAtivo(String seAtivo) {this.seAtivo = seAtivo;}
+
+    public void setLoginAtualizacao(String loginAtualizacao) {
+        this.loginAtualizacao = loginAtualizacao;
+    }
+
+    public void setDataAtualizacao(Date dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
+    }
 
     @Override
     public String toString() {
