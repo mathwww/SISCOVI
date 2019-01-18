@@ -95,13 +95,22 @@ public class ContratoController {
     }
 
     @GET
-    @Path("/getCotnratoCompleto/{username}/{codigoContrato}")
+    @Path("/getContratoCompleto/{username}/{codigoContrato}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getContratoCompletoUsuario(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato){
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        if(new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username)) {
-            List<ContratoModel> contratos = new ContratoDAO(connectSQLServer.dbConnect()).getContratoCompleto(username, codigoContrato);
+        String json = "";
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        try {
+            if (new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username)) {
+                List<ContratoModel> contratos = new ContratoDAO(connectSQLServer.dbConnect()).getContratoCompleto(username, codigoContrato);
+                json = gson.toJson(contratos);
+                connectSQLServer.dbConnect().close();
+            }
+        }catch (Exception ex) {
+            json = new Gson().toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
-        return Response.ok().build();
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

@@ -281,6 +281,7 @@ public class ContratoDAO {
     public List<ContratoModel> getContratoCompleto(String username, int codContrato) throws RuntimeException {
         String sql = "SELECT COD FROM TB_USUARIO WHERE LOGIN=?";
         User user = new User();
+        List<ContratoModel> contratos = new ArrayList<>();
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -295,6 +296,7 @@ public class ContratoDAO {
         }
         sql = "SELECT COD, NOME_EMPRESA, CNPJ, NUMERO_CONTRATO, NUMERO_PROCESSO_STJ, SE_ATIVO, OBJETO, LOGIN_ATUALIZACAO, DATA_ATUALIZACAO FROM TB_CONTRATO WHERE COD=?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codContrato);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
                 while(resultSet.next()){
                     ContratoModel contratoModel = new ContratoModel(codContrato, resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
@@ -302,17 +304,18 @@ public class ContratoDAO {
                     contratoModel.setNumeroProcessoSTJ(resultSet.getString("NUMERO_PROCESSO_STJ"));
                     contratoModel.setSeAtivo(resultSet.getString("SE_ATIVO"));
                     contratoModel.setObjeto(resultSet.getString("OBJETO"));
-                    contratoModel.setLoginAtualizacao("LOGIN_ATUALIZACAO");
+                    contratoModel.setLoginAtualizacao(resultSet.getString("LOGIN_ATUALIZACAO"));
                     contratoModel.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
                     contratoModel.setHistoricoGestao(new HistoricoDAO(connection).getHistoricoGestor(codContrato));
                     contratoModel.setPercentuais(new PercentualDAO(connection).getPercentuaisDoContrato(codContrato));
                     contratoModel.setFuncoes(new CargoDAO(connection).getFuncoesContrato(codContrato, user));
+                    contratos.add(contratoModel);
                 }
             }
+            return contratos;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao tentar recuperar informações do contrato: " + codContrato + ". Para o usuário " + username + ". " + e.getMessage());
         }
-        return null;
     }
 }

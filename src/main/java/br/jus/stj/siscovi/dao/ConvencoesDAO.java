@@ -44,12 +44,15 @@ public class ConvencoesDAO {
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, codConvencaoColetiva);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
-                ConvencaoColetivaModel convencaoColetivaModel = new ConvencaoColetivaModel(resultSet.getString("SIGLA"), resultSet.getString("NOME"),
-                        resultSet.getDate("DATA_BASE"));
-                convencaoColetivaModel.setCodigo(resultSet.getInt("COD"));
-                convencaoColetivaModel.setDescricao(resultSet.getString("DESCRICAO"));
-                convencaoColetivaModel.setLoginAtualizacao(resultSet.getString("LOGIN_ATUALIZACAO"));
-                convencaoColetivaModel.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
+                if(resultSet.next()) {
+                    ConvencaoColetivaModel convencaoColetivaModel = new ConvencaoColetivaModel(resultSet.getString("SIGLA"),
+                            resultSet.getString("NOME"),
+                            resultSet.getDate("DATA_BASE"));
+                    convencaoColetivaModel.setCodigo(resultSet.getInt("COD"));
+                    convencaoColetivaModel.setDescricao(resultSet.getString("DESCRICAO"));
+                    convencaoColetivaModel.setLoginAtualizacao(resultSet.getString("LOGIN_ATUALIZACAO"));
+                    convencaoColetivaModel.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
