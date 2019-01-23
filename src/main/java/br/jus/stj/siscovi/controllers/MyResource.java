@@ -16,7 +16,8 @@ public class MyResource extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> s = new HashSet<Class<?>>(Arrays.asList(CORSFilter.class, CourseRestService.class,Course.class,LoginController.class,
                 RubricaController.class,ContratoController.class, UsuarioController.class, CargoController.class, PercentualController.class, ConvencoesController.class,
-                VigenciaController.class, FuncionariosController.class, HistoricoController.class, TotalMensalController.class, FeriasController.class, RescisaoController.class, DecimoTerceiroController.class));
+                VigenciaController.class, FuncionariosController.class, HistoricoController.class, TotalMensalController.class, FeriasController.class, RescisaoController.class,
+                DecimoTerceiroController.class, SaldoController.class));
         return s;
     }
 }

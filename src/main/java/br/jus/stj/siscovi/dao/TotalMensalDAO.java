@@ -382,4 +382,38 @@ public class TotalMensalDAO {
         return true;
     }
 
+    public void getMesesDeCalculoPermitidosPorAno(int codigoContrato, int ano) {
+        String sql = " SELECT 1, 'Janeiro' " +
+                "UNION ALL SELECT 2, 'Fevereiro' " +
+                "UNION ALL SELECT 3, 'Março' " +
+                "UNION ALL SELECT 4, 'Abril' " +
+                "UNION ALL SELECT 5, 'Maio' " +
+                "UNION ALL SELECT 6, 'Junho' " +
+                "UNION ALL SELECT 7, 'Julho' " +
+                "UNION ALL SELECT 8, 'Agosto' " +
+                "UNION ALL SELECT 9, 'Setembro' " +
+                "UNION ALL SELECT 10, 'Outubro' " +
+                "UNION ALL SELECT 11, 'Novembro' " +
+                "UNION ALL SELECT 12, 'Dezembro' " +
+                "EXCEPT SELECT month(data_referencia), datename(month, data_referencia) " +
+                "         FROM tb_total_mensal_a_reter tmr " +
+                "         JOIN tb_terceirizado_contrato tc on tc.cod_terceirizado_contrato=tmr.cod_terceirizado_contrato " +
+                " WHERE YEAR(data_referencia) = ? " +
+                " AND autorizado = 'S' " +
+                " AND retido != 'N' " +
+                " AND tc.cod_contrato = ?" +
+                "ORDER BY 1 asc ";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, ano);
+            preparedStatement.setInt(2, codigoContrato);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            }
+        }catch(SQLException sqle) {
+            sqle.printStackTrace();
+            throw new RuntimeException("Erro ao tentar recuperar os meses válidos para se realizar cálculos no ano " + ano + " para o contrato " + codigoContrato +
+            ". Causado por: " + sqle.getMessage());
+        }
+    }
+
 }

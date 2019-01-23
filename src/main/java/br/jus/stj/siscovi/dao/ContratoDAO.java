@@ -278,10 +278,10 @@ public class ContratoDAO {
         return null;
     }
 
-    public List<ContratoModel> getContratoCompleto(String username, int codContrato) throws RuntimeException {
+    public ContratoModel getContratoCompleto(String username, int codContrato) throws RuntimeException {
         String sql = "SELECT COD FROM TB_USUARIO WHERE LOGIN=?";
         User user = new User();
-        List<ContratoModel> contratos = new ArrayList<>();
+        ContratoModel contrato = null;
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -298,21 +298,20 @@ public class ContratoDAO {
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, codContrato);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
-                while(resultSet.next()){
-                    ContratoModel contratoModel = new ContratoModel(codContrato, resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
-                    contratoModel.setNumeroDoContrato(resultSet.getString("NUMERO_CONTRATO"));
-                    contratoModel.setNumeroProcessoSTJ(resultSet.getString("NUMERO_PROCESSO_STJ"));
-                    contratoModel.setSeAtivo(resultSet.getString("SE_ATIVO"));
-                    contratoModel.setObjeto(resultSet.getString("OBJETO"));
-                    contratoModel.setLoginAtualizacao(resultSet.getString("LOGIN_ATUALIZACAO"));
-                    contratoModel.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
-                    contratoModel.setHistoricoGestao(new HistoricoDAO(connection).getHistoricoGestor(codContrato));
-                    contratoModel.setPercentuais(new PercentualDAO(connection).getPercentuaisDoContrato(codContrato));
-                    contratoModel.setFuncoes(new CargoDAO(connection).getFuncoesContrato(codContrato, user));
-                    contratos.add(contratoModel);
+                if(resultSet.next()){
+                    contrato = new ContratoModel(codContrato, resultSet.getString("NOME_EMPRESA"), resultSet.getString("CNPJ"));
+                    contrato.setNumeroDoContrato(resultSet.getString("NUMERO_CONTRATO"));
+                    contrato.setNumeroProcessoSTJ(resultSet.getString("NUMERO_PROCESSO_STJ"));
+                    contrato.setSeAtivo(resultSet.getString("SE_ATIVO"));
+                    contrato.setObjeto(resultSet.getString("OBJETO"));
+                    contrato.setLoginAtualizacao(resultSet.getString("LOGIN_ATUALIZACAO"));
+                    contrato.setDataAtualizacao(resultSet.getDate("DATA_ATUALIZACAO"));
+                    contrato.setHistoricoGestao(new HistoricoDAO(connection).getHistoricoGestor(codContrato));
+                    contrato.setPercentuais(new PercentualDAO(connection).getPercentuaisDoContrato(codContrato));
+                    contrato.setFuncoes(new CargoDAO(connection).getFuncoesContrato(codContrato, user));
                 }
             }
-            return contratos;
+            return contrato;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao tentar recuperar informações do contrato: " + codContrato + ". Para o usuário " + username + ". " + e.getMessage());

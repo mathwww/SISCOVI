@@ -24,7 +24,7 @@ public class ContratoController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getContrato(@PathParam("username") String username){
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("dd/MM/yyyy").create();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         String json = "";
         ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
         try {
@@ -103,8 +103,8 @@ public class ContratoController {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         try {
             if (new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username)) {
-                List<ContratoModel> contratos = new ContratoDAO(connectSQLServer.dbConnect()).getContratoCompleto(username, codigoContrato);
-                json = gson.toJson(contratos);
+                ContratoModel contrato = new ContratoDAO(connectSQLServer.dbConnect()).getContratoCompleto(username, codigoContrato);
+                json = gson.toJson(contrato);
                 connectSQLServer.dbConnect().close();
             }
         }catch (Exception ex) {
