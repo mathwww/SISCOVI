@@ -98,7 +98,7 @@ public class CargoDAO {
         List<CargoModel> cargos = new ArrayList<>();
         UsuarioDAO usuarioDAO = new UsuarioDAO(connection);
         int cod = usuarioDAO.verifyPermission(user.getId(), codigo);
-        String sql = "SELECT CC.COD_FUNCAO, CA.NOME, CA.DESCRICAO, RFC.REMUNERACAO, RFC.TRIENIOS, RFC.ADICIONAIS, CA.LOGIN_ATUALIZACAO, CA.DATA_ATUALIZACAO, RFC.COD_CONVENCAO_COLETIVA" +
+        String sql = "SELECT CC.COD_FUNCAO, CA.NOME, CA.DESCRICAO, RFC.REMUNERACAO, RFC.TRIENIOS, RFC.ADICIONAIS, CC.LOGIN_ATUALIZACAO, CC.DATA_ATUALIZACAO, RFC.COD_CONVENCAO_COLETIVA" +
                 " FROM tb_funcao_contrato CC" +
                 " JOIN tb_FUNCAO CA ON CA.cod=CC.COD_FUNCAO" +
                 " JOIN tb_remuneracao_fun_con RFC ON CC.COD = RFC.COD_FUNCAO_CONTRATO" +

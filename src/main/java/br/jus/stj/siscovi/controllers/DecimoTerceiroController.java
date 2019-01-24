@@ -1,20 +1,16 @@
 package br.jus.stj.siscovi.controllers;
 
-import br.jus.stj.siscovi.calculos.DecimoTerceiro;
 import br.jus.stj.siscovi.calculos.RestituicaoDecimoTerceiro;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.DecimoTerceiroDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.AvaliacaoDecimoTerceiro;
-import br.jus.stj.siscovi.model.AvaliacaoFerias;
 import br.jus.stj.siscovi.model.TerceirizadoDecimoTerceiro;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 
-import javax.validation.constraints.Null;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

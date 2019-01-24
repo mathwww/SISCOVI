@@ -41,11 +41,12 @@ public class ConvencoesDAO {
 
     public ConvencaoColetivaModel getConvencaoColetiva(int codConvencaoColetiva) throws RuntimeException{
         String sql = "SELECT * FROM TB_CONVENCAO_COLETIVA WHERE COD=?";
+        ConvencaoColetivaModel convencaoColetivaModel = null;
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, codConvencaoColetiva);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
                 if(resultSet.next()) {
-                    ConvencaoColetivaModel convencaoColetivaModel = new ConvencaoColetivaModel(resultSet.getString("SIGLA"),
+                    convencaoColetivaModel = new ConvencaoColetivaModel(resultSet.getString("SIGLA"),
                             resultSet.getString("NOME"),
                             resultSet.getDate("DATA_BASE"));
                     convencaoColetivaModel.setCodigo(resultSet.getInt("COD"));
@@ -58,7 +59,7 @@ public class ConvencoesDAO {
             e.printStackTrace();
         throw new RuntimeException("Erro ao tentar recuperar as convenções coletivas desta função no contrato !");
         }
-        return null;
+        return convencaoColetivaModel;
     }
     /*public ArrayList getConvencoesContrato(int codigoContrato) {
         PreparedStatement preparedStatement = null;
