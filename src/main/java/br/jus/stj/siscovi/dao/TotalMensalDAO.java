@@ -1,6 +1,6 @@
 package br.jus.stj.siscovi.dao;
 
-import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
+import br.jus.stj.siscovi.helpers.Mes;
 import br.jus.stj.siscovi.model.*;
 
 import java.sql.*;
@@ -382,7 +382,8 @@ public class TotalMensalDAO {
         return true;
     }
 
-    public void getMesesDeCalculoPermitidosPorAno(int codigoContrato, int ano) {
+    public List<Mes> getMesesDeCalculoPermitidosPorAno(int codigoContrato, int ano) {
+        List<Mes> meses = new ArrayList<>();
         String sql = " SELECT 1, 'Janeiro' " +
                 "UNION ALL SELECT 2, 'Fevereiro' " +
                 "UNION ALL SELECT 3, 'Março' " +
@@ -397,7 +398,7 @@ public class TotalMensalDAO {
                 "UNION ALL SELECT 12, 'Dezembro' " +
                 "EXCEPT SELECT month(data_referencia), datename(month, data_referencia) " +
                 "         FROM tb_total_mensal_a_reter tmr " +
-                "         JOIN tb_terceirizado_contrato tc on tc.cod_terceirizado_contrato=tmr.cod_terceirizado_contrato " +
+                "         JOIN tb_terceirizado_contrato tc on tc.COD=tmr.cod_terceirizado_contrato " +
                 " WHERE YEAR(data_referencia) = ? " +
                 " AND autorizado = 'S' " +
                 " AND retido != 'N' " +
@@ -407,13 +408,17 @@ public class TotalMensalDAO {
             preparedStatement.setInt(1, ano);
             preparedStatement.setInt(2, codigoContrato);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
-
+                while (resultSet.next()) {
+                    Mes mes = new Mes(resultSet.getInt(1), resultSet.getString(2));
+                    meses.add(mes);
+                }
             }
         }catch(SQLException sqle) {
             sqle.printStackTrace();
             throw new RuntimeException("Erro ao tentar recuperar os meses válidos para se realizar cálculos no ano " + ano + " para o contrato " + codigoContrato +
             ". Causado por: " + sqle.getMessage());
         }
+        return meses;
     }
 
 }

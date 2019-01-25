@@ -6,6 +6,7 @@ import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.TotalMensalDAO;
 import br.jus.stj.siscovi.dao.UsuarioDAO;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
+import br.jus.stj.siscovi.helpers.Mes;
 import br.jus.stj.siscovi.model.AvaliacaoTotalMensal;
 import br.jus.stj.siscovi.model.ListaTotalMensalData;
 import br.jus.stj.siscovi.model.TotalMensal;
@@ -201,5 +202,20 @@ public class TotalMensalController {
             return Response.ok(json, MediaType.APPLICATION_JSON).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getMesesCalculo/{anoCalculo}/{codigoContrato}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMesesCalculoValidos(@PathParam("anoCalculo") int anoCalculo, @PathParam("codigoContrato") int codigoContrato) {
+        Gson gson = new Gson();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        try{
+            TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
+            List<Mes> meses = totalMensalDAO.getMesesDeCalculoPermitidosPorAno(codigoContrato, anoCalculo);
+        }catch (Exception ex) {
+
+        }
+        return Response.ok().build();
     }
 }
