@@ -230,4 +230,19 @@ public class FuncionariosDAO {
         }
         return funcionarioModel;
     }
+
+    public boolean verificaTerceirizadoExisteContrato(String cpf) throws RuntimeException {
+        String sql = "";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar verificar existência de CPF em um contrato. CPF inserido: " + cpf + ". Causa: " + e.getMessage());
+        }
+        return false;
+    }
 }

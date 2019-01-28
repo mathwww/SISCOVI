@@ -224,14 +224,24 @@ public class FuncionariosController {
     public Response verficaExistenciaTerceirizado(@PathParam("cpf") String cpf) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json = "";
         FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
         try {
             FuncionarioModel terceirizado = funcionariosDAO.getFuncionarioPorCPF(cpf);
+            json = gson.toJson(terceirizado);
+            if(terceirizado == null) {
+                if(funcionariosDAO.verificaTerceirizadoExisteContrato(cpf)){
+                    json = gson.toJson(ErrorMessage.handleError(new RuntimeException("Terceirizado está cadastrado em outro contrato tente outro CPF !")));
+                    return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
+                }
+            }
+
             connectSQLServer.dbConnect().close();
         } catch (Exception ex) {
             ex.printStackTrace();
+            json = gson.toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
-
-        return Response.ok().build();
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
  }
