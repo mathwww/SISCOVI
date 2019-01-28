@@ -212,4 +212,22 @@ public class FuncionariosDAO {
         return terceirizadosNaoAlocados;
     }
 
+    public FuncionarioModel getFuncionarioPorCPF(String cpf) throws RuntimeException {
+        FuncionarioModel funcionarioModel = null;
+        String sql = "SELECT T.COD, T.NOME, T.CPF, T.ATIVO FROM tb_terceirizado T  LEFT JOIN tb_terceirizado_contrato TC ON TC.COD_TERCEIRIZADO = T.COD" +
+                " WHERE TC.COD_TERCEIRIZADO IS NULL AND T.CPF=?;";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1, sql);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    funcionarioModel = new FuncionarioModel(resultSet.getInt("COD"), resultSet.getString("NOME"),
+                            resultSet.getString("CPF"), resultSet.getString("S").charAt(0));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar pesquisar por terceirizados não cadastrados em nenhum contrato. CPF digitado: " + cpf);
+        }
+        return funcionarioModel;
+    }
 }

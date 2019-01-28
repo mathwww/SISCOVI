@@ -4,6 +4,7 @@ import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
 import br.jus.stj.siscovi.model.*;
 import com.sun.org.apache.regexp.internal.RESyntaxException;
+import com.sun.scenario.effect.impl.prism.ps.PPSBlend_REDPeer;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -316,5 +317,26 @@ public class ContratoDAO {
             e.printStackTrace();
             throw new RuntimeException("Erro ao tentar recuperar informações do contrato: " + codContrato + ". Para o usuário " + username + ". " + e.getMessage());
         }
+    }
+
+    public boolean anoDentroPeriodoVigencia(int ano, int codigoContrato) throws RuntimeException {
+        String sql = "SELECT MIN(YEAR(EC.DATA_INICIO_VIGENCIA)), MAX(YEAR(EC.DATA_FIM_VIGENCIA)) FROM TB_CONTRATO C JOIN TB_EVENTO_CONTRATUAL EC ON EC.COD_CONTRATO = C.COD WHERE C.COD= ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codigoContrato);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    if(ano >= resultSet.getInt(1) && ano <= resultSet.getInt(2)) {
+                        return true;
+                    }else {
+                        return  false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar verificar período de vigência no contrato para a função de verificação de meses em Total Mensal a Reter. Causado por: "
+                    + e.getMessage());
+        }
+        return false;
     }
 }

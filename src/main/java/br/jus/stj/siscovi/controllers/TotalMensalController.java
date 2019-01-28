@@ -210,12 +210,16 @@ public class TotalMensalController {
     public Response getMesesCalculoValidos(@PathParam("anoCalculo") int anoCalculo, @PathParam("codigoContrato") int codigoContrato) {
         Gson gson = new Gson();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json = "";
         try{
             TotalMensalDAO totalMensalDAO = new TotalMensalDAO(connectSQLServer.dbConnect());
             List<Mes> meses = totalMensalDAO.getMesesDeCalculoPermitidosPorAno(codigoContrato, anoCalculo);
+            json = gson.toJson(meses);
         }catch (Exception ex) {
-
+            System.err.println(ex.getStackTrace());
+            json = gson.toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
-        return Response.ok().build();
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

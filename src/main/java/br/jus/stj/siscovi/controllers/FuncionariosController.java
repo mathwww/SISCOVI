@@ -217,4 +217,21 @@ public class FuncionariosController {
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
+    @GET
+    @Path("/verificaExistenciaTerceirizado/{cpf}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response verficaExistenciaTerceirizado(@PathParam("cpf") String cpf) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        FuncionariosDAO funcionariosDAO = new FuncionariosDAO(connectSQLServer.dbConnect());
+        try {
+            FuncionarioModel terceirizado = funcionariosDAO.getFuncionarioPorCPF(cpf);
+            connectSQLServer.dbConnect().close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return Response.ok().build();
+    }
  }
