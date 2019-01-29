@@ -232,11 +232,14 @@ public class FuncionariosDAO {
     }
 
     public boolean verificaTerceirizadoExisteContrato(String cpf) throws RuntimeException {
-        String sql = "";
+        String sql = "SELECT COUNT(0) FROM TB_TERCEIRIZADO WHERE CPF = ?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, cpf);
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
                 if(resultSet.next()) {
-                    return true;
+                    if(resultSet.getInt(1) != 0) {
+                        return true;
+                    }
                 }
             }
         } catch (SQLException e) {
