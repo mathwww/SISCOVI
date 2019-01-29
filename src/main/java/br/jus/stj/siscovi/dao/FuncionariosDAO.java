@@ -221,7 +221,7 @@ public class FuncionariosDAO {
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 if(resultSet.next()) {
                     funcionarioModel = new FuncionarioModel(resultSet.getInt("COD"), resultSet.getString("NOME"),
-                            resultSet.getString("CPF"), resultSet.getString("S").charAt(0));
+                            resultSet.getString("CPF"), resultSet.getString("ATIVO").charAt(0));
                 }
             }
         } catch (SQLException e) {
