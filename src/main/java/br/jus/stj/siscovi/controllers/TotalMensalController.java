@@ -155,11 +155,12 @@ public class TotalMensalController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response recebeAvaliacaoCalculos(String object) {
-       Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
-       AvaliacaoTotalMensal calculosAvaliados = gson.fromJson(object, AvaliacaoTotalMensal.class);
-       ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-       String json = "";
-        if(new TotalMensalDAO(connectSQLServer.dbConnect()).salvaAvaliacaoCalculosPendentes(calculosAvaliados.getCodigoContrato(), calculosAvaliados.getTotalMensalPendenteModels(), calculosAvaliados.getUser())) {
+        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
+        AvaliacaoTotalMensal calculosAvaliados = gson.fromJson(object, AvaliacaoTotalMensal.class);
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json = "";
+        if(new TotalMensalDAO(connectSQLServer.dbConnect()).salvaAvaliacaoCalculosPendentes(calculosAvaliados.getCodigoContrato(), calculosAvaliados.getTotalMensalPendenteModels(),
+                calculosAvaliados.getUser())) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("success", "As alterações foram feitas com sucesso");
             json = gson.toJson(jsonObject);
@@ -169,7 +170,7 @@ public class TotalMensalController {
             json = gson.toJson(errorMessage);
         }
         try {
-           connectSQLServer.dbConnect().close();
+            connectSQLServer.dbConnect().close();
         }catch (SQLException sqle) {
             json = gson.toJson(ErrorMessage.handleError(sqle));
             return Response.ok(json, MediaType.APPLICATION_JSON).build();
@@ -221,5 +222,18 @@ public class TotalMensalController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @DELETE
+    @Path("/apagarTotalMensalAReter/{codigoContrato}/{codigoUsuario}/{anoReferencia}/{mesReferencia}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteCalculoTotalMensal(@PathParam("codigoContrato") int codigoContrato, @PathParam("codigoUsuario") int codigoUsuario, @PathParam("anoReferencia") int anoReferencia,
+                                             @PathParam("mesReferencia") int mesReferencia) {
+        Gson gson = new Gson();
+
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        
+
+        return Response.ok().build();
     }
 }

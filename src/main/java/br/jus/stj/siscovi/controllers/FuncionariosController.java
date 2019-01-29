@@ -219,9 +219,9 @@ public class FuncionariosController {
     }
 
     @GET
-    @Path("/verificaExistenciaTerceirizado/{cpf}")
+    @Path("/verificaExistenciaTerceirizado/{cpf}/{codigoContrato}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response verficaExistenciaTerceirizado(@PathParam("cpf") String cpf) {
+    public Response verficaExistenciaTerceirizado(@PathParam("cpf") String cpf, @PathParam("codigoContrato") int codigoContrato) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         String json = "";
@@ -231,7 +231,7 @@ public class FuncionariosController {
             json = gson.toJson(terceirizado);
             if(terceirizado == null) {
                 if(funcionariosDAO.verificaTerceirizadoExisteContrato(cpf)){
-                    json = gson.toJson(ErrorMessage.handleError(new RuntimeException("Terceirizado está cadastrado em outro contrato tente outro CPF !")));
+                    json = gson.toJson(ErrorMessage.handleError(new RuntimeException("Terceirizado está ativo em outro contrato tente outro CPF !")));
                     return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
                 }
             }
