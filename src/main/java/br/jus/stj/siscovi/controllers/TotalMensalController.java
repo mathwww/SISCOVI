@@ -232,7 +232,7 @@ public class TotalMensalController {
         Gson gson = new Gson();
 
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
-        
+
 
         return Response.ok().build();
     }
