@@ -6,6 +6,10 @@ public class TerceirizadoRescisao {
     private final int codTerceirizadoContrato;
     private final String nomeTerceirizado;
     private Date dataDesligamento;
+    private Date pDataInicioFeriasIntegrais;
+    private Date pDataFimFeriasIntegrais;
+    private Date pDataInicioFeriasProporcionais;
+    private Date pDataFimFeriasProporcionais;
     private String tipoRescisao;
     private String tipoRestituicao;
 
@@ -33,4 +37,13 @@ public class TerceirizadoRescisao {
     public String getTipoRestituicao() {
         return tipoRestituicao;
     }
+
+    public Date getpDataInicioFeriasIntegrais() { return pDataInicioFeriasIntegrais; }
+
+    public Date getpDataFimFeriasIntegrais() { return pDataFimFeriasIntegrais; }
+
+    public Date getpDataInicioFeriasProporcionais() { return pDataInicioFeriasProporcionais; }
+
+    public Date getpDataFimFeriasProporcionais() { return pDataFimFeriasProporcionais; }
+
 }
