@@ -65,5 +65,8 @@
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-util:9.0.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-util-scan:9.0.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jaspic-api:9.0.14" level="project" />
+    <orderEntry type="library" name="Maven: com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8" level="project" />
+    <orderEntry type="library" name="Maven: org.connectbot.jbcrypt:jbcrypt:1.0.0" level="project" />
+    <orderEntry type="library" name="jbcrypt-0.3m" level="project" />
   </component>
 </module>

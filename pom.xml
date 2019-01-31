@@ -182,6 +182,21 @@
         <artifactId>tomcat-catalina</artifactId>
         <version>9.0.14</version>
     </dependency>
+    <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>6.2.2.jre8</version>
+    </dependency>
+    <dependency>
+        <groupId>org.connectbot.jbcrypt</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.connectbot.jbcrypt</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>1.0.0</version>
+    </dependency>
 </dependencies>
 
 </project>
