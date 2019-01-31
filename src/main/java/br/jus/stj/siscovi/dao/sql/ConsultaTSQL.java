@@ -1129,12 +1129,12 @@ public class ConsultaTSQL {
      * @return Um registro de restituição de rescisão no model.
      */
 
-    public RegistroDeRescisaoModel RetornaRegistroRestituicaoRescisao (int pCodRestituicaoRescisao) {
+    public RegistroRestituicaoRescisao RetornaRegistroRestituicaoRescisao (int pCodRestituicaoRescisao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
 
-        RegistroDeRescisaoModel registro = null;
+        RegistroRestituicaoRescisao registro = null;
 
         try {
 
@@ -1153,6 +1153,12 @@ public class ConsultaTSQL {
                     " INCID_SUBMOD_4_1_DEC_TERCEIRO," +
                     " INCID_MULTA_FGTS_FERIAS," +
                     " INCID_MULTA_FGTS_TERCO," +
+                    " VALOR_FERIAS_PROP," +
+                    " VALOR_TERCO_PROP," +
+                    " INCID_SUBMOD_4_1_FERIAS_PROP," +
+                    " INCID_SUBMOD_4_1_DEC_TERCEIRO_PROP," +
+                    " INCID_MULTA_FGTS_FERIAS_PROP," +
+                    " INCID_MULTA_FGTS_TERCO_PROP," +
                     " MULTA_FGTS_SALARIO," +
                     " DATA_REFERENCIA," +
                     " AUTORIZADO," +
@@ -1170,7 +1176,7 @@ public class ConsultaTSQL {
 
             if (resultSet.next()) {
 
-                registro = new RegistroDeRescisaoModel(resultSet.getInt(1),
+                registro = new RegistroRestituicaoRescisao(resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getInt(3),
                         resultSet.getInt(4),
@@ -1186,12 +1192,18 @@ public class ConsultaTSQL {
                         resultSet.getFloat(14),
                         resultSet.getFloat(15),
                         resultSet.getFloat(16),
-                        resultSet.getDate(17),
-                        resultSet.getString(18),
-                        resultSet.getString(19),
-                        resultSet.getString(20),
-                        resultSet.getString(21),
-                        resultSet.getTimestamp(22));
+                        resultSet.getFloat(17),
+                        resultSet.getFloat(18),
+                        resultSet.getFloat(19),
+                        resultSet.getFloat(20),
+                        resultSet.getFloat(21),
+                        resultSet.getFloat(22),
+                        resultSet.getDate(23),
+                        resultSet.getString(24),
+                        resultSet.getString(25),
+                        resultSet.getString(26),
+                        resultSet.getString(27),
+                        resultSet.getTimestamp(28));
 
             }
 
@@ -1253,6 +1265,188 @@ public class ConsultaTSQL {
             sqle.printStackTrace();
 
             throw new NullPointerException("Não foi possível recuperar o registro da rubrica requisitada.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_hist_restituicao_rescisao.
+     *
+     * @param pCodHistRestituicaoRescisao;
+     *
+     * @return Um registro ddo histórico de restituições rejeitadas de rescisao no model.
+     */
+
+    public RegistroHistRestituicaoRescisao RetornaRegistroHistRestituicaoRescisao (int pCodHistRestituicaoRescisao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroHistRestituicaoRescisao registro = null;
+
+        try {
+
+            String sql = "SELECT cod_restituicao_rescisao, " +
+                    "cod_tipo_restituicao, " +
+                    "COD_TIPO_RESCISAO, " +
+                    "DATA_DESLIGAMENTO, " +
+                    "DATA_INICIO_FERIAS, " +
+                    "VALOR_DECIMO_TERCEIRO, " +
+                    "INCID_SUBMOD_4_1_DEC_TERCEIRO, " +
+                    "INCID_MULTA_FGTS_DEC_TERCEIRO, " +
+                    "valor_ferias, " +
+                    "valor_terco, " +
+                    "incid_submod_4_1_ferias, " +
+                    "incid_submod_4_1_terco, " +
+                    "INCID_MULTA_FGTS_FERIAS, " +
+                    "INCID_MULTA_FGTS_TERCO, " +
+                    "valor_ferias_prop, " +
+                    "valor_terco_prop, " +
+                    "incid_submod_4_1_ferias_prop, " +
+                    "incid_submod_4_1_terco_prop, " +
+                    "incid_multa_fgts_ferias_prop, " +
+                    "incid_multa_fgts_terco_prop, " +
+                    "MULTA_FGTS_SALARIO, " +
+                    "data_referencia, " +
+                    "autorizado, " +
+                    "restituido, " +
+                    "observacao, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_hist_restituicao_rescisao " +
+                    "WHERE cod = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodHistRestituicaoRescisao);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroHistRestituicaoRescisao(pCodHistRestituicaoRescisao,
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getDate(4),
+                        resultSet.getDate(5),
+                        resultSet.getFloat(6),
+                        resultSet.getFloat(7),
+                        resultSet.getFloat(8),
+                        resultSet.getFloat(9),
+                        resultSet.getFloat(10),
+                        resultSet.getFloat(11),
+                        resultSet.getFloat(12),
+                        resultSet.getFloat(13),
+                        resultSet.getFloat(14),
+                        resultSet.getFloat(15),
+                        resultSet.getFloat(16),
+                        resultSet.getFloat(17),
+                        resultSet.getFloat(18),
+                        resultSet.getFloat(19),
+                        resultSet.getFloat(20),
+                        resultSet.getFloat(21),
+                        resultSet.getDate(22),
+                        resultSet.getString(23),
+                        resultSet.getString(24),
+                        resultSet.getString(25),
+                        resultSet.getString(26),
+                        resultSet.getTimestamp(27));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de histórico de restituição de rescisão solicitado.");
+
+        }
+
+        return registro;
+
+    }
+
+    /**
+     * Retorna um registro da tabela tb_saldo_residual_rescisao.
+     *
+     * @param pCodRestituicaoRescisao;
+     *
+     * @return Um registro de saldo residual de rescisão no model.
+     */
+
+    public RegistroSaldoResidualRescisao RetornaRegistroSaldoResidualRescisao  (int pCodRestituicaoRescisao) {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        RegistroSaldoResidualRescisao registro = null;
+
+        try {
+
+            String sql = "SELECT cod, " +
+                    "VALOR_DECIMO_TERCEIRO, " +
+                    "INCID_SUBMOD_4_1_DEC_TERCEIRO, " +
+                    "INCID_MULTA_FGTS_DEC_TERCEIRO, " +
+                    "valor_ferias, " +
+                    "valor_ferias, " +
+                    "INCID_SUBMOD_4_1_FERIAS, " +
+                    "INCID_SUBMOD_4_1_TERCO, " +
+                    "INCID_MULTA_FGTS_FERIAS, " +
+                    "INCID_MULTA_FGTS_TERCO, " +
+                    "valor_ferias_prop, " +
+                    "valor_terco_prop, " +
+                    "incid_submod_4_1_ferias_prop, " +
+                    "incid_submod_4_1_terco_prop, " +
+                    "incid_multa_fgts_ferias_prop, " +
+                    "incid_multa_fgts_terco_prop, " +
+                    "MULTA_FGTS_SALARIO, " +
+                    "AUTORIZADO, " +
+                    "RESTITUIDO, " +
+                    "login_atualizacao, " +
+                    "data_atualizacao " +
+                    "FROM tb_saldo_residual_rescisao " +
+                    "WHERE COD_RESTITUICAO_RESCISAO = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, pCodRestituicaoRescisao);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                registro = new RegistroSaldoResidualRescisao(resultSet.getInt(1),
+                        pCodRestituicaoRescisao,
+                        resultSet.getFloat(2),
+                        resultSet.getFloat(3),
+                        resultSet.getFloat(4),
+                        resultSet.getFloat(5),
+                        resultSet.getFloat(6),
+                        resultSet.getFloat(7),
+                        resultSet.getFloat(8),
+                        resultSet.getFloat(9),
+                        resultSet.getFloat(10),
+                        resultSet.getFloat(11),
+                        resultSet.getFloat(12),
+                        resultSet.getFloat(13),
+                        resultSet.getFloat(14),
+                        resultSet.getFloat(15),
+                        resultSet.getFloat(16),
+                        resultSet.getFloat(17),
+                        resultSet.getString(18),
+                        resultSet.getString(19),
+                        resultSet.getString(20),
+                        resultSet.getTimestamp(21));
+
+            }
+
+        } catch (SQLException sqle) {
+
+            sqle.printStackTrace();
+
+            throw new NullPointerException("Não foi possível recuperar o registro de saldo residual de férias solicitado.");
 
         }
 
