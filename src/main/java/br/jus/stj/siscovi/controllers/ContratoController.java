@@ -7,8 +7,10 @@ import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
 import br.jus.stj.siscovi.model.EventoContratualModel;
+import br.jus.stj.siscovi.model.TipoEventoContratualModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.org.apache.regexp.internal.RE;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -109,6 +111,24 @@ public class ContratoController {
             }
         }catch (Exception ex) {
             json = new Gson().toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
+        }
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/getTiposEventosContratuais")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEventosContratuais() {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        String json = "";
+        try{
+            List<TipoEventoContratualModel> tiposEventosContratuais = new ContratoDAO(connectSQLServer.dbConnect()).getTiposEventosContratuais();
+            json = gson.toJson(tiposEventosContratuais);
+            connectSQLServer.dbConnect().close();
+        }catch (Exception ex) {
+            json = gson.toJson(ErrorMessage.handleError(ex));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();

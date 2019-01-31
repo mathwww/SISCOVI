@@ -26,6 +26,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" scope="PROVIDED" name="Tomcat 8.0.50" level="application_server_libraries" />
     <orderEntry type="library" exported="" name="aopalliance-repackaged-2.5.0-b32" level="project" />
+    <orderEntry type="library" name="Maven: com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8" level="project" />
+    <orderEntry type="library" name="Maven: org.connectbot.jbcrypt:jbcrypt:1.0.0" level="project" />
+    <orderEntry type="library" name="jbcrypt-0.3m" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2.external:aopalliance-repackaged:2.5.0-b32" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-api:2.5.0-b32" level="project" />
@@ -67,6 +70,5 @@
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jaspic-api:9.0.14" level="project" />
     <orderEntry type="library" name="Maven: com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8" level="project" />
     <orderEntry type="library" name="Maven: org.connectbot.jbcrypt:jbcrypt:1.0.0" level="project" />
-    <orderEntry type="library" name="jbcrypt-0.3m" level="project" />
   </component>
 </module>

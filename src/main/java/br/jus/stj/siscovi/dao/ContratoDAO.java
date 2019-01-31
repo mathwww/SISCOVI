@@ -259,15 +259,18 @@ public class ContratoDAO {
         int codigo = new UsuarioDAO(connection).verifyPermission(vCodUsuario, codigoContrato);
         int codGestor = new ContratoDAO(connection).codigoGestorContrato(vCodUsuario, codigoContrato);
         if (codigo == codGestor) {
-            sql = "SELECT EC.COD, TEC.TIPO, EC.PRORROGACAO, EC.ASSUNTO, EC.DATA_INICIO_VIGENCIA, EC.DATA_FIM_VIGENCIA, EC.DATA_ASSINATURA, EC.LOGIN_ATUALIZACAO, EC.DATA_ATUALIZACAO" +
+            sql = "SELECT EC.COD, EC.PRORROGACAO, EC.ASSUNTO, EC.DATA_INICIO_VIGENCIA, EC.DATA_FM_VIGENCIA, EC.DATA_ASSINATURA, EC.LOGIN_ATUALIZACAO, EC.DATA_ATUALIZACAO," +
+                    " TEC.TIPO, TEC.COD AS 'CODIGO', TEC.DATA_ATUALIZACAO AS 'DA', TEC.LOGIN_ATUALIZACAO AS 'LA'" +
                     " FROM TB_EVENTO_CONTRATUAL EC" +
                     " JOIN TB_TIPO_EVENTO_CONTRATUAL TEC ON EC.COD_TIPO_EVENTO=TEC.COD WHERE TEC.TIPO != 'CONTRATO' AND COD_CONTRATO = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setInt(1, codigoContrato);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
+                        TipoEventoContratualModel tipoEventoContratualModel = new TipoEventoContratualModel(resultSet.getInt("CODIGO"),
+                                resultSet.getString("TIPO"), resultSet.getString("LA"), resultSet.getDate("DA"));
                         EventoContratualModel eventoContratualModel = new EventoContratualModel(resultSet.getInt("COD"),
-                                resultSet.getString("TIPO"),
+                                tipoEventoContratualModel,
                                 resultSet.getString("PRORROGACAO").charAt(0),
                                 resultSet.getString("ASSUNTO"),
                                 resultSet.getDate("DATA_INICIO_VIGENCIA"),
@@ -346,5 +349,23 @@ public class ContratoDAO {
                     + e.getMessage());
         }
         return false;
+    }
+
+    public List<TipoEventoContratualModel> getTiposEventosContratuais() throws RuntimeException{
+        List<TipoEventoContratualModel> tiposEventosContratuais = new ArrayList<>();
+        String sql = "SELECT * FROM TB_TIPO_EVENTO_CONTRATUAL TEC  WHERE TEC.TIPO !='CONTRATO'; ";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                while(resultSet.next()) {
+                    TipoEventoContratualModel tipoEventoContratualModel = new TipoEventoContratualModel(resultSet.getInt("COD"), resultSet.getString("TIPO"),
+                            resultSet.getString("LOGIN_ATUALIZACAO"), resultSet.getDate("DATA_ATUALIZACAO"));
+                    tiposEventosContratuais.add(tipoEventoContratualModel);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar recuperar os tipos de eventos contratuais. Entre em contato com o Administrador do Sistema. Causa: " + e.getMessage());
+        }
+        return tiposEventosContratuais;
     }
 }
