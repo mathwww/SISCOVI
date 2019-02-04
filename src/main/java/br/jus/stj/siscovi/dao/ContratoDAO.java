@@ -368,6 +368,4 @@ public class ContratoDAO {
         }
         return tiposEventosContratuais;
     }
-
-    public
 }
