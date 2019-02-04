@@ -197,4 +197,24 @@ public class UsuarioDAO {
         }
         return false;
     }
+
+    public boolean isGestor(String username, int codigoContrato) {
+        String sql = "SELECT PG.SIGLA FROM tb_historico_gestao_contrato HGC" +
+                " JOIN tb_perfil_gestao PG ON PG.COD=HGC.COD_PERFIL_GESTAO" +
+                " JOIN TB_USUARIO U ON U.COD=HGC.COD_USUARIO" +
+                " WHERE HGC.COD_CONTRATO=? AND U.LOGIN=? AND (HGC.DATA_FIM IS NULL)";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, codigoContrato);
+            preparedStatement.setString(2, username);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    return true;
+                }
+            }
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+            throw new RuntimeException("Usuário não existe ou não tem permissão para acessar os dados deste contrato !");
+        }
+        return false;
+    }
 }

@@ -2,6 +2,7 @@ package br.jus.stj.siscovi.dao;
 
 import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
+import br.jus.stj.siscovi.dao.sql.UpdateTSQL;
 import br.jus.stj.siscovi.model.*;
 import com.sun.org.apache.regexp.internal.RESyntaxException;
 import com.sun.scenario.effect.impl.prism.ps.PPSBlend_REDPeer;
@@ -367,5 +368,19 @@ public class ContratoDAO {
             throw new RuntimeException("Erro ao tentar recuperar os tipos de eventos contratuais. Entre em contato com o Administrador do Sistema. Causa: " + e.getMessage());
         }
         return tiposEventosContratuais;
+    }
+
+    public void cadastrarAjusteContrato(ContratoModel contrato) throws RuntimeException, SQLException {
+        this.connection.setAutoCommit(false);
+        Savepoint savepoint = this.connection.setSavepoint("Savepoint1");
+        InsertTSQL insertTSQL = new InsertTSQL(connection);
+        ConsultaTSQL consultaTSQL = new ConsultaTSQL(connection);
+        UpdateTSQL updateTSQL = new UpdateTSQL(connection);
+        String sql = "";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            
+        }catch (SQLException sqle) {
+
+        }
     }
 }

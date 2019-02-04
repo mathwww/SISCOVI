@@ -103,8 +103,10 @@ public class ContratoController {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         String json = "";
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
         try {
-            if (new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username)) {
+            Connection connection = connectSQLServer.dbConnect();
+            if (new UsuarioDAO(connection).isAdmin(username) || new UsuarioDAO(connection).isGestor(username, codigoContrato)) {
                 ContratoModel contrato = new ContratoDAO(connectSQLServer.dbConnect()).getContratoCompleto(username, codigoContrato);
                 json = gson.toJson(contrato);
                 connectSQLServer.dbConnect().close();
@@ -132,5 +134,27 @@ public class ContratoController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("/cadastrarAjuste/{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cadastrarAjuste(@PathParam("username") String username, String object) {
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        ConnectSQLServer connectSQLServer = new ConnectSQLServer();
+        ContratoModel contrato = gson.fromJson(object, ContratoModel.class);
+        String json = "";
+        try {
+            if(new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username) || new UsuarioDAO(connectSQLServer.dbConnect()).isGestor(username, contrato.getCodigo())) {
+                ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
+                contratoDAO.cadastrarAjusteContrato(contrato);
+            }
+
+        }catch (Exception ex){
+            json = gson.toJson(ErrorMessage.handleError(ex));
+            return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
+        }
+        return Response.ok().build();
     }
 }
