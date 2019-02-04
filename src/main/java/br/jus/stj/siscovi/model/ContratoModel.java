@@ -20,6 +20,15 @@ public class ContratoModel {
     private String numeroProcessoSTJ;
     private String loginAtualizacao;
     private Date dataAtualizacao;
+    private EventoContratualModel eventoContratual;
+
+    public EventoContratualModel getEventoContratual() {
+        return eventoContratual;
+    }
+
+    public void setEventoContratual(EventoContratualModel eventoContratual) {
+        this.eventoContratual = eventoContratual;
+    }
 
     public String getNumeroProcessoSTJ() {
         return numeroProcessoSTJ;

@@ -191,7 +191,7 @@ public class ContratoDAO {
                         vDataAditamentoPercentualTercoConstitucional = pm.getDataAditamento();
                     }
                 }
-                // Inserir Percentual de Décimo terceiro no cadastro do contrato já que o objeto não é criado no Front e por tanto não é enviado na Requisição
+                // Inserir Percentual de Terço Constitucional de Férias no cadastro do contrato já que o objeto não é criado no Front e por tanto não é enviado na Requisição
                 insertTSQL.InsertPercentualContrato(vCodContrato, 2, vPercentualTercoConstitucional, vDataInicioPercentualTercoConstitucional,
                         vDataFimPercentualTercoConstitucional, vDataAditamentoPercentualTercoConstitucional, username);
                 for (CargoModel cm : contrato.getFuncoes()) {
@@ -259,7 +259,7 @@ public class ContratoDAO {
         int codigo = new UsuarioDAO(connection).verifyPermission(vCodUsuario, codigoContrato);
         int codGestor = new ContratoDAO(connection).codigoGestorContrato(vCodUsuario, codigoContrato);
         if (codigo == codGestor) {
-            sql = "SELECT EC.COD, EC.PRORROGACAO, EC.ASSUNTO, EC.DATA_INICIO_VIGENCIA, EC.DATA_FM_VIGENCIA, EC.DATA_ASSINATURA, EC.LOGIN_ATUALIZACAO, EC.DATA_ATUALIZACAO," +
+            sql = "SELECT EC.COD, EC.PRORROGACAO, EC.ASSUNTO, EC.DATA_INICIO_VIGENCIA, EC.DATA_FIM_VIGENCIA, EC.DATA_ASSINATURA, EC.LOGIN_ATUALIZACAO, EC.DATA_ATUALIZACAO," +
                     " TEC.TIPO, TEC.COD AS 'CODIGO', TEC.DATA_ATUALIZACAO AS 'DA', TEC.LOGIN_ATUALIZACAO AS 'LA'" +
                     " FROM TB_EVENTO_CONTRATUAL EC" +
                     " JOIN TB_TIPO_EVENTO_CONTRATUAL TEC ON EC.COD_TIPO_EVENTO=TEC.COD WHERE TEC.TIPO != 'CONTRATO' AND COD_CONTRATO = ?";
@@ -351,7 +351,7 @@ public class ContratoDAO {
         return false;
     }
 
-    public List<TipoEventoContratualModel> getTiposEventosContratuais() throws RuntimeException{
+    public List<TipoEventoContratualModel> getTiposEventosContratuais() throws RuntimeException {
         List<TipoEventoContratualModel> tiposEventosContratuais = new ArrayList<>();
         String sql = "SELECT * FROM TB_TIPO_EVENTO_CONTRATUAL TEC  WHERE TEC.TIPO !='CONTRATO'; ";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -368,4 +368,6 @@ public class ContratoDAO {
         }
         return tiposEventosContratuais;
     }
+
+    public
 }
