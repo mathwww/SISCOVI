@@ -181,7 +181,7 @@ public class ContratoDAO {
                     } catch (SQLException e) {
                         throw new RuntimeException("Erro. Usuário indicado para gestor do contrato não existe no sistema !");
                     }
-                    insertTSQL.InsertHistoricoGestaoContrato(vCodContrato, vCodUsuarioGestor, hgc.getCodigoPerfilGestao(), hgc.getInicio(), hgc.getFim(), username);
+                    insertTSQL.InsertHistoricoGestaoContrato(vCodContrato, vCodUsuarioGestor, hgc.getCodigoPerfilGestao(), hgc.getInicio(), null, username);
                 }
                 for (PercentualModel pm : contrato.getPercentuais()) {
                     insertTSQL.InsertPercentualContrato(vCodContrato, pm.getRubrica().getCodigo(), pm.getPercentual(), pm.getDataInicio(), pm.getDataFim(), pm.getDataAditamento(), username);
@@ -355,9 +355,9 @@ public class ContratoDAO {
     public List<TipoEventoContratualModel> getTiposEventosContratuais() throws RuntimeException {
         List<TipoEventoContratualModel> tiposEventosContratuais = new ArrayList<>();
         String sql = "SELECT * FROM TB_TIPO_EVENTO_CONTRATUAL TEC  WHERE TEC.TIPO !='CONTRATO'; ";
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                while(resultSet.next()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
                     TipoEventoContratualModel tipoEventoContratualModel = new TipoEventoContratualModel(resultSet.getInt("COD"), resultSet.getString("TIPO"),
                             resultSet.getString("LOGIN_ATUALIZACAO"), resultSet.getDate("DATA_ATUALIZACAO"));
                     tiposEventosContratuais.add(tipoEventoContratualModel);
@@ -384,29 +384,14 @@ public class ContratoDAO {
                     contrato.getEventoContratual().getDataInicioVigencia(), contrato.getEventoContratual().getDataFimVigencia(),
                     contrato.getEventoContratual().getDataAssinatura(), username);
             for (HistoricoGestorModel hgc : contrato.getHistoricoGestao()) {
-                if(hgc.getCodigoPerfilGestao() == 1) {
-                    vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
-                    if(vCodHistoricoGestaoVigente != 0) {
-                        updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
-                        insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
-                    }
-                }
-                if(hgc.getCodigoPerfilGestao() == 2) {
-                    vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
-                    if(vCodHistoricoGestaoVigente != 0) {
-                        updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
-                        insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
-                    }
-                }
-                if(hgc.getCodigoPerfilGestao() == 3) {
-                    vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
-                    if(vCodHistoricoGestaoVigente != 0) {
-                        updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
-                        insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
-                    }
+
+                vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
+                if (vCodHistoricoGestaoVigente != 0) {
+                    updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
+                    insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
                 }
             }
-        }catch (SQLException sqle) {
+        } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
     }

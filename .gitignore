@@ -82,3 +82,4 @@ classes/artifacts/SISCOVI_war_exploded/default.html
 classes/artifacts/SISCOVI_war_exploded/WEB-INF/lib/tomcat-catalina-9.0.14.jar
 pom.xml
 SISCOVI.iml
+target/
