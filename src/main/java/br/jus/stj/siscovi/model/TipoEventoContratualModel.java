@@ -15,4 +15,8 @@ public class TipoEventoContratualModel {
         this.loginAtualizacao = loginAtualizacao;
         this.dataAtualizacao = dataAtualizacao;
     }
+
+    public int getCod() {
+        return cod;
+    }
 }

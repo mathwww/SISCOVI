@@ -370,17 +370,61 @@ public class ContratoDAO {
         return tiposEventosContratuais;
     }
 
-    public void cadastrarAjusteContrato(ContratoModel contrato) throws RuntimeException, SQLException {
+    public void cadastrarAjusteContrato(ContratoModel contrato, String username) throws RuntimeException, SQLException {
         this.connection.setAutoCommit(false);
         Savepoint savepoint = this.connection.setSavepoint("Savepoint1");
         InsertTSQL insertTSQL = new InsertTSQL(connection);
         ConsultaTSQL consultaTSQL = new ConsultaTSQL(connection);
         UpdateTSQL updateTSQL = new UpdateTSQL(connection);
+        int vCodHistoricoGestaoVigente = 0;
         String sql = "";
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            
+        try {
+            int vCodEventoContratual = insertTSQL.InsertEventoContratual(contrato.getCodigo(), contrato.getEventoContratual().getTipo().getCod(),
+                    String.valueOf(contrato.getEventoContratual().getProrrogacao()), contrato.getEventoContratual().getAssunto(),
+                    contrato.getEventoContratual().getDataInicioVigencia(), contrato.getEventoContratual().getDataFimVigencia(),
+                    contrato.getEventoContratual().getDataAssinatura(), username);
+            for (HistoricoGestorModel hgc : contrato.getHistoricoGestao()) {
+                if(hgc.getCodigoPerfilGestao() == 1) {
+                    vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
+                    if(vCodHistoricoGestaoVigente != 0) {
+                        updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
+                        insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
+                    }
+                }
+                if(hgc.getCodigoPerfilGestao() == 2) {
+                    vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
+                    if(vCodHistoricoGestaoVigente != 0) {
+                        updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
+                        insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
+                    }
+                }
+                if(hgc.getCodigoPerfilGestao() == 3) {
+                    vCodHistoricoGestaoVigente = consultaTSQL.RetornaRegistroHistoricoGestaoVigente(contrato.getCodigo(), hgc.getCodigoPerfilGestao());
+                    if(vCodHistoricoGestaoVigente != 0) {
+                        updateTSQL.UpdateHistoricoGestaoContrato(vCodHistoricoGestaoVigente, hgc.getInicio(), username);
+                        insereHistoricoGestaoContrato(contrato.getCodigo(), hgc.getGestor(), hgc.getCodigoPerfilGestao(), hgc.getInicio(), username);
+                    }
+                }
+            }
         }catch (SQLException sqle) {
-
+            sqle.printStackTrace();
         }
+    }
+
+    private void insereHistoricoGestaoContrato(int pCodContrato, String nomeGestor, int pCodPerfilGestao, Date pDataInicio, String pUsername) {
+        InsertTSQL insertTSQL = new InsertTSQL(connection);
+        int vCodUsuarioGestor = 0;
+        String sql = "SELECT COD FROM TB_USUARIO WHERE NOME=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, nomeGestor);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    vCodUsuarioGestor = resultSet.getInt("COD");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro. Usuário indicado para gestor do contrato não existe no sistema !");
+        }
+        insertTSQL.InsertHistoricoGestaoContrato(pCodContrato, vCodUsuarioGestor, pCodPerfilGestao, pDataInicio, null, pUsername);
     }
 }

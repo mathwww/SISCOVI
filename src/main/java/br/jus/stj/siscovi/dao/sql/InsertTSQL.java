@@ -860,7 +860,7 @@ public class InsertTSQL {
                                        Date pDataInicioVigencia,
                                        Date pDataFimVigencia,
                                        Date pDataAssinatura,
-                                       String pLoginAtualizacao) {
+                                       String pLoginAtualizacao) throws NullPointerException, SQLException {
 
         PreparedStatement preparedStatement;
         ConsultaTSQL consulta = new ConsultaTSQL(connection);

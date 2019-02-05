@@ -148,7 +148,7 @@ public class ContratoController {
         try {
             if(new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username) || new UsuarioDAO(connectSQLServer.dbConnect()).isGestor(username, contrato.getCodigo())) {
                 ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
-                contratoDAO.cadastrarAjusteContrato(contrato);
+                contratoDAO.cadastrarAjusteContrato(contrato ,username);
             }
 
         }catch (Exception ex){

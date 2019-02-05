@@ -2,11 +2,7 @@ package br.jus.stj.siscovi.dao.sql;
 
 import br.jus.stj.siscovi.model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -1454,4 +1450,20 @@ public class ConsultaTSQL {
 
     }
 
+    public int RetornaRegistroHistoricoGestaoVigente(int pCodContrato, int pCodPerfilGestao) {
+        String sql = "SELECT COD FROM TB_HISTORICO_GESTAO_CONTRATO WHERE COD_CONTRATO=? AND COD_PERFIL_GESTAO=? AND DATA_FIM IS NULL";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, pCodContrato);
+            preparedStatement.setInt(2, pCodPerfilGestao);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    return resultSet.getInt("COD");
+                }
+            }
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+            throw new RuntimeException("Não foi possível encontrar um gestor com esses dados para esse contrato. Causa: " + sqle.getMessage());
+        }
+        return 0;
+    }
 }

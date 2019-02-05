@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 public class UpdateTSQL {
 
@@ -536,4 +537,19 @@ public class UpdateTSQL {
 
     }
 
+    public void UpdateHistoricoGestaoContrato(int pCodHistoricoGestaoVigente, Date pDataInicio, String pUsername) throws RuntimeException{
+        String sql = "UPDATE TB_HISTORICO_GESTAO_CONTRATO SET DATA_FIM=? , LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=GETDATE() WHERE COD=?";
+        LocalDate dateMinusOne = pDataInicio.toLocalDate().minusDays(1);
+        Date dataInicioMenosUmDia = Date.valueOf(dateMinusOne);
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setDate(1, dataInicioMenosUmDia);
+            preparedStatement.setString(2, pUsername);
+            preparedStatement.setInt(3, pCodHistoricoGestaoVigente);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar atualizar o registro de código " + pCodHistoricoGestaoVigente + " em Historico Gestao Contrato. Causa: " +
+            e.getMessage());
+        }
+    }
 }
