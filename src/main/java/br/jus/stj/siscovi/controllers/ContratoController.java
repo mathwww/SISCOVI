@@ -10,6 +10,7 @@ import br.jus.stj.siscovi.model.EventoContratualModel;
 import br.jus.stj.siscovi.model.TipoEventoContratualModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.sun.org.apache.regexp.internal.RE;
 
 import javax.ws.rs.*;
@@ -24,7 +25,7 @@ public class ContratoController {
     @GET
     @Path("/getContrato/usuario={username}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getContrato(@PathParam("username") String username){
+    public Response getContrato(@PathParam("username") String username) {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         String json = "";
@@ -37,6 +38,7 @@ public class ContratoController {
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
     @GET
     @Path("/getGestorContrato={codigo}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,9 +50,9 @@ public class ContratoController {
         String nomeGestor = contratoDAO.retornaNomeDoGestorDoContrato(codigo);
         if (nomeGestor != null) {
             json = gson.toJson(nomeGestor);
-        }else {
+        } else {
             ErrorMessage errorMessage = new ErrorMessage();
-         json = gson.toJson(errorMessage.error = "Este contrato não existe !");
+            json = gson.toJson(errorMessage.error = "Este contrato não existe !");
         }
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
@@ -59,18 +61,18 @@ public class ContratoController {
     @Path("/cadastrarContrato/{username}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response cadastrarContrato(@PathParam("username") String username, String object){
+    public Response cadastrarContrato(@PathParam("username") String username, String object) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ContratoModel contrato = gson.fromJson(object, ContratoModel.class);
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         Connection connection = connectSQLServer.dbConnect();
         ContratoDAO contratoDAO = new ContratoDAO(connection);
         try {
-            if(contratoDAO.cadastrarContrato(contrato, username)) {
+            if (contratoDAO.cadastrarContrato(contrato, username)) {
                 return Response.ok().build();
             }
             connection.close();
-        }catch (SQLException sqle) {
+        } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
         return Response.ok().build();
@@ -79,7 +81,7 @@ public class ContratoController {
     @GET
     @Path("/getEventosContratuais/{username}/{codigoContrato}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getEventosContratuaisContrato(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato){
+    public Response getEventosContratuaisContrato(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
@@ -88,7 +90,7 @@ public class ContratoController {
             List<EventoContratualModel> eventos = contratoDAO.retornaEventosContratuais(username, codigoContrato);
             connectSQLServer.dbConnect().close();
             json = gson.toJson(eventos);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             json = gson.toJson(ErrorMessage.handleError(ex));
             return Response.status(Response.Status.NOT_FOUND).entity(json).build();
@@ -99,7 +101,7 @@ public class ContratoController {
     @GET
     @Path("/getContratoCompleto/{username}/{codigoContrato}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getContratoCompletoUsuario(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato){
+    public Response getContratoCompletoUsuario(@PathParam("username") String username, @PathParam("codigoContrato") int codigoContrato) {
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         String json = "";
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
@@ -111,7 +113,7 @@ public class ContratoController {
                 json = gson.toJson(contrato);
                 connectSQLServer.dbConnect().close();
             }
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             json = new Gson().toJson(ErrorMessage.handleError(ex));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
@@ -125,11 +127,11 @@ public class ContratoController {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         String json = "";
-        try{
+        try {
             List<TipoEventoContratualModel> tiposEventosContratuais = new ContratoDAO(connectSQLServer.dbConnect()).getTiposEventosContratuais();
             json = gson.toJson(tiposEventosContratuais);
             connectSQLServer.dbConnect().close();
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             json = gson.toJson(ErrorMessage.handleError(ex));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
         }
@@ -141,20 +143,22 @@ public class ContratoController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrarAjuste(@PathParam("username") String username, String object) {
-        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         ContratoModel contrato = gson.fromJson(object, ContratoModel.class);
         String json = "";
         try {
-            if(new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username) || new UsuarioDAO(connectSQLServer.dbConnect()).isGestor(username, contrato.getCodigo())) {
+            if (new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username) || new UsuarioDAO(connectSQLServer.dbConnect()).isGestor(username, contrato.getCodigo())) {
                 ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
-                contratoDAO.cadastrarAjusteContrato(contrato ,username);
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("success", "O ajuste foi cadastrado com sucesso");
+                json = gson.toJson(jsonObject);
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             json = gson.toJson(ErrorMessage.handleError(ex));
             return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
         }
-        return Response.ok().build();
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

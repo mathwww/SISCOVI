@@ -154,6 +154,18 @@ public class ContratoDAO {
         return codigoGestor;
     }
 
+    /**
+     * Função que insere um contrato no sistema, isto é, insere o nome da empresa, o CNPJ, o número do contrato no STJ,
+     * o número do processo no STJ, a descrição do objeto deste contrato, os gestores (O gestor em si, e até dois
+     * substitutos), os percentuais, as funções com suas respectivas remunerações e convenções coletivas e a vigência do
+     * contrato
+     *
+     * @param contrato
+     * @param username
+     * @return
+     * @throws RuntimeException
+     * @throws SQLException
+     */
     public boolean cadastrarContrato(ContratoModel contrato, String username) throws RuntimeException, SQLException {
         this.connection.setAutoCommit(false);
         Savepoint savepoint = this.connection.setSavepoint("Savepoint1");
@@ -185,7 +197,7 @@ public class ContratoDAO {
                     insertTSQL.InsertHistoricoGestaoContrato(vCodContrato, vCodUsuarioGestor, hgc.getCodigoPerfilGestao(), hgc.getInicio(), null, username);
                 }
                 for (PercentualModel pm : contrato.getPercentuais()) {
-                    insertTSQL.InsertPercentualContrato(vCodContrato, pm.getRubrica().getCodigo(), pm.getPercentual(), pm.getDataInicio(), pm.getDataFim(), pm.getDataAditamento(), username);
+                    insertTSQL.InsertPercentualContrato(vCodContrato, pm.getRubrica().getCodigo(), pm.getPercentual(), pm.getDataInicio(), null, pm.getDataAditamento(), username);
                     if (pm.getRubrica().getNome().contains("Férias")) {
                         vPercentualTercoConstitucional = pm.getPercentual() / 3;
                         vDataInicioPercentualTercoConstitucional = pm.getDataInicio();
@@ -229,7 +241,13 @@ public class ContratoDAO {
         }
     }
 
-    public int retornaCodEventoContratual(String tipoEventoContratual) {
+    /**
+     * Retorna o código de um evento contratual pelo tipo de evento.
+     * @param tipoEventoContratual
+     * @return
+     * @throws RuntimeException
+     */
+    public int retornaCodEventoContratual(String tipoEventoContratual) throws RuntimeException {
         String sql = "SELECT COD FROM TB_TIPO_EVENTO_CONTRATUAL WHERE TIPO = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, tipoEventoContratual);
@@ -244,6 +262,13 @@ public class ContratoDAO {
         return 0;
     }
 
+    /**
+     *
+     * @param username
+     * @param codigoContrato
+     * @return
+     * @throws RuntimeException
+     */
     public List<EventoContratualModel> retornaEventosContratuais(String username, int codigoContrato) throws RuntimeException {
         int vCodUsuario = 0;
         List<EventoContratualModel> lista = new ArrayList<>();
@@ -292,6 +317,14 @@ public class ContratoDAO {
         return null;
     }
 
+    /**
+     * Retorna todas as informações atuais do contrato.
+     *
+     * @param username
+     * @param codContrato
+     * @return
+     * @throws RuntimeException
+     */
     public ContratoModel getContratoCompleto(String username, int codContrato) throws RuntimeException {
         String sql = "SELECT COD FROM TB_USUARIO WHERE LOGIN=?";
         User user = new User();
