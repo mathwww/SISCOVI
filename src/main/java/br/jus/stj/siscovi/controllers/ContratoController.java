@@ -141,7 +141,7 @@ public class ContratoController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrarAjuste(@PathParam("username") String username, String object) {
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create();
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         ContratoModel contrato = gson.fromJson(object, ContratoModel.class);
         String json = "";

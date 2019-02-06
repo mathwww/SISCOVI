@@ -1,9 +1,6 @@
 package br.jus.stj.siscovi.dao.sql;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class UpdateTSQL {
@@ -537,7 +534,7 @@ public class UpdateTSQL {
 
     }
 
-    public void UpdateHistoricoGestaoContrato(int pCodHistoricoGestaoVigente, Date pDataInicio, String pUsername) throws RuntimeException{
+    public void UpdateDataFimHistoricoGestaoContrato(int pCodHistoricoGestaoVigente, Date pDataInicio, String pUsername) throws RuntimeException {
         String sql = "UPDATE TB_HISTORICO_GESTAO_CONTRATO SET DATA_FIM=? , LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=GETDATE() WHERE COD=?";
         LocalDate dateMinusOne = pDataInicio.toLocalDate().minusDays(1);
         Date dataInicioMenosUmDia = Date.valueOf(dateMinusOne);
@@ -551,5 +548,38 @@ public class UpdateTSQL {
             throw new RuntimeException("Erro ao tentar atualizar o registro de código " + pCodHistoricoGestaoVigente + " em Historico Gestao Contrato. Causa: " +
             e.getMessage());
         }
+    }
+
+    public void UpdateDataFimPercentualContrato(int pCodPercentualVigente, Date pDataInicio, String pUsername) throws RuntimeException {
+        String sql = "UPDATE TB_PERCENTUAL_CONTRATO SET DATA_FIM=?, LOGIN_ATUALIZACAO=?, DATA_ATUALIZACAO=GETDATE() WHERE COD=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setDate(1, subraiDias(pDataInicio, 1));
+            preparedStatement.setString(2, pUsername);
+            preparedStatement.setInt(3, pCodPercentualVigente);
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar atualizar a data fim de um percentual do contrato ! [Codigo do registro:" +
+                    pCodPercentualVigente + "]. Causa: " + e.getMessage());
+        }
+    }
+
+    public void UpdateFimRemuneracaoFuncao(int pCodFuncaoContrato, Date pDataInicio ,String pUsername) throws RuntimeException {
+        String sql = "UPDATE TB_REMUNERACAO_FUN_CON SET DATA_FIM=?, LOGIN_ATUALIZACAO=? WHERE COD_FUNCAO_CONTRATO=? ";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setDate(1, subraiDias(pDataInicio, 1));
+            preparedStatement.setString(2, pUsername);
+            preparedStatement.setInt(3, pCodFuncaoContrato);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao tentar atualizar a data fim da remuneração vigente no contrato ! " +
+                    e.getMessage());
+        }
+    }
+
+    private Date subraiDias(Date date, long qtdDias){
+        LocalDate localDate = date.toLocalDate().minusDays(qtdDias);
+        return Date.valueOf(localDate);
     }
 }

@@ -1,5 +1,7 @@
 package br.jus.stj.siscovi.dao.sql;
 
+import br.jus.stj.siscovi.dao.CargoDAO;
+import br.jus.stj.siscovi.dao.ConvencoesDAO;
 import br.jus.stj.siscovi.model.*;
 
 import java.sql.*;
@@ -18,12 +20,12 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna o código de um contrato aleatório no banco de dados.
+     * Função que retorna o código de um contrato aleatório no banco de dados.
      *
      * @return Um código (cod) de contrato aleatório.
      */
 
-    public int RetornaCodContratoAleatorio () {
+    public int RetornaCodContratoAleatorio() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -56,15 +58,14 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna o código de um registro de terceirizado no contrato aleatório do banco de dados.
+     * Função que retorna o código de um registro de terceirizado no contrato aleatório do banco de dados.
      * Esse registro é responsável por "linkar" terceirizado e contrato de alguma prestadora de serviço.
      *
      * @param pCodContrato;
-     *
      * @return Um código (cod) de terceirizado_contrato aleatório.
      */
 
-    public int RetornaCodTerceirizadoAleatorio (int pCodContrato) {
+    public int RetornaCodTerceirizadoAleatorio(int pCodContrato) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -100,14 +101,13 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna a data de disponibilização de um terceirizado em determinado contrato.
+     * Função que retorna a data de disponibilização de um terceirizado em determinado contrato.
      *
      * @param pCodTerceirizadoContrato;
-     *
      * @return A data de disponibilização do terceirizado em um contrato.
      */
 
-    public Date RetornaDataDisponibilizacaoTerceirizado (int pCodTerceirizadoContrato) {
+    public Date RetornaDataDisponibilizacaoTerceirizado(int pCodTerceirizadoContrato) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -143,14 +143,13 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna a data de início de um contrato registrado no banco de dados.
+     * Função que retorna a data de início de um contrato registrado no banco de dados.
      *
      * @param pCodContrato;
-     *
      * @return A data de início de um contrato.
      */
 
-    public Date RetornaDataInicioContrato (int pCodContrato) {
+    public Date RetornaDataInicioContrato(int pCodContrato) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -186,14 +185,13 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna o código de um tipo de restituição.
+     * Função que retorna o código de um tipo de restituição.
      *
      * @param pTipoRestituicao;
-     *
      * @return O código (cod) do registro correspondente a um tipo de restituição.
      */
 
-    public int RetornaCodTipoRestituicao (String pTipoRestituicao) {
+    public int RetornaCodTipoRestituicao(String pTipoRestituicao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -262,15 +260,15 @@ public class ConsultaTSQL {
         return vTipoRestituicao;
     }
 */
+
     /**
-     *Função que retorna o código de um tipo de rescisão.
+     * Função que retorna o código de um tipo de rescisão.
      *
      * @param pTipoRescisao;
-     *
      * @return O código (cod) do registro correspondente a um tipo de rescisão.
      */
 
-    public int RetornaCodTipoRescisao (String pTipoRescisao) {
+    public int RetornaCodTipoRescisao(String pTipoRescisao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -308,16 +306,15 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna a lista de código "função terceirizado" e o códgigo de sua "função" de um
+     * Função que retorna a lista de código "função terceirizado" e o códgigo de sua "função" de um
      * terceirizado em uma determinada data.
      *
      * @param pCodTerceirizadoContrato;
      * @param pDataReferencia;
-     *
      * @return Lista contendo o código "função terceirizado" (cod) e o código de "função" (cod_funcao) de um terceirizado.
      */
 
-    public ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> SelecionaFuncaoContratoEFuncaoTerceirizado (int pCodTerceirizadoContrato, Date pDataReferencia) {
+    public ArrayList<CodFuncaoContratoECodFuncaoTerceirizadoModel> SelecionaFuncaoContratoEFuncaoTerceirizado(int pCodTerceirizadoContrato, Date pDataReferencia) {
 
         /*Busca as funções que um funcionário exerceu no mês de cálculo.*/
 
@@ -333,7 +330,7 @@ public class ConsultaTSQL {
                 " OR" +
                 " (((CONVERT(date, CONVERT(varchar, year(ft.data_inicio)) + '-' + CONVERT(varchar, month(ft.data_inicio)) + '-01')) <= ?) " +
                 "AND" +
-                " (ft.data_fim IS NULL)))")){
+                " (ft.data_fim IS NULL)))")) {
 
             preparedStatement.setInt(1, pCodTerceirizadoContrato);
             preparedStatement.setDate(2, pDataReferencia);
@@ -352,7 +349,7 @@ public class ConsultaTSQL {
 
             }
 
-        } catch(SQLException slqe) {
+        } catch (SQLException slqe) {
             //slqe.printStackTrace();
             throw new NullPointerException("Problemas durante a consulta ao banco em relação ao terceirizado: " + pCodTerceirizadoContrato);
 
@@ -363,14 +360,13 @@ public class ConsultaTSQL {
     }
 
     /**
-     *Função que retorna o código do contrato de um terceirizado alocado em um contrato específico.
+     * Função que retorna o código do contrato de um terceirizado alocado em um contrato específico.
      *
      * @param pCodTerceirizadoContrato;
-     *
      * @return O cod_contrato contido no registro da tabela tb_terceirizado_contrato.
      */
 
-    public int RetornaContratoTerceirizado (int pCodTerceirizadoContrato) {
+    public int RetornaContratoTerceirizado(int pCodTerceirizadoContrato) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -447,7 +443,7 @@ public class ConsultaTSQL {
      * @return Próximo valor de sequência da chave primária da tabela.
      */
 
-    int RetornaCodSequenceTbRestituicaoDecimoTerceiro () {
+    int RetornaCodSequenceTbRestituicaoDecimoTerceiro() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -483,7 +479,7 @@ public class ConsultaTSQL {
      * @return Próximo valor de sequência da chave primária da tabela.
      */
 
-    int RetornaCodSequenceTbRestituicaoRescisao () {
+    int RetornaCodSequenceTbRestituicaoRescisao() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -519,7 +515,7 @@ public class ConsultaTSQL {
      * @return Próximo valor de sequência da chave primária da tabela.
      */
 
-    int RetornaCodSequenceTbHistRestituicaoFerias () {
+    int RetornaCodSequenceTbHistRestituicaoFerias() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -555,7 +551,7 @@ public class ConsultaTSQL {
      * @return Próximo valor de sequência da chave primária da tabela.
      */
 
-    int RetornaCodSequenceTbHistRestituicaoDecTer () {
+    int RetornaCodSequenceTbHistRestituicaoDecTer() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -591,7 +587,7 @@ public class ConsultaTSQL {
      * @return Próximo valor de sequência da chave primária da tabela.
      */
 
-    int RetornaCodSequenceTbHistRestituicaoRescisao () {
+    int RetornaCodSequenceTbHistRestituicaoRescisao() {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -649,13 +645,13 @@ public class ConsultaTSQL {
 
         } catch (SQLException sqle) {
 
-            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela " + pNomeTabela +".");
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela " + pNomeTabela + ".");
 
         }
 
         if (vCodSequence == 0) {
 
-            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela " + pNomeTabela +".");
+            throw new NullPointerException("Não foi possível recuperar o número de sequência da chave primária da tabela " + pNomeTabela + ".");
 
         }
 
@@ -670,14 +666,13 @@ public class ConsultaTSQL {
      * @param pMes;
      * @param pAno;
      * @param pDataReferencia;
-     *
      * @return Lista de datas.
      */
 
-    public List<Date> RetornaSubperiodosMesPercentual (int pCodContrato,
-                                                       int pMes,
-                                                       int pAno,
-                                                       Date pDataReferencia) {
+    public List<Date> RetornaSubperiodosMesPercentual(int pCodContrato,
+                                                      int pMes,
+                                                      int pAno,
+                                                      Date pDataReferencia) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -763,15 +758,14 @@ public class ConsultaTSQL {
      * @param pAno;
      * @param pCodFuncaoContrato;
      * @param pDataReferencia;
-     *
      * @return Lista de datas.
      */
 
-    public List<Date> RetornaSubperiodosMesRemuneracao (int pCodContrato,
-                                                        int pMes,
-                                                        int pAno,
-                                                        int pCodFuncaoContrato,
-                                                        Date pDataReferencia) {
+    public List<Date> RetornaSubperiodosMesRemuneracao(int pCodContrato,
+                                                       int pMes,
+                                                       int pAno,
+                                                       int pCodFuncaoContrato,
+                                                       Date pDataReferencia) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -852,15 +846,14 @@ public class ConsultaTSQL {
      * @param pAno;
      * @param pCodFuncaoContrato;
      * @param pDataReferencia;
-     *
      * @return Lista de datas.
      */
 
-    public List<Date> RetornaSubperiodosMesPercentualRemuneracao (int pCodContrato,
-                                                                  int pMes,
-                                                                  int pAno,
-                                                                  int pCodFuncaoContrato,
-                                                                  Date pDataReferencia) {
+    public List<Date> RetornaSubperiodosMesPercentualRemuneracao(int pCodContrato,
+                                                                 int pMes,
+                                                                 int pAno,
+                                                                 int pCodFuncaoContrato,
+                                                                 Date pDataReferencia) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -973,11 +966,10 @@ public class ConsultaTSQL {
      * Retorna um registro da tabela tb_restituicao_ferias..
      *
      * @param pCodRestituicaoFerias;
-     *
      * @return Um registro de restituição de férias no model.
      */
 
-    public RegistroDeFeriasModel RetornaRegistroRestituicaoFerias (int pCodRestituicaoFerias) {
+    public RegistroDeFeriasModel RetornaRegistroRestituicaoFerias(int pCodRestituicaoFerias) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -1053,11 +1045,10 @@ public class ConsultaTSQL {
      * Retorna um registro da tabela tb_restituicao_decimo_terceiro.
      *
      * @param pCodRestituicaoDecimoTerceiro;
-     *
      * @return Um registro de restituição de décimo terceiro no model.
      */
 
-    public RegistroDeDecimoTerceiroModel RetornaRegistroRestituicaoDecimoTerceiro (int pCodRestituicaoDecimoTerceiro) {
+    public RegistroDeDecimoTerceiroModel RetornaRegistroRestituicaoDecimoTerceiro(int pCodRestituicaoDecimoTerceiro) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -1121,11 +1112,10 @@ public class ConsultaTSQL {
      * Retorna um registro da tabela tb_restituicao_rescisao.
      *
      * @param pCodRestituicaoRescisao;
-     *
      * @return Um registro de restituição de rescisão no model.
      */
 
-    public RegistroRestituicaoRescisao RetornaRegistroRestituicaoRescisao (int pCodRestituicaoRescisao) {
+    public RegistroRestituicaoRescisao RetornaRegistroRestituicaoRescisao(int pCodRestituicaoRescisao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -1219,11 +1209,10 @@ public class ConsultaTSQL {
      * Retorna um registro da tabela tb_rubrica.
      *
      * @param pCodRubrica;
-     *
      * @return Um registro de rubrica no model.
      */
 
-    public RegistroRubricaModel RetornaRegistroRubrica (int pCodRubrica) {
+    public RegistroRubricaModel RetornaRegistroRubrica(int pCodRubrica) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -1272,11 +1261,10 @@ public class ConsultaTSQL {
      * Retorna um registro da tabela tb_hist_restituicao_rescisao.
      *
      * @param pCodHistRestituicaoRescisao;
-     *
      * @return Um registro ddo histórico de restituições rejeitadas de rescisao no model.
      */
 
-    public RegistroHistRestituicaoRescisao RetornaRegistroHistRestituicaoRescisao (int pCodHistRestituicaoRescisao) {
+    public RegistroHistRestituicaoRescisao RetornaRegistroHistRestituicaoRescisao(int pCodHistRestituicaoRescisao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -1369,11 +1357,10 @@ public class ConsultaTSQL {
      * Retorna um registro da tabela tb_saldo_residual_rescisao.
      *
      * @param pCodRestituicaoRescisao;
-     *
      * @return Um registro de saldo residual de rescisão no model.
      */
 
-    public RegistroSaldoResidualRescisao RetornaRegistroSaldoResidualRescisao  (int pCodRestituicaoRescisao) {
+    public RegistroSaldoResidualRescisao RetornaRegistroSaldoResidualRescisao(int pCodRestituicaoRescisao) {
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
@@ -1452,18 +1439,88 @@ public class ConsultaTSQL {
 
     public int RetornaRegistroHistoricoGestaoVigente(int pCodContrato, int pCodPerfilGestao) {
         String sql = "SELECT COD FROM TB_HISTORICO_GESTAO_CONTRATO WHERE COD_CONTRATO=? AND COD_PERFIL_GESTAO=? AND DATA_FIM IS NULL";
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, pCodContrato);
             preparedStatement.setInt(2, pCodPerfilGestao);
-            try(ResultSet resultSet = preparedStatement.executeQuery()) {
-                if(resultSet.next()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
                     return resultSet.getInt("COD");
                 }
             }
-        }catch (SQLException sqle){
+        } catch (SQLException sqle) {
             sqle.printStackTrace();
             throw new RuntimeException("Não foi possível encontrar um gestor com esses dados para esse contrato. Causa: " + sqle.getMessage());
         }
         return 0;
+    }
+
+    public int RetornaPercentualContratoVigente(int pCodigoContrato, int pCodRubrica) throws NullPointerException {
+        int vCodPercentualContratoVigente = 0;
+        String sql = "SELECT COD FROM TB_PERCENTUAL_CONTRATO WHERE COD_CONTRATO=? AND COD_RUBRICA=? AND DATA_FIM IS NULL";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, pCodigoContrato);
+            preparedStatement.setInt(2, pCodRubrica);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    vCodPercentualContratoVigente = resultSet.getInt("COD");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NullPointerException("Nenhum percentual encontrado para o contrato " + pCodigoContrato + ", rubrica: " + pCodRubrica + " . Causa: " + e.getMessage());
+        }
+
+        return vCodPercentualContratoVigente;
+    }
+
+    public int RetornaCodFuncaoContrato(int pCodigoContrato, int pCodFuncao) throws NullPointerException {
+        int vCodFuncaoContrato = 0;
+        String sql = "SELECT FC.COD FROM TB_FUNCAO_CONTRATO FC WHERE FC.COD_CONTRATO=? AND FC.COD_FUNCAO=?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, pCodigoContrato);
+            preparedStatement.setInt(2, pCodFuncao);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    vCodFuncaoContrato = resultSet.getInt("COD");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NullPointerException("Função não encontrada no contrato !");
+        }
+        return vCodFuncaoContrato;
+    }
+
+    public CargoModel RetornaFuncaoRemuneracaoVigente(int vCodFuncaoContrato) {
+        CargoModel vFuncaoRemuneracaoVigente = null;
+
+        String sql = "SELECT CC.COD_FUNCAO, CA.NOME, CA.DESCRICAO, RFC.REMUNERACAO, RFC.TRIENIOS, RFC.ADICIONAIS, CC.LOGIN_ATUALIZACAO, CC.DATA_ATUALIZACAO, RFC.COD_CONVENCAO_COLETIVA" +
+                "  FROM tb_funcao_contrato CC" +
+                " JOIN tb_FUNCAO CA ON CA.cod=CC.COD_FUNCAO" +
+                " JOIN tb_remuneracao_fun_con RFC ON CC.COD = RFC.COD_FUNCAO_CONTRATO" +
+                " WHERE RFC.COD_FUNCAO_CONTRATO=? AND RFC.DATA_FIM IS NULL" +
+                " ORDER BY CA.NOME";
+
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, vCodFuncaoContrato);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()) {
+                    vFuncaoRemuneracaoVigente = new CargoModel(resultSet.getInt("COD_FUNCAO"),
+                            resultSet.getString("NOME"),
+                            resultSet.getString("LOGIN_ATUALIZACAO"),
+                            resultSet.getDate("DATA_ATUALIZACAO"));
+                    vFuncaoRemuneracaoVigente.setDescricao(resultSet.getString("DESCRICAO"));
+                    vFuncaoRemuneracaoVigente.setRemuneracao(resultSet.getFloat("REMUNERACAO"));
+                    vFuncaoRemuneracaoVigente.setTrienios(resultSet.getFloat("TRIENIOS"));
+                    vFuncaoRemuneracaoVigente.setAdicionais(resultSet.getFloat("ADICIONAIS"));
+                    vFuncaoRemuneracaoVigente.setConvencao(new ConvencoesDAO(connection).getConvencaoColetiva(resultSet.getInt("COD_CONVENCAO_COLETIVA")));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NullPointerException("Função não encontrada ! " + e.getMessage());
+        }
+
+        return vFuncaoRemuneracaoVigente;
     }
 }
