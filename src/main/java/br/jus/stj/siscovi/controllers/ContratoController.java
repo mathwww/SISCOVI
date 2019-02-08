@@ -150,6 +150,8 @@ public class ContratoController {
         try {
             if (new UsuarioDAO(connectSQLServer.dbConnect()).isAdmin(username) || new UsuarioDAO(connectSQLServer.dbConnect()).isGestor(username, contrato.getCodigo())) {
                 ContratoDAO contratoDAO = new ContratoDAO(connectSQLServer.dbConnect());
+                contratoDAO.cadastrarAjusteContrato(contrato, username);
+                connectSQLServer.dbConnect().close();
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("success", "O ajuste foi cadastrado com sucesso");
                 json = gson.toJson(jsonObject);

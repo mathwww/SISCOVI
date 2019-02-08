@@ -425,6 +425,7 @@ public class ContratoDAO {
         int vCodHistoricoGestaoVigente = 0;
         int vCodPercentualVigente = 0;
         int vCodFuncaoContrato = 0;
+        int vCodRubrica = 0;
 
         CargoModel vFuncaoComRemuneracaoVigente = null;
 

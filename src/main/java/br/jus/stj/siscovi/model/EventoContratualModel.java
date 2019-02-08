@@ -53,4 +53,19 @@ public class EventoContratualModel {
     public TipoEventoContratualModel getTipo() {
         return tipo;
     }
+
+    @Override
+    public String toString() {
+        return "EventoContratualModel{" +
+                "codigo=" + codigo +
+                ", tipo=" + tipo +
+                ", prorrogacao=" + prorrogacao +
+                ", assunto='" + assunto + '\'' +
+                ", dataInicioVigencia=" + dataInicioVigencia +
+                ", dataFimVigencia=" + dataFimVigencia +
+                ", dataAssinatura=" + dataAssinatura +
+                ", loginAtualizacao='" + loginAtualizacao + '\'' +
+                ", dataAtualizacao=" + dataAtualizacao +
+                '}';
+    }
 }

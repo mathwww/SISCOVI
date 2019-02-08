@@ -19,4 +19,14 @@ public class TipoEventoContratualModel {
     public int getCod() {
         return cod;
     }
+
+    @Override
+    public String toString() {
+        return "TipoEventoContratualModel{" +
+                "cod=" + cod +
+                ", tipo='" + tipo + '\'' +
+                ", loginAtualizacao='" + loginAtualizacao + '\'' +
+                ", dataAtualizacao=" + dataAtualizacao +
+                '}';
+    }
 }

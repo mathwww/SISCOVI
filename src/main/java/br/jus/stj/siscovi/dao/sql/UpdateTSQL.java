@@ -556,7 +556,7 @@ public class UpdateTSQL {
             preparedStatement.setDate(1, subraiDias(pDataInicio, 1));
             preparedStatement.setString(2, pUsername);
             preparedStatement.setInt(3, pCodPercentualVigente);
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao tentar atualizar a data fim de um percentual do contrato ! [Codigo do registro:" +
