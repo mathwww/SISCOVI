@@ -3,7 +3,6 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
 import br.jus.stj.siscovi.dao.UsuarioDAO;
-import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.ContratoModel;
 import br.jus.stj.siscovi.model.EventoContratualModel;
@@ -11,7 +10,6 @@ import br.jus.stj.siscovi.model.TipoEventoContratualModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.sun.org.apache.regexp.internal.RE;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

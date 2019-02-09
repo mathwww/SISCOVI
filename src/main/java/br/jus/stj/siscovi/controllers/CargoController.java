@@ -3,16 +3,13 @@ package br.jus.stj.siscovi.controllers;
 import br.jus.stj.siscovi.dao.CargoDAO;
 import br.jus.stj.siscovi.dao.ConnectSQLServer;
 import br.jus.stj.siscovi.dao.ContratoDAO;
-import br.jus.stj.siscovi.dao.sql.ConsultaTSQL;
 import br.jus.stj.siscovi.dao.sql.InsertTSQL;
-import br.jus.stj.siscovi.dao.sql.UpdateTSQL;
 import br.jus.stj.siscovi.helpers.ErrorMessage;
 import br.jus.stj.siscovi.model.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.sun.org.apache.regexp.internal.RE;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -35,6 +32,7 @@ public class CargoController {
         connectSQLServer.dbConnect().close();
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
     @POST
     @Path("/getCargosDosContratos")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -48,7 +46,7 @@ public class CargoController {
         ArrayList<ContratoModel> contratoModels = new ArrayList<>();
         ArrayList<CargoResponseModel> cargos = new ArrayList<>();
         contratos = gson.fromJson(request, new ArrayList<ContratoModel>().getClass());
-        for(int i = 0; i < contratos.size(); i++){
+        for (int i = 0; i < contratos.size(); i++) {
             String temp = gson.toJson(contratos.get(i));
             contratoModels.add(gson.fromJson(temp, ContratoModel.class));
         }
@@ -63,6 +61,7 @@ public class CargoController {
         String json = gson.toJson(cargos);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
+
     @POST
     @Path("/cadastrarCargos")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -73,9 +72,9 @@ public class CargoController {
         CadastroCargoModel ccm = gson.fromJson(object, CadastroCargoModel.class);
         CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
         String json;
-        if(cargoDAO.cadastroCargos(ccm.getCargos(), ccm.getCurrentUser())){
+        if (cargoDAO.cadastroCargos(ccm.getCargos(), ccm.getCurrentUser())) {
             json = gson.toJson("Cadastro realizado com sucesso !");
-        }else {
+        } else {
             json = gson.toJson("Ocorreu Algum erro");
         }
         try {
@@ -90,14 +89,14 @@ public class CargoController {
     @Path("/getFuncoesContrato/{codigo}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getFuncoesContrato (@PathParam("codigo") int codigo, String object) {
+    public Response getFuncoesContrato(@PathParam("codigo") int codigo, String object) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
         User user = gson.fromJson(object, User.class);
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
         List<CargoModel> funcoes = new ArrayList<>();
         try {
-           funcoes =  cargoDAO.getFuncoesContrato(codigo, user);
+            funcoes = cargoDAO.getFuncoesContrato(codigo, user);
             connectSQLServer.dbConnect().close();
         } catch (SQLException e) {
             gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
@@ -117,11 +116,11 @@ public class CargoController {
         CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
         List<CargosFuncionariosModel> lista = new ArrayList<>();
         try {
-           lista = cargoDAO.getTerceirizadosFuncao(codigo, user);
+            lista = cargoDAO.getTerceirizadosFuncao(codigo, user);
             connectSQLServer.dbConnect().close();
-        }catch (SQLException sqle) {
+        } catch (SQLException sqle) {
             return Response.ok(gson.toJson(ErrorMessage.handleError(sqle))).build();
-        }catch (RuntimeException rte) {
+        } catch (RuntimeException rte) {
             return Response.ok(gson.toJson(ErrorMessage.handleError(rte))).build();
         }
         return Response.ok(gson.toJson(lista)).build();
@@ -133,12 +132,13 @@ public class CargoController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response alocarTerceirizados(String object, @PathParam("codigo") int codigoContrato, @PathParam("username") String username) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-        List<CargosFuncionariosModel> lista = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>(){}.getType());
+        List<CargosFuncionariosModel> lista = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>() {
+        }.getType());
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         try {
             InsertTSQL insertTSQL = new InsertTSQL(connectSQLServer.dbConnect());
-            CargoDAO cargoDAO= new CargoDAO(connectSQLServer.dbConnect());
-            for(CargosFuncionariosModel cfm : lista) {
+            CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
+            for (CargosFuncionariosModel cfm : lista) {
                 int a = insertTSQL.InsertTerceirizadoContrato(codigoContrato, cfm.getFuncionario().getCodigo(), cfm.getDataDisponibilizacao(), cfm.getDataDesligamento(), username);
                 int codFuncaoContrato = cargoDAO.recuperaCodigoFuncaoContrato(codigoContrato, cfm.getFuncao().getCodigo());
                 insertTSQL.InsertFuncaoTerceirizado(a, codFuncaoContrato, cfm.getDataDisponibilizacao(), null, username);
@@ -159,12 +159,13 @@ public class CargoController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response alterarFuncaoTerceirizado(String object, @PathParam("codigoContrato") int codigoContrato, @PathParam("username") String username) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-        List<CargosFuncionariosModel> listaFuncionariosAlteracao = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>(){}.getType());
+        List<CargosFuncionariosModel> listaFuncionariosAlteracao = gson.fromJson(object, new TypeToken<List<CargosFuncionariosModel>>() {
+        }.getType());
         ConnectSQLServer connectSQLServer = new ConnectSQLServer();
         CargoDAO cargoDAO = new CargoDAO(connectSQLServer.dbConnect());
         try {
-            for(CargosFuncionariosModel cfm : listaFuncionariosAlteracao) {
-                if(!cargoDAO.alterarFuncaoTerceirizado(codigoContrato, cfm.getFuncionario().getCodigo(), cfm.getFuncao().getCodigo(), cfm.getDataDisponibilizacao(), username)) {
+            for (CargosFuncionariosModel cfm : listaFuncionariosAlteracao) {
+                if (!cargoDAO.alterarFuncaoTerceirizado(codigoContrato, cfm.getFuncionario().getCodigo(), cfm.getFuncao().getCodigo(), cfm.getDataDisponibilizacao(), username)) {
                     ErrorMessage errorMessage = new ErrorMessage();
                     errorMessage.error = "Erro ao tentar alterar a função de um terceirizado. Entre em contato com o administrador do sistema";
                     return Response.ok(gson.toJson(errorMessage)).build();
@@ -173,7 +174,7 @@ public class CargoController {
             connectSQLServer.dbConnect().close();
         } catch (SQLException e) {
             return Response.ok(gson.toJson(ErrorMessage.handleError(e))).build();
-        }catch(RuntimeException rte) {
+        } catch (RuntimeException rte) {
             return Response.ok(gson.toJson(ErrorMessage.handleError(rte))).build();
         }
         JsonObject jsonObject = new JsonObject();
